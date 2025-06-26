@@ -358,11 +358,11 @@ export class AffiliateService {
           address: node.address,
           direction: node.direction,
           level: node.level,
-          rank: node.rank,
-          totalPkgAmount: node.totalPkgAmount,
-          totalBuyPkgFee: node.totalBuyPkgFee,
-          totalVolume: node.totalVolume,
-          weakBranchVolume: node.weakBranchVolume,
+          // rank: node.rank,
+          // totalPkgAmount: node.totalPkgAmount,
+          // totalBuyPkgFee: node.totalBuyPkgFee,
+          // totalVolume: node.totalVolume,
+          // weakBranchVolume: node.weakBranchVolume,
           hasChildren: hasChildCount > 0,
           children: node.children?.length
             ? await Promise.all(
@@ -489,16 +489,18 @@ export class AffiliateService {
       const newPosition =
         direction - BigInt(1) + BigInt(2) * parentPos + BigInt(1);
 
-      const newAff = await this.affRepository.create({
-        ...pick(dto, Object.keys(dto)),
-        parent:
-          descendants.length > 0 ? descendants[descendants.length - 1] : ref,
-        position: newPosition.toString(),
-        level: parent.level + 1,
-        totalPkgAmount: pkgAmount,
-        totalBuyPkgFee: buyPkgFee,
-        packages: [{ pkgAmount, buyPkgFee }]
-      } as Affiliate);
+      // const newAff = await this.affRepository.create({
+      //   ...pick(dto, Object.keys(dto)),
+      //   parent:
+      //     descendants.length > 0 ? descendants[descendants.length - 1] : ref,
+      //   position: newPosition.toString(),
+      //   level: parent.level + 1,
+      //   totalPkgAmount: pkgAmount,
+      //   totalBuyPkgFee: buyPkgFee,
+      //   packages: [{ pkgAmount, buyPkgFee }]
+      // } as Affiliate);
+      
+      const newAff = {};
 
       await this.affRepository.save(newAff);
 
@@ -508,48 +510,48 @@ export class AffiliateService {
     }
   }
 
-  async upgradePackage(dto: UpgradePackageDto) {
-    try {
-      const aff = await this.affRepository.findOne({
-        where: { address: dto.address },
-        relations: ['parent']
-      });
+  // async upgradePackage(dto: UpgradePackageDto) {
+  //   try {
+  //     const aff = await this.affRepository.findOne({
+  //       where: { address: dto.address },
+  //       relations: ['parent']
+  //     });
 
-      if (!aff) {
-        return { message: 'Address is not existed', data: null };
-      }
+  //     if (!aff) {
+  //       return { message: 'Address is not existed', data: null };
+  //     }
 
-      const pkgAmount = (dto.packageAmount * (100 - buyPkgFeePer)) / 100;
-      const buyPkgFee = (dto.packageAmount * buyPkgFeePer) / 100;
+  //     const pkgAmount = (dto.packageAmount * (100 - buyPkgFeePer)) / 100;
+  //     const buyPkgFee = (dto.packageAmount * buyPkgFeePer) / 100;
 
-      // init array
-      if (!aff.packages) {
-        aff.packages = [];
-      }
+  //     // init array
+  //     if (!aff.packages) {
+  //       aff.packages = [];
+  //     }
 
-      aff.packages.push({
-        pkgAmount,
-        buyPkgFee
-      } as Package);
+  //     aff.packages.push({
+  //       pkgAmount,
+  //       buyPkgFee
+  //     } as Package);
 
-      await this.affRepository.update(aff.id, {
-        totalPkgAmount: +aff.totalPkgAmount + pkgAmount,
-        totalBuyPkgFee: +aff.totalBuyPkgFee + buyPkgFee,
-        packages: aff.packages
-      });
+  //     await this.affRepository.update(aff.id, {
+  //       totalPkgAmount: +aff.totalPkgAmount + pkgAmount,
+  //       totalBuyPkgFee: +aff.totalBuyPkgFee + buyPkgFee,
+  //       packages: aff.packages
+  //     });
 
-      return {
-        data: {
-          ...aff,
-          totalPkgAmount: +aff.totalPkgAmount + pkgAmount,
-          totalBuyPkgFee: +aff.totalBuyPkgFee + buyPkgFee,
-          packages: aff.packages
-        }
-      };
-    } catch (e: any) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
-    }
-  }
+  //     return {
+  //       data: {
+  //         ...aff,
+  //         totalPkgAmount: +aff.totalPkgAmount + pkgAmount,
+  //         totalBuyPkgFee: +aff.totalBuyPkgFee + buyPkgFee,
+  //         packages: aff.packages
+  //       }
+  //     };
+  //   } catch (e: any) {
+  //     throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+  //   }
+  // }
 
   async moveSubTree(dto: MoveSubTreeDto) {
     dto.includeSelf = true;

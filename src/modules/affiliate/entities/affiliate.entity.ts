@@ -33,34 +33,11 @@ export class Affiliate extends BaseEntity {
   @Column({ nullable: true })
   hash: string;
 
-  @Column({ type: 'decimal', default: 0 })
-  totalPkgAmount: number;
-
-  @Column({ type: 'decimal', default: 0 })
-  totalBuyPkgFee: number;
-
-  @Column({ type: 'jsonb', nullable: true })
-  packages: Package[];
-
   @TreeParent()
   parent: Affiliate;
 
   @TreeChildren()
   children: Affiliate[];
-
-  @Column({
-    type: 'enum',
-    enum: EnumAffRank,
-    default: EnumAffRank.NONE
-  })
-  @Column()
-  rank?: EnumAffRank;
-
-  @Column({ type: 'decimal', precision: 20, scale: 2, default: 0 })
-  totalVolume: number;
-
-  @Column({ type: 'decimal', precision: 20, scale: 2, default: 0 })
-  weakBranchVolume: number;
 }
 
 export interface Package {

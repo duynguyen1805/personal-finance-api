@@ -14,11 +14,10 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { EnumAffDirect, EnumAffRank } from './dto/enum.dto';
 import { Affiliate } from './entities/affiliate.entity';
 import { Commission } from './entities/commission.entity';
-import { Income } from './entities/income.entity';
 import { uuid } from 'uuidv4';
 import { Transactions } from '../transactions/entities/transaction.entity';
 import { User } from '../user/entities/user.entity';
-import { LeadershipService } from './leadership.service';
+// import { LeadershipService } from './leadership.service';
 import { getSolPrice } from '../../shared/get-sol-price.shared';
 
 // const DIRECT_F1_COMMISSION_PERCENT =
@@ -51,13 +50,11 @@ export class CommissionService {
     @InjectRepository(Affiliate)
     private treeAffRepository: TreeRepository<Affiliate>,
     private readonly transactionsService: TransactionsService,
-    @InjectRepository(Income)
-    private incomeRepo: Repository<Income>,
     @InjectRepository(Transactions)
     private transactionsRepo: Repository<Transactions>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private readonly leadershipService: LeadershipService
+    // private readonly leadershipService: LeadershipService
   ) {}
 
   async getRewards() {
@@ -516,12 +513,12 @@ export class CommissionService {
       //   return obj[address] ? obj : { ...obj, [address]: item };
       // }, {});
 
-      const countByRank = allAffs.reduce<Record<string, number>>(
-        (obj, item) => {
-          return { ...obj, [item.rank]: (obj[item.rank] || 0) + 1 };
-        },
-        {}
-      );
+      // const countByRank = allAffs.reduce<Record<string, number>>(
+      //   (obj, item) => {
+      //     return { ...obj, [item.rank]: (obj[item.rank] || 0) + 1 };
+      //   },
+      //   {}
+      // );
       const solPrice: number = await getSolPrice();
       // await Promise.all(
       //   allAffs.map(async (aff) => {
