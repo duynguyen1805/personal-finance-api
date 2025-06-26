@@ -1,10 +1,13 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../../../common/base.entity';
 import { EnumAffRank } from '../dto/enum.dto';
 import { COMMISSION_TYPES } from '../../transactions/dto/enum.dto';
 
 @Entity()
 export class Commission extends BaseEntity {
+  @PrimaryGeneratedColumn('increment')
+  id: number;
+
   @Column()
   address: string;
 

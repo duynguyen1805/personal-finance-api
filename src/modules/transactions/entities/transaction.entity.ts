@@ -1,4 +1,4 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base.entity';
@@ -7,6 +7,9 @@ import { ColumnNumericTransformer } from '../../../common/common.helper';
 
 @Entity()
 export class Transactions extends BaseEntity {
+  @PrimaryGeneratedColumn('increment')
+  id: number;
+
   @Column({ nullable: true })
   walletAddress: string;
 

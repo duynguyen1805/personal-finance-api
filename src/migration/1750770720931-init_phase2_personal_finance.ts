@@ -6,6 +6,7 @@ export class initPhase2PersonalFinance1750770720931 implements MigrationInterfac
         await queryRunner.query(`
            CREATE TABLE "budgets" (
                 "budgetId" SERIAL NOT NULL,
+                "is_active" boolean NOT NULL DEFAULT true,
                 "userId" integer NOT NULL,
                 "month" date NOT NULL,
                 "totalAmount" numeric NOT NULL,
@@ -22,6 +23,7 @@ export class initPhase2PersonalFinance1750770720931 implements MigrationInterfac
         await queryRunner.query(`
             CREATE TABLE "categories" (
                 "categoryId" SERIAL NOT NULL,
+                "is_active" boolean NOT NULL DEFAULT true,
                 "budgetId" integer NOT NULL,
                 "cateroryName" character varying NOT NULL,
                 "typeCategory" category_type_enum NOT NULL DEFAULT 'OTHER',
@@ -36,6 +38,7 @@ export class initPhase2PersonalFinance1750770720931 implements MigrationInterfac
         await queryRunner.query(`
             CREATE TABLE "expenses" (
                 "expenseId" SERIAL NOT NULL,
+                "is_active" boolean NOT NULL DEFAULT true,
                 "userId" integer NOT NULL,
                 "categoryId" integer NOT NULL,
                 "amount" numeric NOT NULL,
@@ -50,6 +53,7 @@ export class initPhase2PersonalFinance1750770720931 implements MigrationInterfac
         await queryRunner.query(`
             CREATE TABLE "financial_goals" (
                 "goalId" SERIAL NOT NULL,
+                "is_active" boolean NOT NULL DEFAULT true,
                 "userId" integer NOT NULL,
                 "goalName" character varying NOT NULL,
                 "targetAmount" numeric NOT NULL,
@@ -64,6 +68,7 @@ export class initPhase2PersonalFinance1750770720931 implements MigrationInterfac
         await queryRunner.query(`
             CREATE TABLE "register_verification" (
                 "userId" integer NOT NULL,
+                "is_active" boolean NOT NULL DEFAULT true,
                 "code" character varying NOT NULL,
                 "isVerified" boolean NOT NULL DEFAULT false,
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone,
@@ -74,6 +79,7 @@ export class initPhase2PersonalFinance1750770720931 implements MigrationInterfac
         await queryRunner.query(`
             CREATE TABLE "otp" (
                 "otpId" integer NOT NULL,
+                "is_active" boolean NOT NULL DEFAULT true,
                 "userId" integer NOT NULL,
                 "code" character varying NOT NULL,
                 "action" character varying NOT NULL,

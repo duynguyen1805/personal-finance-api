@@ -1,4 +1,4 @@
-import { Column, Entity, Tree, TreeChildren, TreeParent } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from 'typeorm';
 import { BaseEntity } from '../../../common/base.entity';
 import { EnumAffDirect, EnumAffRank } from '../dto/enum.dto';
 
@@ -9,6 +9,9 @@ import { EnumAffDirect, EnumAffRank } from '../dto/enum.dto';
   descendantColumnName: (column) => 'descendant_' + column.propertyName
 })
 export class Affiliate extends BaseEntity {
+  @PrimaryGeneratedColumn('increment')
+  id: number;
+
   @Column()
   address: string;
 

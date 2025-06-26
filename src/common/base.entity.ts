@@ -8,8 +8,8 @@ import {
 } from 'typeorm';
 
 export abstract class BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
+  // @PrimaryGeneratedColumn('increment')
+  // id: number;
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
   isActive: boolean;

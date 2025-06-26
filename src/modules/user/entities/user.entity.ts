@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 // base.entity.ts
 
 import { EnumUserStatus } from '../dto/enum.dto';
@@ -7,6 +7,9 @@ import { Role } from '../../role/entities/role.entity';
 
 @Entity()
 export class User extends BaseEntity {
+  @PrimaryGeneratedColumn('increment')
+  id: number;
+
   @Column({ unique: true })
   walletAddress: string;
 
@@ -17,9 +20,36 @@ export class User extends BaseEntity {
   @JoinTable()
   roles: Role[];
 
-  @Column('numeric', { default: 0 })
-  currentMaxoutLimit: number; // limit maxout hiện tại (300% của gói đầu tư) tính bằng USD
+  @Column({ nullable: false })
+  email: string;
+
+  @Column({ nullable: false })
+  paaswordHash: string;
+
+  @Column({ nullable: false })
+  firstName: string;
+
+  @Column({ nullable: false })
+  lastName: string;
+
+  @Column({ nullable: false, default: '' })
+  accountType: string;
+
+  @Column({ nullable: true })
+  lastChangePasswordAt: string | Date;
 
   @Column({ default: false })
-  isMaxedOut: boolean;
+  isFrozen: boolean;
+
+  @Column({ nullable: true })
+  avatar: number;
+
+  @Column({ default: false })
+  isTwoFactorAuthEnabled: boolean;
+
+  @Column({ nullable: true })
+  twoFactorAuthSecret: string;
+
+  @Column({ nullable: true })
+  timeActiveTwoFactorAuth: string | Date;
 }

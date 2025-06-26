@@ -6,10 +6,10 @@ export class addUserPermissionAndAuthProviderTable1750948171841 implements Migra
         await queryRunner.query(`
             CREATE TABLE "user_permission" (
                 "userPermissionId" SERIAL NOT NULL,
+                "is_active" boolean NOT NULL DEFAULT true,
                 "userId" integer NOT NULL,
                 "permission" character varying NOT NULL,
                 "userRole" character varying NOT NULL,
-                "isActive" boolean NOT NULL DEFAULT true,
                 "isHidden" boolean NOT NULL DEFAULT false,
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone,
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone,
@@ -21,10 +21,10 @@ export class addUserPermissionAndAuthProviderTable1750948171841 implements Migra
         await queryRunner.query(`
             CREATE TABLE "user_auth_provider" (
                 "userAuthProviderId" SERIAL NOT NULL,
+                "is_active" boolean NOT NULL DEFAULT true,
                 "userId" integer NOT NULL,
                 "authProvider" character varying NOT NULL,
                 "authProviderId" character varying NOT NULL,
-                "isActive" boolean NOT NULL DEFAULT true,
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone,
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone,
                 "deleted_at" TIMESTAMP,
@@ -50,6 +50,7 @@ export class addUserPermissionAndAuthProviderTable1750948171841 implements Migra
         await queryRunner.query(`
             CREATE TABLE "file" (
                 "fileId" SERIAL NOT NULL,
+                "is_active" boolean NOT NULL DEFAULT true,
                 "userUploadId" integer NOT NULL,
                 "mineType" character varying NOT NULL,
                 "fileExtension" character varying NOT NULL,
