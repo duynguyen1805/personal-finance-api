@@ -15,7 +15,7 @@ import { Transactions } from './entities/transaction.entity';
 import nacl from 'tweetnacl';
 import { decodeUTF8 } from 'tweetnacl-util';
 import { User } from '../user/entities/user.entity';
-import { getSOLRBalance } from '../../shared/get-solr-balance';
+// import { getSOLRBalance } from '../../shared/get-solr-balance';
 import bs58 from 'bs58';
 import { PublicKey } from '@solana/web3.js';
 import { ClientProxy } from '@nestjs/microservices';
@@ -212,7 +212,8 @@ export class TransactionsService {
   async validateWithdraw(currentUser: User, dto: any, isFake = false) {
     const { signature } = dto;
     // Get admin sol balancez
-    const totalPool = await getSOLRBalance(process.env.ADMIN_PRIVATE_KEY);
+    // const totalPool = await getSOLRBalance(process.env.ADMIN_PRIVATE_KEY);
+    const totalPool = 0;
     if (+totalPool < +dto.amount) {
       throw new HttpException(
         'Pool has insufficient balance',

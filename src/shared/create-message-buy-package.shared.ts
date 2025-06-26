@@ -1,5 +1,5 @@
 import * as emoji from 'node-emoji';
-import { getSOLRBalance } from './get-solr-balance';
+// import { getSOLRBalance } from './get-solr-balance';
 import { formatAmountBuy } from './format-amount-buy.shared';
 import { sendMessageTelegram } from './send-message-telegram.shared';
 import { EMessageTypeEnum } from './enums/message-types.enum';
@@ -11,7 +11,8 @@ export async function withdrawMessage(
   totalWithdraw: number,
   transactionHash: string
 ) {
-  const totalPool = await getSOLRBalance(process.env.ADMIN_PRIVATE_KEY);
+  // const totalPool = await getSOLRBalance(process.env.ADMIN_PRIVATE_KEY);
+  const totalPool = 0;
 
   const CHAT_ID_PRODUCTION_NORMAL = +process.env.CHAT_ID_PRODUCTION_NORMAL;
 

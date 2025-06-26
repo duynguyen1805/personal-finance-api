@@ -20,7 +20,7 @@ import {
   WithdrawType
 } from '../dto/enum.dto';
 import { withdrawMessage } from '../../../shared/create-message-withdraw.shared';
-import { transferSolr } from '../../../shared/send-solr.shared';
+// import { transferSolr } from '../../../shared/send-solr.shared';
 import { uuid } from 'uuidv4';
 
 @Controller()
@@ -71,10 +71,11 @@ export class TransactionConsumer {
       // Transfer fee to address Received Fee
       await delay(30000);
 
-      const digest: any = await transferSolr(
-        process.env.RECEIVED_TRANSFER_FEE_ADDRESS,
-        +amountFee
-      );
+      // const digest: any = await transferSolr(
+      //   process.env.RECEIVED_TRANSFER_FEE_ADDRESS,
+      //   +amountFee
+      // );
+      const digest: any = null;
 
       if (digest) {
         const nUUID = uuid();
@@ -117,7 +118,8 @@ export class TransactionConsumer {
     } = msgData;
     try {
       // withdraw
-      const digest: any = await transferSolr(toAddress, amountWithdraw);
+      // const digest: any = await transferSolr(toAddress, amountWithdraw);
+      const digest: any = null;
       if (digest) {
         // Update transaction hash
         await this.transactionsRepo.update(transactionId, {
