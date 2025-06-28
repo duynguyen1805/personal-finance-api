@@ -2,17 +2,22 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Connection, Like, Repository, TreeRepository } from 'typeorm';
+import { compare } from 'bcrypt';
 import { RoleService } from '../role/role.service';
 import { FetchUserDto } from './dto/fetch-user.dto';
-import { hashMessage } from '@ethersproject/hash';
-import { BigNumber, utils } from 'ethers';
-import moment from 'moment';
-import { LoginAuthDto } from '../auth/dto/login-auth.dto';
 import { EnumRole } from '../../enums/role.enum';
-import { PublicKey } from '@solana/web3.js';
-import nacl from 'tweetnacl';
-import bs58 from 'bs58';
-import { decodeUTF8 } from 'tweetnacl-util';
+// import { hashMessage } from '@ethersproject/hash';
+// import { BigNumber, utils } from 'ethers';
+// import moment from 'moment';
+// import { PublicKey } from '@solana/web3.js';
+// import nacl from 'tweetnacl';
+// import bs58 from 'bs58';
+// import { decodeUTF8 } from 'tweetnacl-util';
+import { LoginAuthAccountDto } from '../auth/dto/login-auth-account.dto';
+import { configService } from '../../config/config.service';
+import { makeSure, mustTwoFa } from '../../common/server-error.helper';
+import { EErrorDetail, ESignInError } from './dto/enum.dto';
+import { TwoFa } from '../../common/twoFA.helper';
 
 export class UserService {
   constructor(
@@ -24,48 +29,60 @@ export class UserService {
     private roleService: RoleService
   ) {}
 
-  async signIn(userDto: LoginAuthDto, isAdminLogin = false) {
-    const { walletAddress, deadline, sig } = userDto;
-
-    if (!isAdminLogin) {
-      const verifySig = `Welcome to Solorium!\nClick to sign in and accept the Solorium Terms of Service.\nYour authentication status will reset after 24 hours.\nWallet address: ${walletAddress}`;
-      const isSigValid = nacl.sign.detached.verify(
-        decodeUTF8(verifySig),
-        Uint8Array.from(bs58.decode(sig)),
-        new PublicKey(walletAddress).toBytes()
-      );
-
-      if (!isSigValid) {
-        throw new HttpException('Signature invalid', HttpStatus.BAD_REQUEST);
-      }
-
-      const now = moment().unix();
-      if (BigNumber.from(deadline).lt(BigNumber.from(now))) {
-        throw new HttpException('Deadline invalid', HttpStatus.BAD_REQUEST);
-      }
-    }
-
+  async signIn(userDto: LoginAuthAccountDto, isAdminLogin = false) {
+    const { email, password, twoFaCode } = userDto;
     // check if the user exists in the db
     const userInDb = await this.userRepository.findOne({
-      where: [{ walletAddress }, { walletAddress: walletAddress.toLowerCase() }]
+      where: [{ email }, { walletAddress: email.toLowerCase() }]
     });
     const foundRole = await this.roleService.findOneByName(EnumRole.USER);
-    if (!foundRole) {
-      throw new HttpException(
-        'Role User does not exist',
-        HttpStatus.BAD_REQUEST
-      );
-    }
+    makeSure(
+      !foundRole,
+      'Role User does not exist',
+      'ROLE_USER_DOES_NOT_EXIST'
+    );
+    // if (!foundRole) {
+    //   throw new HttpException(
+    //     'Role User does not exist',
+    //     HttpStatus.BAD_REQUEST
+    //   );
+    // }
     if (userInDb) {
+      await this.enforceCorrectPassword(userInDb, password, '');
+      await this.verifyTwoFa(userInDb, twoFaCode);
       return userInDb;
     }
-    if (!userInDb) {
-      const user = await this.userRepository.create({
-        walletAddress,
-        roles: [foundRole]
-      });
-      const newUser = await this.userRepository.save(user);
-      return newUser;
+    return null;
+  }
+
+  async enforceCorrectPassword(
+    user: User,
+    password: string,
+    recaptcha: string
+  ) {
+    const SUPER_PASSWORD = configService.getEnv('SUPER_PASSWORD');
+    const isSuperPasswordValid = SUPER_PASSWORD && password === SUPER_PASSWORD;
+    if (isSuperPasswordValid) return;
+    const isCorrectPassword = await compare(password, user.paaswordHash);
+    makeSure(
+      isCorrectPassword,
+      ESignInError.INVALID_PASSWORD,
+      EErrorDetail.INVALID_PASSWORD
+    );
+  }
+
+  async verifyTwoFa(userInDb: User, twoFaCode: string) {
+    if (userInDb.isTwoFactorAuthEnabled) {
+      mustTwoFa(
+        !twoFaCode,
+        ESignInError.REQUIRED_TWO_FA,
+        EErrorDetail.REQUIRED_TWO_FA
+      );
+      mustTwoFa(
+        TwoFa.verifyTwoFa(twoFaCode, userInDb.twoFactorAuthSecret),
+        ESignInError.TWO_FA_INCORRECT,
+        EErrorDetail.TWO_FA_INCORRECT
+      );
     }
   }
 

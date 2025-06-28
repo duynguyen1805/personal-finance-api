@@ -29,7 +29,7 @@ export enum EPermission {
   LEADER = 'LEADER',
   SIGN = 'SIGN',
   EDIT = 'EDIT',
-  VIEW = 'VIEW',
+  VIEW = 'VIEW'
 }
 
 export enum EAuthProvider {
@@ -39,6 +39,18 @@ export enum EAuthProvider {
   APPLE = 'APPLE'
 }
 
-export enum EAccountType {
-  
+export enum EAccountType {}
+
+export enum ESignInError {
+  INVALID_PASSWORD = 'INVALID_PASSWORD',
+  INVALID_EMAIL = 'INVALID_EMAIL',
+  REQUIRED_TWO_FA = 'REQUIRED_TWO_FA',
+  TWO_FA_INCORRECT = 'TWO_FA_INCORRECT'
+}
+
+export enum EErrorDetail {
+  INVALID_PASSWORD = 'INVALID_PASSWORD',
+  INVALID_EMAIL = 'INVALID_EMAIL',
+  REQUIRED_TWO_FA = 'REQUIRED_TWO_FA',
+  TWO_FA_INCORRECT = 'TWO_FA_INCORRECT'
 }

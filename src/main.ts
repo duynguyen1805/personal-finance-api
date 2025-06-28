@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { LoggingInterceptor } from './common/logging.interceptor';
 import { TransformInterceptor } from './common/transform.interceptor';
-import { AllExceptionsFilter } from './common/all-exception.filter';
+import { AllExceptionsFilter } from './common/exceptions/all-exception.filter';
 import { MicroserviceOptions } from '@nestjs/microservices';
 import { RmqService } from './modules/rmq/rmq.service';
 import { rmqConsumerSetting } from './rmq.consumer';
@@ -17,10 +17,7 @@ async function bootstrap() {
   const appConfigs = app.get(ConfigService);
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:4000',
-    ],
+    origin: ['http://localhost:3000', 'http://localhost:4000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
   });

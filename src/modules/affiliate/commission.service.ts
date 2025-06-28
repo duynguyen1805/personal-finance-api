@@ -86,289 +86,290 @@ export class CommissionService {
   }
 
   // do direct commission F1, F2, F3
-  async doDirectCommission(
-    buyerAddress: string,
-    packageBaseAmountSOL: number,
-    solPrice: number
-  ) {
-    console.log(
-      `[${moment
-        .utc()
-        .format(
-          'dd - DD/MM/YYYY HH:mm:ss'
-        )}] - [Commission][Begin] - Doing direct commission F1, F2, F3`
-    );
-    try {
-      if (packageBaseAmountSOL <= 0) {
-        return { message: 'No commission to distribute' };
-      }
+  // async doDirectCommission(
+  //   buyerAddress: string,
+  //   packageBaseAmountSOL: number,
+  //   solPrice: number
+  // ) {
+  //   console.log(
+  //     `[${moment
+  //       .utc()
+  //       .format(
+  //         'dd - DD/MM/YYYY HH:mm:ss'
+  //       )}] - [Commission][Begin] - Doing direct commission F1, F2, F3`
+  //   );
+  //   try {
+  //     if (packageBaseAmountSOL <= 0) {
+  //       return { message: 'No commission to distribute' };
+  //     }
 
-      const buyer = await this.affRepository.findOne({
-        where: { address: buyerAddress },
-      });
+  //     const buyer = await this.affRepository.findOne({
+  //       where: { address: buyerAddress },
+  //     });
 
-      if (!buyer) {
-        throw new Error('Buyer not found');
-      }
+  //     if (!buyer) {
+  //       throw new Error('Buyer not found');
+  //     }
 
-      const totalCommission = packageBaseAmountSOL;
-      if (totalCommission <= 0)
-        return { message: 'No commission to distribute' };
+  //     const totalCommission = packageBaseAmountSOL;
+  //     if (totalCommission <= 0)
+  //       return { message: 'No commission to distribute' };
 
-      // do commission
-      if (totalCommission > 0) {
-        // get F1
-        // F1 là parent trực tiếp của người mua
-        const f1 = await this.affRepository.findOne({
-          where: { address: buyer.refAddress },
-        });;
+  //     // do commission
+  //     if (totalCommission > 0) {
+  //       // get F1
+  //       // F1 là parent trực tiếp của người mua
+  //       const f1 = await this.affRepository.findOne({
+  //         where: { address: buyer.refAddress },
+  //       });;
 
-        // process F1 (5%)
-        if (f1) {
-          const f1User = await this.userRepository.findOne({
-            walletAddress: f1.address
-          });
+  //       // process F1 (5%)
+  //       if (f1) {
+  //         const f1User = await this.userRepository.findOne({
+  //           walletAddress: f1.address
+  //         });
 
-          if (f1User) {
-            // check maxout
-            const isMaxedOut = await this.checkUserMaxout(f1User.id, solPrice);
+  //         if (f1User) {
+  //           // check maxout
+  //           // const isMaxedOut = await this.checkUserMaxout(f1User.id, solPrice);
+  //           const isMaxedOut = true;
 
-            if (!isMaxedOut) {
-              // hh F1
-              const commAmount =
-                (totalCommission * DIRECT_F1_COMMISSION_PERCENT) / 100;
+  //           if (!isMaxedOut) {
+  //             // hh F1
+  //             const commAmount =
+  //               (totalCommission * DIRECT_F1_COMMISSION_PERCENT) / 100;
 
-              // check limit còn lại
-              const totalReceived =
-                await this.getTotalCommissionReceivedConvertToUSD(
-                  f1User.id,
-                  solPrice
-                );
-              const remainingAllowance =
-                Number(f1User.currentMaxoutLimit) > 0
-                  ? Number(f1User.currentMaxoutLimit) - totalReceived
-                  : 0;
+  //             // check limit còn lại
+  //             const totalReceived =
+  //               await this.getTotalCommissionReceivedConvertToUSD(
+  //                 f1User.id,
+  //                 solPrice
+  //               );
+  //             const remainingAllowance =
+  //               Number(f1User.currentMaxoutLimit) > 0
+  //                 ? Number(f1User.currentMaxoutLimit) - totalReceived
+  //                 : 0;
 
-              let adjustedAmount = commAmount;
-              if (
-                Number(f1User.currentMaxoutLimit) > 0 &&
-                remainingAllowance < commAmount
-              ) {
-                adjustedAmount =
-                  remainingAllowance > 0 ? remainingAllowance : 0;
-              }
+  //             let adjustedAmount = commAmount;
+  //             if (
+  //               Number(f1User.currentMaxoutLimit) > 0 &&
+  //               remainingAllowance < commAmount
+  //             ) {
+  //               adjustedAmount =
+  //                 remainingAllowance > 0 ? remainingAllowance : 0;
+  //             }
 
-              if (adjustedAmount > 0) {
-                // Lưu log hoa hồng
-                const newLog = this.commRepository.create({
-                  address: f1.address,
-                  amount: adjustedAmount,
-                  amountUsdt: adjustedAmount * solPrice,
-                  exchangeRate: solPrice,
-                  type: COMMISSION_TYPES.DIRECT_F1_COMMISSION,
-                  percent: DIRECT_F1_COMMISSION_PERCENT,
-                  f0Commission: totalCommission,
-                  note: `F1 Direct Commission ${buyerAddress}`
-                } as Commission);
-                await this.commRepository.save(newLog);
+  //             if (adjustedAmount > 0) {
+  //               // Lưu log hoa hồng
+  //               const newLog = this.commRepository.create({
+  //                 address: f1.address,
+  //                 amount: adjustedAmount,
+  //                 amountUsdt: adjustedAmount * solPrice,
+  //                 exchangeRate: solPrice,
+  //                 type: COMMISSION_TYPES.DIRECT_F1_COMMISSION,
+  //                 percent: DIRECT_F1_COMMISSION_PERCENT,
+  //                 f0Commission: totalCommission,
+  //                 note: `F1 Direct Commission ${buyerAddress}`
+  //               } as Commission);
+  //               await this.commRepository.save(newLog);
 
-                // update F1 balance
-                await this.updateUserBalance(
-                  f1.address,
-                  adjustedAmount,
-                  TransactionType.DIRECT_F1_COMMISSION,
-                  buyerAddress
-                );
+  //               // update F1 balance
+  //               await this.updateUserBalance(
+  //                 f1.address,
+  //                 adjustedAmount,
+  //                 TransactionType.DIRECT_F1_COMMISSION,
+  //                 buyerAddress
+  //               );
 
-                // check lại F1 đã maxout sau khi nhận hoa hồng chưa
-                const newTotalReceived = totalReceived + adjustedAmount;
-                if (
-                  newTotalReceived >= Number(f1User.currentMaxoutLimit) &&
-                  Number(f1User.currentMaxoutLimit) > 0
-                ) {
-                  f1User.isMaxedOut = true;
-                  await this.userRepository.save(f1User);
-                }
-              }
+  //               // check lại F1 đã maxout sau khi nhận hoa hồng chưa
+  //               const newTotalReceived = totalReceived + adjustedAmount;
+  //               if (
+  //                 newTotalReceived >= Number(f1User.currentMaxoutLimit) &&
+  //                 Number(f1User.currentMaxoutLimit) > 0
+  //               ) {
+  //                 f1User.isMaxedOut = true;
+  //                 await this.userRepository.save(f1User);
+  //               }
+  //             }
 
-              // get F2
-              const f2 = await this.affRepository.findOne({
-                where: { address: f1.refAddress },
-              });;
+  //             // get F2
+  //             const f2 = await this.affRepository.findOne({
+  //               where: { address: f1.refAddress },
+  //             });;
 
-              // process F2 (2%)
-              if (f2) {
-                const f2User = await this.userRepository.findOne({
-                  walletAddress: f2.address
-                });
+  //             // process F2 (2%)
+  //             if (f2) {
+  //               const f2User = await this.userRepository.findOne({
+  //                 walletAddress: f2.address
+  //               });
 
-                if (f2User) {
-                  // check maxout của F2
-                  const isF2MaxedOut = await this.checkUserMaxout(
-                    f2User.id,
-                    solPrice
-                  );
+  //               if (f2User) {
+  //                 // check maxout của F2
+  //                 const isF2MaxedOut = await this.checkUserMaxout(
+  //                   f2User.id,
+  //                   solPrice
+  //                 );
 
-                  if (!isF2MaxedOut) {
-                    const commAmountF2 =
-                      (totalCommission * DIRECT_F2_COMMISSION_PERCENT) / 100;
+  //                 if (!isF2MaxedOut) {
+  //                   const commAmountF2 =
+  //                     (totalCommission * DIRECT_F2_COMMISSION_PERCENT) / 100;
 
-                    // check limit còn lại của F2
-                    const f2TotalReceived =
-                      await this.getTotalCommissionReceivedConvertToUSD(
-                        f2User.id,
-                        solPrice
-                      );
-                    const f2RemainingAllowance =
-                      Number(f2User.currentMaxoutLimit) > 0
-                        ? Number(f2User.currentMaxoutLimit) - f2TotalReceived
-                        : 0;
+  //                   // check limit còn lại của F2
+  //                   const f2TotalReceived =
+  //                     await this.getTotalCommissionReceivedConvertToUSD(
+  //                       f2User.id,
+  //                       solPrice
+  //                     );
+  //                   const f2RemainingAllowance =
+  //                     Number(f2User.currentMaxoutLimit) > 0
+  //                       ? Number(f2User.currentMaxoutLimit) - f2TotalReceived
+  //                       : 0;
 
-                    let adjustedAmountF2 = commAmountF2;
-                    if (
-                      Number(f2User.currentMaxoutLimit) > 0 &&
-                      f2RemainingAllowance < commAmountF2
-                    ) {
-                      adjustedAmountF2 =
-                        f2RemainingAllowance > 0 ? f2RemainingAllowance : 0;
-                    }
+  //                   let adjustedAmountF2 = commAmountF2;
+  //                   if (
+  //                     Number(f2User.currentMaxoutLimit) > 0 &&
+  //                     f2RemainingAllowance < commAmountF2
+  //                   ) {
+  //                     adjustedAmountF2 =
+  //                       f2RemainingAllowance > 0 ? f2RemainingAllowance : 0;
+  //                   }
 
-                    if (adjustedAmountF2 > 0) {
-                      const newLogF2 = this.commRepository.create({
-                        address: f2.address,
-                        amount: adjustedAmountF2,
-                        amountUsdt: adjustedAmountF2 * solPrice,
-                        exchangeRate: solPrice,
-                        type: COMMISSION_TYPES.DIRECT_F2_COMMISSION,
-                        percent: DIRECT_F2_COMMISSION_PERCENT,
-                        f0Commission: totalCommission,
-                        note: `F2 Direct Commission ${buyerAddress}`
-                      } as Commission);
-                      await this.commRepository.save(newLogF2);
+  //                   if (adjustedAmountF2 > 0) {
+  //                     const newLogF2 = this.commRepository.create({
+  //                       address: f2.address,
+  //                       amount: adjustedAmountF2,
+  //                       amountUsdt: adjustedAmountF2 * solPrice,
+  //                       exchangeRate: solPrice,
+  //                       type: COMMISSION_TYPES.DIRECT_F2_COMMISSION,
+  //                       percent: DIRECT_F2_COMMISSION_PERCENT,
+  //                       f0Commission: totalCommission,
+  //                       note: `F2 Direct Commission ${buyerAddress}`
+  //                     } as Commission);
+  //                     await this.commRepository.save(newLogF2);
 
-                      // update F2 balance
-                      await this.updateUserBalance(
-                        f2.address,
-                        adjustedAmountF2,
-                        TransactionType.DIRECT_F2_COMMISSION,
-                        buyerAddress
-                      );
+  //                     // update F2 balance
+  //                     await this.updateUserBalance(
+  //                       f2.address,
+  //                       adjustedAmountF2,
+  //                       TransactionType.DIRECT_F2_COMMISSION,
+  //                       buyerAddress
+  //                     );
 
-                      // check F2 đã maxout sau khi nhận hoa hồng chưa
-                      const newF2TotalReceived =
-                        f2TotalReceived + adjustedAmountF2;
-                      if (
-                        newF2TotalReceived >=
-                          Number(f2User.currentMaxoutLimit) &&
-                        Number(f2User.currentMaxoutLimit) > 0
-                      ) {
-                        f2User.isMaxedOut = true;
-                        await this.userRepository.save(f2User);
-                      }
-                    }
+  //                     // check F2 đã maxout sau khi nhận hoa hồng chưa
+  //                     const newF2TotalReceived =
+  //                       f2TotalReceived + adjustedAmountF2;
+  //                     if (
+  //                       newF2TotalReceived >=
+  //                         Number(f2User.currentMaxoutLimit) &&
+  //                       Number(f2User.currentMaxoutLimit) > 0
+  //                     ) {
+  //                       f2User.isMaxedOut = true;
+  //                       await this.userRepository.save(f2User);
+  //                     }
+  //                   }
 
-                    // get F3
-                    const f3 = await this.affRepository.findOne({
-                      where: { address: f2.refAddress },
-                    });;
-                    // process F3 (1%)
-                    if (f3) {
-                      const f3User = await this.userRepository.findOne({
-                        walletAddress: f3.address
-                      });
+  //                   // get F3
+  //                   const f3 = await this.affRepository.findOne({
+  //                     where: { address: f2.refAddress },
+  //                   });;
+  //                   // process F3 (1%)
+  //                   if (f3) {
+  //                     const f3User = await this.userRepository.findOne({
+  //                       walletAddress: f3.address
+  //                     });
 
-                      if (f3User) {
-                        // check maxout của F3
-                        const isF3MaxedOut = await this.checkUserMaxout(
-                          f3User.id,
-                          solPrice
-                        );
+  //                     if (f3User) {
+  //                       // check maxout của F3
+  //                       const isF3MaxedOut = await this.checkUserMaxout(
+  //                         f3User.id,
+  //                         solPrice
+  //                       );
 
-                        if (!isF3MaxedOut) {
-                          const commAmountF3 =
-                            (totalCommission * DIRECT_F3_COMMISSION_PERCENT) /
-                            100;
+  //                       if (!isF3MaxedOut) {
+  //                         const commAmountF3 =
+  //                           (totalCommission * DIRECT_F3_COMMISSION_PERCENT) /
+  //                           100;
 
-                          // check limit còn lại của F3
-                          const f3TotalReceived =
-                            await this.getTotalCommissionReceivedConvertToUSD(
-                              f3User.id,
-                              solPrice
-                            );
-                          const f3RemainingAllowance =
-                            Number(f3User.currentMaxoutLimit) > 0
-                              ? Number(f3User.currentMaxoutLimit) -
-                                f3TotalReceived
-                              : 0;
+  //                         // check limit còn lại của F3
+  //                         const f3TotalReceived =
+  //                           await this.getTotalCommissionReceivedConvertToUSD(
+  //                             f3User.id,
+  //                             solPrice
+  //                           );
+  //                         const f3RemainingAllowance =
+  //                           Number(f3User.currentMaxoutLimit) > 0
+  //                             ? Number(f3User.currentMaxoutLimit) -
+  //                               f3TotalReceived
+  //                             : 0;
 
-                          let adjustedAmountF3 = commAmountF3;
-                          if (
-                            Number(f3User.currentMaxoutLimit) > 0 &&
-                            f3RemainingAllowance < commAmountF3
-                          ) {
-                            adjustedAmountF3 =
-                              f3RemainingAllowance > 0
-                                ? f3RemainingAllowance
-                                : 0;
-                          }
+  //                         let adjustedAmountF3 = commAmountF3;
+  //                         if (
+  //                           Number(f3User.currentMaxoutLimit) > 0 &&
+  //                           f3RemainingAllowance < commAmountF3
+  //                         ) {
+  //                           adjustedAmountF3 =
+  //                             f3RemainingAllowance > 0
+  //                               ? f3RemainingAllowance
+  //                               : 0;
+  //                         }
 
-                          if (adjustedAmountF3 > 0) {
-                            const newLogF3 = this.commRepository.create({
-                              address: f3.address,
-                              amount: adjustedAmountF3,
-                              amountUsdt: adjustedAmountF3 * solPrice,
-                              exchangeRate: solPrice,
-                              type: COMMISSION_TYPES.DIRECT_F3_COMMISSION,
-                              percent: DIRECT_F3_COMMISSION_PERCENT,
-                              f0Commission: totalCommission,
-                              note: `F3 Direct Commission ${buyerAddress}`
-                            } as Commission);
-                            await this.commRepository.save(newLogF3);
+  //                         if (adjustedAmountF3 > 0) {
+  //                           const newLogF3 = this.commRepository.create({
+  //                             address: f3.address,
+  //                             amount: adjustedAmountF3,
+  //                             amountUsdt: adjustedAmountF3 * solPrice,
+  //                             exchangeRate: solPrice,
+  //                             type: COMMISSION_TYPES.DIRECT_F3_COMMISSION,
+  //                             percent: DIRECT_F3_COMMISSION_PERCENT,
+  //                             f0Commission: totalCommission,
+  //                             note: `F3 Direct Commission ${buyerAddress}`
+  //                           } as Commission);
+  //                           await this.commRepository.save(newLogF3);
 
-                            // update F3 balance
-                            await this.updateUserBalance(
-                              f3.address,
-                              adjustedAmountF3,
-                              TransactionType.DIRECT_F3_COMMISSION,
-                              buyerAddress
-                            );
+  //                           // update F3 balance
+  //                           await this.updateUserBalance(
+  //                             f3.address,
+  //                             adjustedAmountF3,
+  //                             TransactionType.DIRECT_F3_COMMISSION,
+  //                             buyerAddress
+  //                           );
 
-                            // check F3 đã maxout sau khi nhận hoa hồng chưa
-                            const newF3TotalReceived =
-                              f3TotalReceived + adjustedAmountF3;
-                            if (
-                              newF3TotalReceived >=
-                                Number(f3User.currentMaxoutLimit) &&
-                              Number(f3User.currentMaxoutLimit) > 0
-                            ) {
-                              f3User.isMaxedOut = true;
-                              await this.userRepository.save(f3User);
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+  //                           // check F3 đã maxout sau khi nhận hoa hồng chưa
+  //                           const newF3TotalReceived =
+  //                             f3TotalReceived + adjustedAmountF3;
+  //                           if (
+  //                             newF3TotalReceived >=
+  //                               Number(f3User.currentMaxoutLimit) &&
+  //                             Number(f3User.currentMaxoutLimit) > 0
+  //                           ) {
+  //                             f3User.isMaxedOut = true;
+  //                             await this.userRepository.save(f3User);
+  //                           }
+  //                         }
+  //                       }
+  //                     }
+  //                   }
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
 
-      return { message: 'Direct commission distribution completed!' };
-    } catch (e: any) {
-      throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
-    } finally {
-      console.log(
-        `[${moment
-          .utc()
-          .format(
-            'dd - DD/MM/YYYY HH:mm:ss'
-          )}] - [Commission][End] - Doing direct commission F1, F2, F3`
-      );
-    }
-  }
+  //     return { message: 'Direct commission distribution completed!' };
+  //   } catch (e: any) {
+  //     throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+  //   } finally {
+  //     console.log(
+  //       `[${moment
+  //         .utc()
+  //         .format(
+  //           'dd - DD/MM/YYYY HH:mm:ss'
+  //         )}] - [Commission][End] - Doing direct commission F1, F2, F3`
+  //     );
+  //   }
+  // }
 
   // HH đồng cấp
   // F1 đồng hưởng 10% thu nhập (nhị phân) từ người giới thiệu trực tiếp nhận vào Chủ nhật
@@ -624,170 +625,170 @@ export class CommissionService {
     return totalIncome;
   }
 
-  async calculateBinaryCommission(
-    parent: Affiliate,
-    reason = '',
-    modifiedChild: Affiliate,
-    totalAmountSol: number,
-    solPrice: number
-  ) {
-    const parentDetail = await this.affRepository.findOne({
-      where: { address: parent.address },
-      relations: ['children']
-    });
+  // async calculateBinaryCommission(
+  //   parent: Affiliate,
+  //   reason = '',
+  //   modifiedChild: Affiliate,
+  //   totalAmountSol: number,
+  //   solPrice: number
+  // ) {
+  //   const parentDetail = await this.affRepository.findOne({
+  //     where: { address: parent.address },
+  //     relations: ['children']
+  //   });
 
-    if (!parentDetail) return;
+  //   if (!parentDetail) return;
 
-    // check maxout của parent trước khi tính binary commission
-    const parentUser = await this.userRepository.findOne({
-      where: { walletAddress: parent.address }
-    });
+  //   // check maxout của parent trước khi tính binary commission
+  //   const parentUser = await this.userRepository.findOne({
+  //     where: { walletAddress: parent.address }
+  //   });
 
-    if (!parentUser) return;
+  //   if (!parentUser) return;
 
-    // kiểm tra do nhánh yếu mua mới tính hh
-    const leftChild = parentDetail.children.find(
-      (x) => x.direction === EnumAffDirect.LEFT
-    );
-    const rightChild = parentDetail.children.find(
-      (x) => x.direction === EnumAffDirect.RIGHT
-    );
-    if (
-      leftChild?.address === modifiedChild.address ||
-      rightChild?.address === modifiedChild.address
-    ) {
-      const totalInLeftBranch = leftChild
-        ? await this.calculateBranchIncome(leftChild)
-        : Infinity;
-      const totalInRightBranch = rightChild
-        ? await this.calculateBranchIncome(rightChild)
-        : Infinity;
+  //   // kiểm tra do nhánh yếu mua mới tính hh
+  //   const leftChild = parentDetail.children.find(
+  //     (x) => x.direction === EnumAffDirect.LEFT
+  //   );
+  //   const rightChild = parentDetail.children.find(
+  //     (x) => x.direction === EnumAffDirect.RIGHT
+  //   );
+  //   if (
+  //     leftChild?.address === modifiedChild.address ||
+  //     rightChild?.address === modifiedChild.address
+  //   ) {
+  //     const totalInLeftBranch = leftChild
+  //       ? await this.calculateBranchIncome(leftChild)
+  //       : Infinity;
+  //     const totalInRightBranch = rightChild
+  //       ? await this.calculateBranchIncome(rightChild)
+  //       : Infinity;
 
-      if (
-        !(
-          (totalInLeftBranch < totalInRightBranch &&
-            leftChild?.address === modifiedChild.address) ||
-          (totalInRightBranch < totalInLeftBranch &&
-            rightChild?.address === modifiedChild.address)
-        )
-      )
-        return;
-    }
+  //     if (
+  //       !(
+  //         (totalInLeftBranch < totalInRightBranch &&
+  //           leftChild?.address === modifiedChild.address) ||
+  //         (totalInRightBranch < totalInLeftBranch &&
+  //           rightChild?.address === modifiedChild.address)
+  //       )
+  //     )
+  //       return;
+  //   }
 
-    // check nếu parent đã maxout
-    const isParentMaxedOut = await this.checkUserMaxout(
-      parentUser.id,
-      solPrice
-    );
+  //   // check nếu parent đã maxout
+  //   const isParentMaxedOut = await this.checkUserMaxout(
+  //     parentUser.id,
+  //     solPrice
+  //   );
 
-    if (isParentMaxedOut) {
-      // đã maxout, không tính binary commission nữa
-      console.log(
-        `User ${parent.address} has maxed out. Binary commission skipped.`
-      );
+  //   if (isParentMaxedOut) {
+  //     // đã maxout, không tính binary commission nữa
+  //     console.log(
+  //       `User ${parent.address} has maxed out. Binary commission skipped.`
+  //     );
 
-      // tiếp tục tính cho cấp trên
-      return this.calculateBinaryCommission(
-        parent.parent,
-        reason,
-        modifiedChild,
-        totalAmountSol,
-        solPrice
-      );
-    }
+  //     // tiếp tục tính cho cấp trên
+  //     return this.calculateBinaryCommission(
+  //       parent.parent,
+  //       reason,
+  //       modifiedChild,
+  //       totalAmountSol,
+  //       solPrice
+  //     );
+  //   }
 
-    if (parentDetail.children.length !== 2)
-      return this.calculateBinaryCommission(
-        parent.parent,
-        reason,
-        modifiedChild,
-        totalAmountSol,
-        solPrice
-      );
+  //   if (parentDetail.children.length !== 2)
+  //     return this.calculateBinaryCommission(
+  //       parent.parent,
+  //       reason,
+  //       modifiedChild,
+  //       totalAmountSol,
+  //       solPrice
+  //     );
 
-    let commissionAmount = totalAmountSol * (BINARY_COMMISSION_PERCENT / 100);
+  //   let commissionAmount = totalAmountSol * (BINARY_COMMISSION_PERCENT / 100);
 
-    if (commissionAmount > 0) {
-      // check giới hạn hoa hồng còn lại có thể nhận
-      const totalReceived = await this.getTotalCommissionReceivedConvertToUSD(
-        parentUser.id,
-        solPrice
-      );
-      const remainingAllowance =
-        Number(parentUser.currentMaxoutLimit) - totalReceived;
+  //   if (commissionAmount > 0) {
+  //     // check giới hạn hoa hồng còn lại có thể nhận
+  //     const totalReceived = await this.getTotalCommissionReceivedConvertToUSD(
+  //       parentUser.id,
+  //       solPrice
+  //     );
+  //     const remainingAllowance =
+  //       Number(parentUser.currentMaxoutLimit) - totalReceived;
 
-      if (
-        remainingAllowance <= 0 &&
-        Number(parentUser.currentMaxoutLimit) > 0
-      ) {
-        // đã maxout
-        parentUser.isMaxedOut = true;
-        await this.userRepository.save(parentUser);
+  //     if (
+  //       remainingAllowance <= 0 &&
+  //       Number(parentUser.currentMaxoutLimit) > 0
+  //     ) {
+  //       // đã maxout
+  //       parentUser.isMaxedOut = true;
+  //       await this.userRepository.save(parentUser);
 
-        console.log(
-          `User ${parent.address} has reached maxout limit. Binary commission rejected.`
-        );
+  //       console.log(
+  //         `User ${parent.address} has reached maxout limit. Binary commission rejected.`
+  //       );
 
-        return this.calculateBinaryCommission(
-          parent.parent,
-          reason,
-          modifiedChild,
-          totalAmountSol,
-          solPrice
-        );
-      }
+  //       return this.calculateBinaryCommission(
+  //         parent.parent,
+  //         reason,
+  //         modifiedChild,
+  //         totalAmountSol,
+  //         solPrice
+  //       );
+  //     }
 
-      // chỉnh số tiền nếu vượt quá giới hạn
-      if (
-        commissionAmount > remainingAllowance &&
-        Number(parentUser.currentMaxoutLimit) > 0
-      ) {
-        commissionAmount = remainingAllowance;
-      }
+  //     // chỉnh số tiền nếu vượt quá giới hạn
+  //     if (
+  //       commissionAmount > remainingAllowance &&
+  //       Number(parentUser.currentMaxoutLimit) > 0
+  //     ) {
+  //       commissionAmount = remainingAllowance;
+  //     }
 
-      // const solPrice: number = await getSolPrice();
-      const newComm = this.commRepository.create({
-        address: parent.address,
-        amount: commissionAmount,
-        amountUsdt: commissionAmount * solPrice,
-        exchangeRate: solPrice,
-        type: COMMISSION_TYPES.BINARY_COMMISSION,
-        percent: BINARY_COMMISSION_PERCENT,
-        f0Commission: totalAmountSol,
-        note: reason
-      });
+  //     // const solPrice: number = await getSolPrice();
+  //     const newComm = this.commRepository.create({
+  //       address: parent.address,
+  //       amount: commissionAmount,
+  //       amountUsdt: commissionAmount * solPrice,
+  //       exchangeRate: solPrice,
+  //       type: COMMISSION_TYPES.BINARY_COMMISSION,
+  //       percent: BINARY_COMMISSION_PERCENT,
+  //       f0Commission: totalAmountSol,
+  //       note: reason
+  //     });
 
-      await this.commRepository.save(newComm);
+  //     await this.commRepository.save(newComm);
 
-      await this.updateUserBalance(
-        parent.address,
-        commissionAmount,
-        TransactionType.BINARY_COMMISSION,
-        parent.address
-      );
+  //     await this.updateUserBalance(
+  //       parent.address,
+  //       commissionAmount,
+  //       TransactionType.BINARY_COMMISSION,
+  //       parent.address
+  //     );
 
-      // check đã đạt ngưỡng maxout sau khi nhận binary commission
-      const newTotalReceived = totalReceived + commissionAmount;
-      if (
-        newTotalReceived >= Number(parentUser.currentMaxoutLimit) &&
-        Number(parentUser.currentMaxoutLimit) > 0
-      ) {
-        parentUser.isMaxedOut = true;
-        await this.userRepository.save(parentUser);
-        console.log(
-          `User ${parent.address} has reached maxout limit after receiving binary commission.`
-        );
-      }
-    }
+  //     // check đã đạt ngưỡng maxout sau khi nhận binary commission
+  //     const newTotalReceived = totalReceived + commissionAmount;
+  //     if (
+  //       newTotalReceived >= Number(parentUser.currentMaxoutLimit) &&
+  //       Number(parentUser.currentMaxoutLimit) > 0
+  //     ) {
+  //       parentUser.isMaxedOut = true;
+  //       await this.userRepository.save(parentUser);
+  //       console.log(
+  //         `User ${parent.address} has reached maxout limit after receiving binary commission.`
+  //       );
+  //     }
+  //   }
 
-    return this.calculateBinaryCommission(
-      parent.parent,
-      reason,
-      modifiedChild,
-      totalAmountSol,
-      solPrice
-    );
-  }
+  //   return this.calculateBinaryCommission(
+  //     parent.parent,
+  //     reason,
+  //     modifiedChild,
+  //     totalAmountSol,
+  //     solPrice
+  //   );
+  // }
 
   private async updateUserBalance(
     address: string,
@@ -858,35 +859,35 @@ export class CommissionService {
     return totalCommisionUSD || 0;
   }
 
-  async checkUserMaxout(userId: number, solPrice?: number): Promise<boolean> {
-    const user = await this.userRepository.findOne({
-      where: { id: userId }
-    });
+  // async checkUserMaxout(userId: number, solPrice?: number): Promise<boolean> {
+  //   const user = await this.userRepository.findOne({
+  //     where: { id: userId }
+  //   });
 
-    if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
-    }
+  //   if (!user) {
+  //     throw new Error(`User with ID ${userId} not found`);
+  //   }
 
-    if (user.isMaxedOut) {
-      return true;
-    }
+  //   if (user.isMaxedOut) {
+  //     return true;
+  //   }
 
-    // tính tổng hoa hồng đã nhận
-    const totalCommissionReceived =
-      await this.getTotalCommissionReceivedConvertToUSD(userId, solPrice);
+  //   // tính tổng hoa hồng đã nhận
+  //   const totalCommissionReceived =
+  //     await this.getTotalCommissionReceivedConvertToUSD(userId, solPrice);
 
-    // đạt ngưỡng maxout, update isMaxout
-    if (
-      totalCommissionReceived >= Number(user.currentMaxoutLimit) &&
-      Number(user.currentMaxoutLimit) > 0
-    ) {
-      user.isMaxedOut = true;
-      await this.userRepository.save(user);
-      return true;
-    }
+  //   // đạt ngưỡng maxout, update isMaxout
+  //   if (
+  //     totalCommissionReceived >= Number(user.currentMaxoutLimit) &&
+  //     Number(user.currentMaxoutLimit) > 0
+  //   ) {
+  //     user.isMaxedOut = true;
+  //     await this.userRepository.save(user);
+  //     return true;
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
   // private async getTotalCommissionFromTransactions(
   //   address: string,

@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
 import { HttpService } from '@nestjs/axios';
-import { LoginAuthDto } from './dto/login-auth.dto';
+import { LoginAuthAccountDto } from './dto/login-auth-account.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,15 +15,16 @@ export class AuthService {
   ) {}
 
   async validateUser(
-    walletAddress: string,
-    deadline: number,
-    sig: string,
+    email: string,
+    password: string,
+    isRememberMe: boolean,
+    twoFaCode: string,
     isAdminLogin = false
   ): Promise<any> {
-    const reqUser: LoginAuthDto = {
-      walletAddress,
-      deadline,
-      sig
+    const reqUser: LoginAuthAccountDto = {
+      email,
+      password,
+      twoFaCode
     };
     const user = await this.userService.signIn(reqUser, isAdminLogin);
 
@@ -34,18 +35,19 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any, isAdminLogin = false) {
+  async login(user: LoginAuthAccountDto, isAdminLogin = false) {
     const validateResult = await this.validateUser(
-      user.walletAddress,
-      user.deadline,
-      user.sig,
+      user.email,
+      user.password,
+      user?.isRememberMe,
+      user?.twoFaCode,
       isAdminLogin
     );
     if (!validateResult) {
       throw new UnauthorizedException();
     }
     const payload = {
-      walletAddress: validateResult.walletAddress,
+      email: validateResult.email,
       id: validateResult.id,
       permissions: validateResult?.roles
         ? validateResult.roles
