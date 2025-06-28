@@ -1,4 +1,10 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm';
 // base.entity.ts
 
 import { EnumUserStatus } from '../dto/enum.dto';
@@ -10,7 +16,7 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   walletAddress: string;
 
   @Column({ default: EnumUserStatus.ACTIVE })
