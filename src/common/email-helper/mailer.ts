@@ -26,7 +26,8 @@ export enum EEmailTemplate {
   IMPORT_TIME_OFF_BALANCES = 'time-off/import-time-off-balances',
   EXPORT_TIME_OFF_BALANCES = 'time-off/export-time-off-balances',
   EXPORT_TIME_OFF_REQUESTS = 'time-off/export-time-off-requests',
-  CHANGE_STATUS_TIME_OFF_REQUEST = 'time-off/change-status-time-off-request'
+  CHANGE_STATUS_TIME_OFF_REQUEST = 'time-off/change-status-time-off-request',
+  REGISTRATION_CONFIRMATION = 'registration-confirmation'
 }
 
 export interface IEmailCotent {

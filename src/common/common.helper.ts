@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as getStream from 'get-stream';
 import { parse } from 'csv-parse';
-import { isEmpty, zipObject } from 'lodash';
+import { isEmpty, random, zipObject } from 'lodash';
 import { utils } from 'ethers';
 
 export const removeEmptyAttr = (obj: any): any => {
@@ -88,4 +88,11 @@ export const delay = (delayInms) => {
 
 export const parseUnits = (amount: number) => {
   return utils.parseUnits(amount.toFixed(6), 'ether').toString();
+};
+
+export const generateRandomCodeNumber = (length: number) => {
+  if (isNaN(length) || length <= 0 || length > 10)
+    throw new Error('INVALID_LENGTH');
+  const min = 1111111111 % 10 ** length;
+  return random(min, min * 9).toString();
 };

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Connection, Like, Repository, TreeRepository } from 'typeorm';
-import { compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { RoleService } from '../role/role.service';
 import { FetchUserDto } from './dto/fetch-user.dto';
 import { EnumRole } from '../../enums/role.enum';
@@ -16,8 +16,13 @@ import { EnumRole } from '../../enums/role.enum';
 import { LoginAuthAccountDto } from '../auth/dto/login-auth-account.dto';
 import { configService } from '../../config/config.service';
 import { makeSure, mustTwoFa } from '../../common/server-error.helper';
-import { EErrorDetail, ESignInError } from './dto/enum.dto';
+import { EErrorDetail, EnumUserStatus, ESignInError } from './dto/enum.dto';
 import { TwoFa } from '../../common/twoFA.helper';
+import { SignUpAuthAccountDto } from '../auth/dto/signup-auth-account.dto';
+import { isNil } from 'lodash';
+import { generateRandomCodeNumber } from '../../common/common.helper';
+import { RegisterVerification } from '../register-verification/entities/register-verification.entity';
+import { EEmailTemplate, Mailer } from '../../common/email-helper/mailer';
 
 export class UserService {
   constructor(
@@ -25,9 +30,66 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(User)
     private treeUserRepository: TreeRepository<User>,
+    @InjectRepository(RegisterVerification)
+    private registerVerification: Repository<RegisterVerification>,
     @InjectConnection() private readonly connection: Connection,
-    private roleService: RoleService
+    private roleService: RoleService,
+    private Mailer: Mailer
   ) {}
+
+  async signUpAccount(user: SignUpAuthAccountDto) {
+    const currentUserWithRegisterEmail =
+      await this.getCurrentUserWithRegisterEmail(user.email);
+
+    if (
+      currentUserWithRegisterEmail &&
+      currentUserWithRegisterEmail.status === EnumUserStatus.INACTIVE
+    ) {
+      const code = generateRandomCodeNumber(6);
+      this.Mailer.send(
+        this.Mailer.getSubjectByTemplate(
+          EEmailTemplate.REGISTRATION_CONFIRMATION
+        ),
+        currentUserWithRegisterEmail,
+        EEmailTemplate.REGISTRATION_CONFIRMATION,
+        { code }
+      );
+      await this.saveRegisterVerification(code, currentUserWithRegisterEmail);
+      return currentUserWithRegisterEmail;
+    } else {
+      makeSure(
+        isNil(currentUserWithRegisterEmail),
+        ESignInError.USER_EXIST,
+        EErrorDetail.USER_EXIST
+      );
+    }
+
+    const userRegistered = await this.saveUser(user);
+    return userRegistered;
+  }
+
+  async getCurrentUserWithRegisterEmail(email) {
+    const filter = { email: email };
+    return this.userRepository.findOne(filter);
+  }
+
+  async saveRegisterVerification(code: string, { id: userId }: User) {
+    await this.registerVerification.findOne({ userId });
+    await this.registerVerification.delete({ userId });
+    return this.registerVerification.create({
+      userId,
+      code
+    });
+  }
+
+  async saveUser(user: SignUpAuthAccountDto) {
+    const passwordHash = await hash(user.password, 8);
+    return this.userRepository.save({
+      ...user,
+      paaswordHash: passwordHash,
+      status: EnumUserStatus.INACTIVE
+    });
+  }
 
   async signIn(userDto: LoginAuthAccountDto, isAdminLogin = false) {
     const { email, password, twoFaCode } = userDto;
@@ -166,6 +228,10 @@ export class UserService {
       .where('user.walletAddress = :walletAddress', { walletAddress })
       .leftJoinAndSelect('user.roles', 'role')
       .getOne();
+  }
+
+  async findById(id: number) {
+    return await this.userRepository.findOne(id);
   }
 
   findByIds(ids: number[]) {

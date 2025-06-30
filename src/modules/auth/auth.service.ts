@@ -4,6 +4,7 @@ import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
 import { HttpService } from '@nestjs/axios';
 import { LoginAuthAccountDto } from './dto/login-auth-account.dto';
+import { SignUpAuthAccountDto } from './dto/signup-auth-account.dto';
 
 @Injectable()
 export class AuthService {
@@ -62,5 +63,14 @@ export class AuthService {
         data: payload
       })
     };
+  }
+
+  async signUp(user: SignUpAuthAccountDto) {
+    const userRegistered = await this.userService.signUpAccount(user);
+
+    return this.login({
+      email: userRegistered.email,
+      password: user.password
+    });
   }
 }
