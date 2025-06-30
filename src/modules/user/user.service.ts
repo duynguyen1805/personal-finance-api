@@ -16,7 +16,7 @@ import { EnumRole } from '../../enums/role.enum';
 import { LoginAuthAccountDto } from '../auth/dto/login-auth-account.dto';
 import { configService } from '../../config/config.service';
 import { makeSure, mustTwoFa } from '../../common/server-error.helper';
-import { EErrorDetail, EnumUserStatus, ESignInError } from './dto/enum.dto';
+import { EErrorDetail, ESignInError } from './dto/enum.dto';
 import { TwoFa } from '../../common/twoFA.helper';
 
 export class UserService {

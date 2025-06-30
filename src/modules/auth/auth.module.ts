@@ -7,6 +7,8 @@ import { PassportModule } from '@nestjs/passport';
 import { UserModule } from '../user/user.module';
 import { CustomeCacheModule } from '../cache/cache.module';
 import { HttpModule } from '@nestjs/axios';
+import { RegisterVerification } from '../register-verification/entities/register-verification.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -17,7 +19,8 @@ import { HttpModule } from '@nestjs/axios';
       signOptions: { expiresIn: '24h' }
     }),
     CustomeCacheModule,
-    HttpModule
+    HttpModule,
+    TypeOrmModule.forFeature([RegisterVerification])
   ],
   controllers: [AuthController],
   providers: [AuthService],
