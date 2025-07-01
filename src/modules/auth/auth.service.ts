@@ -22,6 +22,8 @@ import { RoleService } from '../role/role.service';
 import { EnumRole } from '../../enums/role.enum';
 import { configService } from '../../config/config.service';
 import { TwoFa } from '../../common/twoFA.helper';
+import { VerifyRegistrationAccountDto } from './dto/verify-registration.dto';
+import { SignUpUseCase } from './use-cases/sign-up.use-case';
 
 @Injectable()
 export class AuthService {
@@ -31,11 +33,10 @@ export class AuthService {
     private userRepository: Repository<User>,
     @InjectRepository(RegisterVerification)
     private registerVerification: Repository<RegisterVerification>,
-    private userService: UserService,
     private jwtService: JwtService,
     private httpService: HttpService,
     private roleService: RoleService,
-    private Mailer: Mailer
+    private readonly loginUseCase: SignUpUseCase
   ) {}
 
   async validateUser(
@@ -146,7 +147,7 @@ export class AuthService {
   }
 
   async signUp(user: SignUpAuthAccountDto) {
-    const userRegistered = await this.signUpAccount(user);
+    const userRegistered = await this.loginUseCase.signUpAccount(user);
 
     return this.login({
       email: userRegistered.email,
@@ -154,57 +155,7 @@ export class AuthService {
     });
   }
 
-  async signUpAccount(user: SignUpAuthAccountDto) {
-    const currentUserWithRegisterEmail =
-      await this.getCurrentUserWithRegisterEmail(user.email);
-
-    if (
-      currentUserWithRegisterEmail &&
-      currentUserWithRegisterEmail.status === EnumUserStatus.INACTIVE
-    ) {
-      const code = generateRandomCodeNumber(6);
-      this.Mailer.send(
-        this.Mailer.getSubjectByTemplate(
-          EEmailTemplate.REGISTRATION_CONFIRMATION
-        ),
-        currentUserWithRegisterEmail,
-        EEmailTemplate.REGISTRATION_CONFIRMATION,
-        { code }
-      );
-      await this.saveRegisterVerification(code, currentUserWithRegisterEmail);
-      return currentUserWithRegisterEmail;
-    } else {
-      makeSure(
-        isNil(currentUserWithRegisterEmail),
-        ESignInError.USER_EXIST,
-        EErrorDetail.USER_EXIST
-      );
-    }
-
-    const userRegistered = await this.saveUser(user);
-    return userRegistered;
-  }
-
-  async getCurrentUserWithRegisterEmail(email) {
-    const filter = { email: email };
-    return this.userRepository.findOne(filter);
-  }
-
-  async saveRegisterVerification(code: string, { id: userId }: User) {
-    await this.registerVerification.findOne({ userId });
-    await this.registerVerification.delete({ userId });
-    return this.registerVerification.create({
-      userId,
-      code
-    });
-  }
-
-  async saveUser(user: SignUpAuthAccountDto) {
-    const passwordHash = await hash(user.password, 8);
-    return this.userRepository.save({
-      ...user,
-      paaswordHash: passwordHash,
-      status: EnumUserStatus.INACTIVE
-    });
+  async verifyRegistration(input: VerifyRegistrationAccountDto) {
+    const { email, code } = input;
   }
 }
