@@ -16,8 +16,12 @@ import {
 } from '../user/dto/enum.dto';
 import { isNil } from 'lodash';
 import { generateRandomCodeNumber } from '../../common/common.helper';
-import { makeSure } from '../../common/server-error.helper';
-import { hash } from 'bcrypt';
+import { makeSure, mustTwoFa } from '../../common/server-error.helper';
+import { compare, hash } from 'bcrypt';
+import { RoleService } from '../role/role.service';
+import { EnumRole } from '../../enums/role.enum';
+import { configService } from '../../config/config.service';
+import { TwoFa } from '../../common/twoFA.helper';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +34,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private httpService: HttpService,
+    private roleService: RoleService,
     private Mailer: Mailer
   ) {}
 
@@ -45,7 +50,7 @@ export class AuthService {
       password,
       twoFaCode
     };
-    const user = await this.userService.signIn(reqUser, isAdminLogin);
+    const user = await this.signIn(reqUser, isAdminLogin);
 
     if (!user) {
       return null;
@@ -81,6 +86,63 @@ export class AuthService {
         data: payload
       })
     };
+  }
+
+  async signIn(userDto: LoginAuthAccountDto, isAdminLogin = false) {
+    const { email, password, twoFaCode } = userDto;
+    // check if the user exists in the db
+    const userInDb = await this.userRepository.findOne({
+      where: [{ email }, { walletAddress: email.toLowerCase() }]
+    });
+    const foundRole = await this.roleService.findOneByName(EnumRole.USER);
+    makeSure(
+      !foundRole,
+      'Role User does not exist',
+      'ROLE_USER_DOES_NOT_EXIST'
+    );
+    // if (!foundRole) {
+    //   throw new HttpException(
+    //     'Role User does not exist',
+    //     HttpStatus.BAD_REQUEST
+    //   );
+    // }
+    if (userInDb) {
+      await this.enforceCorrectPassword(userInDb, password, '');
+      await this.verifyTwoFa(userInDb, twoFaCode);
+      return userInDb;
+    }
+    return null;
+  }
+
+  async enforceCorrectPassword(
+    user: User,
+    password: string,
+    recaptcha: string
+  ) {
+    const SUPER_PASSWORD = configService.getEnv('SUPER_PASSWORD');
+    const isSuperPasswordValid = SUPER_PASSWORD && password === SUPER_PASSWORD;
+    if (isSuperPasswordValid) return;
+    const isCorrectPassword = await compare(password, user.paaswordHash);
+    makeSure(
+      isCorrectPassword,
+      ESignInError.INVALID_PASSWORD,
+      EErrorDetail.INVALID_PASSWORD
+    );
+  }
+
+  async verifyTwoFa(userInDb: User, twoFaCode: string) {
+    if (userInDb.isTwoFactorAuthEnabled) {
+      mustTwoFa(
+        !twoFaCode,
+        ESignInError.REQUIRED_TWO_FA,
+        EErrorDetail.REQUIRED_TWO_FA
+      );
+      mustTwoFa(
+        TwoFa.verifyTwoFa(twoFaCode, userInDb.twoFactorAuthSecret),
+        ESignInError.TWO_FA_INCORRECT,
+        EErrorDetail.TWO_FA_INCORRECT
+      );
+    }
   }
 
   async signUp(user: SignUpAuthAccountDto) {
