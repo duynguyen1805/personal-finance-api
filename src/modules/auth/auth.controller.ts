@@ -12,18 +12,18 @@ import { VerifyRegistrationAccountDto } from './dto/verify-registration.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('/login-wallet')
-  @ApiBody({ type: LoginAuthDto })
-  login(@Request() req) {
-    return this.authService.login(req.body);
-  }
+  // @Post('/login-wallet')
+  // @ApiBody({ type: LoginAuthDto })
+  // login(@Request() req) {
+  //   return this.authService.signIn(req.body);
+  // }
 
-  @Post('/admin/login-wallet')
-  @ApiBody({ type: LoginAuthDto })
-  @UseGuards(ApiKeyGuard)
-  adminLogin(@Request() req) {
-    return this.authService.login(req.body, true);
-  }
+  // @Post('/admin/login-wallet')
+  // @ApiBody({ type: LoginAuthDto })
+  // @UseGuards(ApiKeyGuard)
+  // adminLogin(@Request() req) {
+  //   return this.authService.signIn(req.body, true);
+  // }
 
   @Post('/signup-account')
   @ApiBody({ type: SignUpAuthAccountDto })
@@ -34,7 +34,7 @@ export class AuthController {
   @Post('/login-account')
   @ApiBody({ type: LoginAuthAccountDto })
   loginAccount(@Request() req) {
-    return this.authService.login(req.body);
+    return this.authService.signIn(req.body);
   }
 
   @Post('/verify-registration')
