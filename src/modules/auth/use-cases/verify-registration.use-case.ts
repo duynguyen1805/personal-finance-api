@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import {
-  makeSure,
-  mustExist,
-  mustTwoFa
-} from '../../../common/server-error.helper';
+import { makeSure, mustExist } from '../../../common/server-error.helper';
 import { RegisterVerification } from '../../register-verification/entities/register-verification.entity';
 import { EConfirmRegisterError, EErrorDetail } from '../dto/enum.dto';
 import { isExpired } from '../../../common/common.helper';

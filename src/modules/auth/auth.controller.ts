@@ -1,4 +1,4 @@
-import { Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginAuthDto } from './dto/login-auth-wallet.dto';
@@ -6,11 +6,18 @@ import { ApiKeyGuard } from './guards/api-key.guard';
 import { LoginAuthAccountDto } from './dto/login-auth-account.dto';
 import { SignUpAuthAccountDto } from './dto/signup-auth-account.dto';
 import { VerifyRegistrationAccountDto } from './dto/verify-registration.dto';
+import { ResendVerifyRegistrationAccountDto } from './dto/resend-verify-registration.dto';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { User } from '../user/entities/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    @Inject(REQUEST) private request: Request
+  ) {}
 
   // @Post('/login-wallet')
   // @ApiBody({ type: LoginAuthDto })
@@ -27,19 +34,26 @@ export class AuthController {
 
   @Post('/signup-account')
   @ApiBody({ type: SignUpAuthAccountDto })
-  signupAccount(@Request() req) {
-    return this.authService.signUp(req.body);
+  signupAccount(@Body() dto: SignUpAuthAccountDto) {
+    return this.authService.signUp(dto);
   }
 
   @Post('/login-account')
   @ApiBody({ type: LoginAuthAccountDto })
-  loginAccount(@Request() req) {
-    return this.authService.signIn(req.body);
+  loginAccount(@Body() dto: LoginAuthAccountDto) {
+    return this.authService.signIn(dto);
   }
 
   @Post('/verify-registration')
   @ApiBody({ type: VerifyRegistrationAccountDto })
-  verifyRegistration(@Request() req) {
-    return this.authService.verifyRegistration(req.body);
+  verifyRegistration(@Body() dto: VerifyRegistrationAccountDto) {
+    return this.authService.verifyRegistration(dto);
+  }
+
+  @Post('/resend-verify-registration')
+  @ApiBody({ type: ResendVerifyRegistrationAccountDto })
+  resendVerifyRegistration(@Body() dto: ResendVerifyRegistrationAccountDto) {
+    const user = this.request.user as User;
+    return this.authService.resendVerifyRegistration(dto, user.id);
   }
 }

@@ -7,6 +7,8 @@ import { VerifyRegistrationAccountDto } from './dto/verify-registration.dto';
 import { SignUpUseCase } from './use-cases/sign-up.use-case';
 import { SignInUseCase } from './use-cases/sign-in.use-case';
 import { VerifyRegistrationUseCase } from './use-cases/verify-registration.use-case';
+import { ResendVerifyRegistrationAccountDto } from './dto/resend-verify-registration.dto';
+import { ResendVerifyRegistrationUseCase } from './use-cases/resend-verify-registration.use-case';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +17,8 @@ export class AuthService {
     // private httpService: HttpService,
     private readonly signUpUseCase: SignUpUseCase,
     private readonly signInUseCase: SignInUseCase,
-    private readonly verifyRegistrationUseCase: VerifyRegistrationUseCase
+    private readonly verifyRegistrationUseCase: VerifyRegistrationUseCase,
+    private readonly resendVerifyRegistrationUseCase: ResendVerifyRegistrationUseCase
   ) {}
 
   async signIn(user: LoginAuthAccountDto, isAdminLogin = false) {
@@ -59,5 +62,16 @@ export class AuthService {
   async verifyRegistration(input: VerifyRegistrationAccountDto) {
     const { email, code } = input;
     return this.verifyRegistrationUseCase.verifyRegistration(email, code);
+  }
+
+  async resendVerifyRegistration(
+    input: ResendVerifyRegistrationAccountDto,
+    userId: number
+  ) {
+    const { email } = input;
+    return this.resendVerifyRegistrationUseCase.resendVerifyRegistration(
+      userId,
+      email
+    );
   }
 }

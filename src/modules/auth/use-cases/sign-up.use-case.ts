@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EEmailTemplate, Mailer } from 'src/common/email-helper/mailer';
+import { EEmailTemplate, Mailer } from '../../../common/email-helper/mailer';
 import { User } from '../../user/entities/user.entity';
 import { SignUpAuthAccountDto } from '../dto/signup-auth-account.dto';
 import {
