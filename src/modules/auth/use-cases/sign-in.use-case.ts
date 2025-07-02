@@ -3,13 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { EErrorDetail, ESignInError } from '../../user/dto/enum.dto';
-import { makeSure, mustTwoFa } from '../../../common/server-error.helper';
+import { makeSure, mustTwoFa } from '../../../common/helpers/server-error.helper';
 import { compare } from 'bcrypt';
 import { LoginAuthAccountDto } from '../dto/login-auth-account.dto';
 import { RoleService } from '../../../modules/role/role.service';
 import { EnumRole } from '../../../enums/role.enum';
 import { configService } from '../../../config/config.service';
-import { TwoFa } from '../../../common/twoFA.helper';
+import { TwoFa } from '../../../common/helpers/twoFA.helper';
 
 @Injectable()
 export class SignInUseCase {

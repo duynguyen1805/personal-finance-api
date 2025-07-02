@@ -1,4 +1,4 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheModule, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,7 +10,7 @@ import type { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { configService } from './config/config.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { CacheInterceptor } from './common/cache.interceptor';
+import { CacheInterceptor } from './common/interceptors/cache.interceptor';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MulterModule } from '@nestjs/platform-express';
@@ -24,6 +24,7 @@ import { RmqModule } from './modules/rmq/rmq.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
 import { EServiceType } from './common/enums/service-type.enum';
 import { compact } from 'lodash';
+import { BlacklistMiddleware } from './common/middleware/blacklist-token.middleware';
 const { host, port } = configService.getRedisConfig();
 
 @Module({
@@ -64,4 +65,12 @@ const { host, port } = configService.getRedisConfig();
     }
   ]
 })
-export class AppModule {}
+export class AppModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer
+  //     .apply(BlacklistMiddleware)
+  //     .forRoutes({ path: '*', method: RequestMethod.ALL }); // Áp dụng cho tất cả route
+  //   // Hoặc chỉ áp dụng cho một số route:
+  //   // .forRoutes('user', 'transactions')
+  // }
+}

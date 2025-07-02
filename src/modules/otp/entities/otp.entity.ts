@@ -2,7 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 't
 // base.entity.ts
 
 import { ESendOTPAction } from '../dto/enum.dto';
-import { BaseEntity } from '../../../common/base.entity';
+import { BaseEntity } from '../../../common/base/base.entity';
 
 @Entity()
 export class Otp extends BaseEntity {

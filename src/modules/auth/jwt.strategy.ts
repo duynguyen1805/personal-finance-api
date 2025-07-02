@@ -1,11 +1,17 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  UnauthorizedException
+} from '@nestjs/common';
 import { jwtConstants } from './constants';
 import { UserService } from '../user/user.service';
 import { Cache } from 'cache-manager';
 import { flattenDeep, uniq } from 'lodash';
 import { CacheService } from '../cache/cache.service';
+import { ERedisKey } from '../../database/redis';
 
 @Injectable()
 /* It extends the PassportStrategy class and overrides the validate method */
@@ -25,7 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: jwtConstants.secret
+      secretOrKey: jwtConstants.secret,
+      passReqToCallback: true
     });
   }
 
@@ -35,16 +42,25 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @param {any} payload - The payload that was sent to the server.
    * @returns The payload data, and the permissions.
    */
-  async validate(payload: any) {
+  async validate(req: Request, payload: any) {
     /* Getting the email and id from the payload.data, then it is getting the permissions from the
     cache. If the permissions are not in the cache, it gets them from the database. */
-    const { walletAddress } = payload.data;
-    let permissions: any = await this.cacheService.get(
-      `permissions_${walletAddress}`
+    const authHeader = req.headers['authorization'] || '';
+    const token = authHeader.replace('Bearer ', '');
+
+    // Check blacklist
+    const isBlacklisted = await this.cacheService.get(
+      `${ERedisKey.BLACKLIST_TOKEN_PREFIX}${token}`
     );
+    if (isBlacklisted) {
+      throw new UnauthorizedException('Token is blacklisted');
+    }
+
+    const { id } = payload.data;
+    let permissions: any = await this.cacheService.get(`permissions_${id}`);
 
     if (!permissions) {
-      const user = await this.userService.findOneByAddress(walletAddress);
+      const user = await this.userService.findOne(id);
 
       permissions = uniq(
         flattenDeep(
@@ -54,7 +70,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         )
       );
 
-      await this.cacheService.set(`permissions_${walletAddress}`, permissions);
+      await this.cacheService.set(`permissions_${id}`, permissions);
     }
 
     return { ...payload.data, permissions };

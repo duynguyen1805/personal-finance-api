@@ -58,4 +58,12 @@ export class AuthController {
     const user = this.request.user as User;
     return this.authService.resendVerifyRegistration(dto, user.id);
   }
+
+  @Post('/logout')
+  @UseGuards(JwtAuthGuard)
+  logout() {
+    const authHeader = this.request.headers['authorization'] || '';
+    const token = authHeader.replace('Bearer ', '');
+    return this.authService.logOut(token);
+  }
 }

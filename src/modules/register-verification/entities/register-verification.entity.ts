@@ -1,7 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 // base.entity.ts
 
-import { BaseEntity } from '../../../common/base.entity';
+import { BaseEntity } from '../../../common/base/base.entity';
 
 @Entity()
 export class RegisterVerification extends BaseEntity {

@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from 'typeorm';
-import { BaseEntity } from '../../../common/base.entity';
+import { BaseEntity } from '../../../common/base/base.entity';
 import { EnumAffDirect, EnumAffRank } from '../dto/enum.dto';
 
 @Entity()

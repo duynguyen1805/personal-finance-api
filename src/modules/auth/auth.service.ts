@@ -9,6 +9,8 @@ import { SignInUseCase } from './use-cases/sign-in.use-case';
 import { VerifyRegistrationUseCase } from './use-cases/verify-registration.use-case';
 import { ResendVerifyRegistrationAccountDto } from './dto/resend-verify-registration.dto';
 import { ResendVerifyRegistrationUseCase } from './use-cases/resend-verify-registration.use-case';
+import { CacheService } from '../cache/cache.service';
+import { LogOutUseCase } from './use-cases/logout.use-case';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +20,8 @@ export class AuthService {
     private readonly signUpUseCase: SignUpUseCase,
     private readonly signInUseCase: SignInUseCase,
     private readonly verifyRegistrationUseCase: VerifyRegistrationUseCase,
-    private readonly resendVerifyRegistrationUseCase: ResendVerifyRegistrationUseCase
+    private readonly resendVerifyRegistrationUseCase: ResendVerifyRegistrationUseCase,
+    private readonly logoutUseCase: LogOutUseCase
   ) {}
 
   async signIn(user: LoginAuthAccountDto, isAdminLogin = false) {
@@ -73,5 +76,9 @@ export class AuthService {
       userId,
       email
     );
+  }
+
+  async logOut(token: string) {
+    return this.logoutUseCase.addTokenToBlackList(token);
   }
 }

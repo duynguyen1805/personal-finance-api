@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 // base.entity.ts
 
-import { BaseEntity } from '../../../common/base.entity';
+import { BaseEntity } from '../../../common/base/base.entity';
 import { Coin, TransactionStatus, TransactionType } from '../dto/enum.dto';
 import { ColumnNumericTransformer } from '../../../common/common.helper';
 

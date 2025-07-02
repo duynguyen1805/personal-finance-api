@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { EErrorDetail, EUserServiceError } from '../../user/dto/enum.dto';
-import { mustExist } from '../../../common/server-error.helper';
+import { mustExist } from '../../../common/helpers/server-error.helper';
 // import { RoleService } from '../../role/role.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
 

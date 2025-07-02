@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EEmailTemplate, Mailer } from '../../../common/email-helper/mailer';
+import { EEmailTemplate, Mailer } from '../../../common/email-helpers/mailer';
 import { User } from '../../user/entities/user.entity';
 import { SignUpAuthAccountDto } from '../dto/signup-auth-account.dto';
 import {
@@ -9,8 +9,8 @@ import {
   EnumUserStatus,
   ESignInError
 } from '../../../modules/user/dto/enum.dto';
-import { generateRandomCodeNumber } from '../../../common/common.helper';
-import { makeSure } from '../../../common/server-error.helper';
+import { generateRandomCodeNumber } from '../../../common/helpers/common.helper';
+import { makeSure } from '../../../common/helpers/server-error.helper';
 import { isNil } from 'lodash';
 import { RegisterVerification } from '../../../modules/register-verification/entities/register-verification.entity';
 import { hash } from 'bcrypt';

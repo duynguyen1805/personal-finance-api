@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
-import { EErrorDetail, ESignInError } from '../../user/dto/enum.dto';
-import { makeSure } from '../../../common/server-error.helper';
-import { RoleService } from '../../role/role.service';
+import { ERedisKey } from '../../../database/redis';
+import { CacheService } from '../../../modules/cache/cache.service';
 
 @Injectable()
 export class LogOutUseCase {
-  constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-    private roleService: RoleService
-  ) {}
+  constructor(private readonly cacheService: CacheService) {}
+
+  async addTokenToBlackList(token: string) {
+    // const expriredTime = await this.getExpiredTime(token)
+    const blackListToken = `${ERedisKey.BLACKLIST_TOKEN_PREFIX}${token}`;
+    // const NONSENSE_VALUE = '';
+    // return Redis.set(blackListToken, expriredTime, NONSENSE_VALUE);
+    return this.cacheService.set(blackListToken, true);
+  }
 }

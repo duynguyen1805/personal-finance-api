@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EEmailTemplate, Mailer } from '../../../common/email-helper/mailer';
+import { EEmailTemplate, Mailer } from '../../../common/email-helpers/mailer';
 import { User } from '../../user/entities/user.entity';
 import {
   EErrorDetail,
   EnumUserStatus,
   ESignInError
 } from '../../user/dto/enum.dto';
-import { generateRandomCodeNumber } from '../../../common/common.helper';
-import { makeSure, mustExist } from '../../../common/server-error.helper';
+import { generateRandomCodeNumber } from '../../../common/helpers/common.helper';
+import {
+  makeSure,
+  mustExist
+} from '../../../common/helpers/server-error.helper';
 import { RegisterVerification } from '../../register-verification/entities/register-verification.entity';
 
 @Injectable()

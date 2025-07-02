@@ -8,7 +8,7 @@ import {
 // base.entity.ts
 
 import { EnumUserStatus } from '../dto/enum.dto';
-import { BaseEntity } from '../../../common/base.entity';
+import { BaseEntity } from '../../../common/base/base.entity';
 import { Role } from '../../role/entities/role.entity';
 
 @Entity()

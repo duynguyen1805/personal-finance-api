@@ -5,7 +5,7 @@ import ejs from 'ejs';
 import Polyglot from 'node-polyglot';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import sendgrid from '@sendgrid/mail';
-import { EEnviroment } from '../../common/env.helper';
+import { EEnviroment } from '../helpers/env.helper';
 import { Settings } from '../../settings';
 import { createTransport } from 'nodemailer';
 import { configService } from '../../config/config.service';
