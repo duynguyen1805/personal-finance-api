@@ -3,6 +3,10 @@ import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Connection, Like, Repository, TreeRepository } from 'typeorm';
 import { FetchUserDto } from './dto/fetch-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+// import { mustExist } from 'src/common/server-error.helper';
+// import { EErrorDetail, EUserServiceError } from './dto/enum.dto';
+import { UpdateUserUseCase } from './use-cases/update-user.use-case';
 // import { hashMessage } from '@ethersproject/hash';
 // import { BigNumber, utils } from 'ethers';
 // import moment from 'moment';
@@ -17,7 +21,8 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(User)
     private treeUserRepository: TreeRepository<User>,
-    @InjectConnection() private readonly connection: Connection
+    @InjectConnection() private readonly connection: Connection,
+    private readonly updateUserUseCase: UpdateUserUseCase
   ) {}
 
   async findAll(query: FetchUserDto) {
@@ -117,5 +122,9 @@ export class UserService {
     }
 
     return this.userRepository.softDelete(id);
+  }
+
+  async updateUserInfo(userId: number, dto: UpdateUserDto) {
+    return this.updateUserUseCase.execute(userId, dto);
   }
 }

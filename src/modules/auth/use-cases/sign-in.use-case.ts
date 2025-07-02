@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { EErrorDetail, ESignInError } from '../../user/dto/enum.dto';
 import { makeSure, mustTwoFa } from '../../../common/server-error.helper';
-import { RegisterVerification } from '../../register-verification/entities/register-verification.entity';
 import { compare } from 'bcrypt';
 import { LoginAuthAccountDto } from '../dto/login-auth-account.dto';
 import { RoleService } from '../../../modules/role/role.service';
@@ -17,7 +16,6 @@ export class SignInUseCase {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    // @InjectRepository(RegisterVerification)
     private roleService: RoleService
   ) {}
 

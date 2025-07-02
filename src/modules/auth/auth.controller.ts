@@ -10,6 +10,7 @@ import { ResendVerifyRegistrationAccountDto } from './dto/resend-verify-registra
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { User } from '../user/entities/user.entity';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -52,6 +53,7 @@ export class AuthController {
 
   @Post('/resend-verify-registration')
   @ApiBody({ type: ResendVerifyRegistrationAccountDto })
+  @UseGuards(JwtAuthGuard)
   resendVerifyRegistration(@Body() dto: ResendVerifyRegistrationAccountDto) {
     const user = this.request.user as User;
     return this.authService.resendVerifyRegistration(dto, user.id);
