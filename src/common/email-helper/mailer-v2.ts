@@ -6,7 +6,7 @@ import Polyglot from 'node-polyglot';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import sendgrid from '@sendgrid/mail';
 import { EEnviroment } from '../../common/env.helper';
-import { Settings } from '../../setting';
+import { Settings } from '../../settings';
 import { createTransport } from 'nodemailer';
 import { configService } from '../../config/config.service';
 import { handleUnexpectedError } from '../handle-unexpected-error';

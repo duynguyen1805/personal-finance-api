@@ -3,6 +3,7 @@ import * as getStream from 'get-stream';
 import { parse } from 'csv-parse';
 import { isEmpty, random, zipObject } from 'lodash';
 import { utils } from 'ethers';
+import { TimeHelper } from './time-helper';
 
 export const removeEmptyAttr = (obj: any): any => {
   return Object.entries(obj)
@@ -95,4 +96,11 @@ export const generateRandomCodeNumber = (length: number) => {
     throw new Error('INVALID_LENGTH');
   const min = 1111111111 % 10 ** length;
   return random(min, min * 9).toString();
+};
+
+export const isExpired = (created: string | Date, expiredTime: number) => {
+  const getTimeByString = (str: string) => new Date(`${str} GMT+0`).getTime();
+  const time =
+    typeof created === 'string' ? getTimeByString(created) : created.getTime();
+  return time + expiredTime < TimeHelper.now();
 };

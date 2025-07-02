@@ -1,40 +1,21 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-import { User } from '../user/entities/user.entity';
 import { HttpService } from '@nestjs/axios';
 import { LoginAuthAccountDto } from './dto/login-auth-account.dto';
 import { SignUpAuthAccountDto } from './dto/signup-auth-account.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { RegisterVerification } from '../register-verification/entities/register-verification.entity';
-import { EEmailTemplate, Mailer } from '../../common/email-helper/mailer';
-import {
-  EErrorDetail,
-  EnumUserStatus,
-  ESignInError
-} from '../user/dto/enum.dto';
-import { isNil } from 'lodash';
-import { generateRandomCodeNumber } from '../../common/common.helper';
-import { makeSure, mustTwoFa } from '../../common/server-error.helper';
-import { compare, hash } from 'bcrypt';
-import { RoleService } from '../role/role.service';
-import { EnumRole } from '../../enums/role.enum';
-import { configService } from '../../config/config.service';
-import { TwoFa } from '../../common/twoFA.helper';
 import { VerifyRegistrationAccountDto } from './dto/verify-registration.dto';
 import { SignUpUseCase } from './use-cases/sign-up.use-case';
 import { SignInUseCase } from './use-cases/sign-in.use-case';
+import { VerifyRegistrationUseCase } from './use-cases/verify-registration.use-case';
 
 @Injectable()
 export class AuthService {
-  private user: User;
   constructor(
     private jwtService: JwtService,
-    private httpService: HttpService,
-    private roleService: RoleService,
+    // private httpService: HttpService,
     private readonly signUpUseCase: SignUpUseCase,
-    private readonly signInUseCase: SignInUseCase
+    private readonly signInUseCase: SignInUseCase,
+    private readonly verifyRegistrationUseCase: VerifyRegistrationUseCase
   ) {}
 
   async signIn(user: LoginAuthAccountDto, isAdminLogin = false) {
@@ -77,5 +58,6 @@ export class AuthService {
 
   async verifyRegistration(input: VerifyRegistrationAccountDto) {
     const { email, code } = input;
+    return this.verifyRegistrationUseCase.verifyRegistration(email, code);
   }
 }

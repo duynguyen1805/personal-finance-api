@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Mailer } from 'src/common/email-helper/mailer';
 import { User } from '../../user/entities/user.entity';
 import { EErrorDetail, ESignInError } from '../../user/dto/enum.dto';
 import { makeSure, mustTwoFa } from '../../../common/server-error.helper';
@@ -18,7 +17,7 @@ export class SignInUseCase {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    @InjectRepository(RegisterVerification)
+    // @InjectRepository(RegisterVerification)
     private roleService: RoleService
   ) {}
 
