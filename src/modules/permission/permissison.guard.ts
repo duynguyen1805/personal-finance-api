@@ -7,20 +7,21 @@ export class PermissionGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredPermissions = this.reflector.getAllAndMerge<string[]>(
+    // Lấy quyền yêu cầu từ decorator
+    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
       PERMISSION_KEY,
       [context.getHandler(), context.getClass()]
-    );
+    ) || [];
 
-    if (!requiredPermissions.length) {
-      return true;
-    }
-
+    // Lấy user từ request (đã được JwtAuthGuard xác thực)
     const { user } = context.switchToHttp().getRequest();
+    const userPermissions = user?.permissions || [];
 
-    const result = requiredPermissions.some((permission) =>
-      user?.permissions?.includes(permission)
-    );
-    return result;
+    // const result = requiredPermissions.some((permission) =>
+    //   user?.permissions?.includes(permission)
+    // );
+
+    // User phải có quyền yêu cầu
+    return requiredPermissions.some((permission) => userPermissions.includes(permission));
   }
 }

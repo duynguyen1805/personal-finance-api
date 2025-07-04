@@ -18,12 +18,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { User } from './entities/user.entity';
+import { Permissions } from '../permission/permission.decorator';
 
 @ApiTags('user')
 @Controller('user')
 @ApiBearerAuth()
-@UseGuards(PermissionGuard)
 @UseGuards(JwtAuthGuard)
+@UseGuards(PermissionGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -46,6 +47,7 @@ export class UserController {
   }
 
   @Post('update-user-info')
+  // @Permissions('EDIT_USER')
   updateUserInfo(@Body() dto: UpdateUserDto) {
     const user = this.request.user as User;
     return this.userService.updateUserInfo(user.id, dto);

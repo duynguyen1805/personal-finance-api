@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { Role } from './entities/role.entity';
+import { ERole } from './dto/enum-role.dto';
 
 @Injectable()
 export class RoleService {
@@ -16,7 +17,7 @@ export class RoleService {
     const { name, permissions, description } = createRoleDto;
 
     // check role exist
-    const foundRole = await this.roleRepository.findOne({ name });
+    const foundRole = await this.roleRepository.findOne({ where: { name } });
 
     if (foundRole) {
       throw new HttpException(
@@ -26,7 +27,7 @@ export class RoleService {
     }
 
     const role = await this.roleRepository.create({
-      name,
+      name: name as ERole,
       permissions: JSON.stringify(permissions),
       description,
     });
@@ -44,7 +45,7 @@ export class RoleService {
   }
 
   findOneByName(name: string) {
-    return this.roleRepository.findOne({ name });
+    return this.roleRepository.findOne({ where: { name: name as ERole } });
   }
 
   findByIds(ids: number[]) {
