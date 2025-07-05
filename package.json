@@ -68,6 +68,7 @@
     "ethers": "^5.7.1",
     "ipfs-http-client": "^50.1.2",
     "lodash": "^4.17.21",
+    "minio": "^8.0.5",
     "moment": "^2.29.4",
     "mysql2": "^2.3.3",
     "node-polyglot": "^2.6.0",

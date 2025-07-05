@@ -71,6 +71,19 @@ class ConfigService {
     };
   }
 
+  public getMinIOConfig() {
+    return {
+      STORAGE_LOCAL_ENDPOINT: this.getEnv('STORAGE_LOCAL_ENDPOINT'),
+      MINIO_UPLOAD_LOCAL_PORT: this.getEnv('MINIO_UPLOAD_LOCAL_PORT'),
+      USE_SSL: this.getEnv('USE_SSL'),
+      STORAGE_ENDPOINT: this.getEnv('STORAGE_ENDPOINT'),
+      MINIO_UPLOAD_PORT: this.getEnv('MINIO_UPLOAD_PORT'),
+      MINIO_UPLOAD_ACCESS_KEY: this.getEnv('MINIO_UPLOAD_ACCESS_KEY'),
+      MINIO_UPLOAD_SECRET_KEY: this.getEnv('MINIO_UPLOAD_SECRET_KEY'),
+      MINIO_UPLOAD_BUCKET_NAME: this.getEnv('MINIO_UPLOAD_BUCKET_NAME')
+    };
+  }
+
   public getEmailServiceConfig() {
     return {
       isSendEmail: this.getEnv('IS_SEND_EMAIL').toLowerCase() === 'true',
