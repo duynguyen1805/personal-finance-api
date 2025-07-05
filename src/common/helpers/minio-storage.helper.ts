@@ -1,6 +1,6 @@
 // import { getEnv } from '.';
 import * as Minio from 'minio';
-import { IFileInput } from '../../modules/file/interface/file.interface';
+import { IFileUploadInput } from '../../modules/file/interface/file.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Readable, pipeline } from 'stream';
 const fs = require('fs');
@@ -34,7 +34,9 @@ const minioClient = new Minio.Client({
 
 const bucketName = configMinIO.MINIO_UPLOAD_BUCKET_NAME;
 
-export async function uploadFileToMinIO(file: IFileInput): Promise<string> {
+export async function uploadFileToMinIO(
+  file: IFileUploadInput
+): Promise<string> {
   const fileName = `${file.originalname}`;
   const metaData = {
     'Content-Type': file.mimetype

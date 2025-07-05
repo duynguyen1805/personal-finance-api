@@ -1,4 +1,4 @@
-export interface IFileInput {
+export interface IFileUploadInput {
   fieldname: string;
   originalname: string;
   encoding: string;
