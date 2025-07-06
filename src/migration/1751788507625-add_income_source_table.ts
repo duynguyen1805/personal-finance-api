@@ -7,6 +7,7 @@ export class addIncomeSourceTable1751788507625 implements MigrationInterface {
                 "incomeId" SERIAL NOT NULL,
                 "is_active" boolean NOT NULL DEFAULT true,
                 "userId" integer NOT NULL,
+                "sourceName" character varying NOT NULL,
                 "month" date NOT NULL,
                 "amount" numeric NOT NULL,
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT ('now'::text)::timestamp(6) with time zone,
@@ -15,10 +16,10 @@ export class addIncomeSourceTable1751788507625 implements MigrationInterface {
                 CONSTRAINT "PK_income_incomeId" PRIMARY KEY ("incomeId"))
         `);
 
-    await queryRunner.query(`
-            ALTER TABLE "register_verification"
-            ADD CONSTRAINT "PK_register_verification_code" PRIMARY KEY ("code")
-        `);
+    // await queryRunner.query(`
+    //         ALTER TABLE "register_verification"
+    //         ADD CONSTRAINT "PK_register_verification_code" PRIMARY KEY ("code")
+    //     `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

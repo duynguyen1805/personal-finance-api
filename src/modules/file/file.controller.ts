@@ -1,12 +1,12 @@
 import {
+  Post,
   Body,
   Controller,
-  Delete,
-  Get,
+  // Delete,
+  // Get,
   Inject,
-  Param,
-  Post,
-  Query,
+  // Param,
+  // Query,
   UseGuards
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -14,7 +14,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PermissionGuard } from '../permission/permissison.guard';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { Permissions } from '../permission/permission.decorator';
+// import { Permissions } from '../permission/permission.decorator';
 import { User } from '../user/entities/user.entity';
 import { FileService } from './file.service';
 import { UpdateFileDto } from './dto/update-file.dto';
