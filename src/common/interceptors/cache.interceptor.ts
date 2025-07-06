@@ -10,7 +10,7 @@ import { Cache } from 'cache-manager';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { compact, isEmpty } from 'lodash';
-import { CacheService } from '../modules/cache/cache.service';
+import { CacheService } from '../../modules/cache/cache.service';
 
 @Injectable()
 export class CacheInterceptor implements NestInterceptor {

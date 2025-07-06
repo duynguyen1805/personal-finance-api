@@ -1,4 +1,11 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn
+} from 'typeorm';
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
@@ -8,7 +15,7 @@ export class RegisterVerification extends BaseEntity {
   @Column({ nullable: false })
   userId: number;
 
-  @Column({ nullable: false })
+  @PrimaryColumn({ nullable: false })
   code: string;
 
   @Column({ default: false })

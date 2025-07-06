@@ -26,7 +26,7 @@ export class FinancialGoals extends BaseEntity {
   targetAmount: number;
 
   @Column({ nullable: false })
-  deadline: string | Date;
+  deadline: Date;
 
   @Column({ default: true })
   autoDeduct: boolean;

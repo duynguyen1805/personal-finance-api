@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 import { BaseEntity } from '../../../common/base/base.entity';
 import { Coin, TransactionStatus, TransactionType } from '../dto/enum.dto';
-import { ColumnNumericTransformer } from '../../../common/common.helper';
+import { ColumnNumericTransformer } from '../../../common/helpers/common.helper';
 
 @Entity()
 export class Transactions extends BaseEntity {
@@ -16,13 +16,22 @@ export class Transactions extends BaseEntity {
   @Column({ unique: true, nullable: true })
   transactionHash: string;
 
-  @Column('numeric', { default: 0, transformer: new ColumnNumericTransformer() })
+  @Column('numeric', {
+    default: 0,
+    transformer: new ColumnNumericTransformer()
+  })
   amount: number;
 
-  @Column('numeric', { default: 0, transformer: new ColumnNumericTransformer() })
+  @Column('numeric', {
+    default: 0,
+    transformer: new ColumnNumericTransformer()
+  })
   balanceBefore: number;
 
-  @Column('numeric', { default: 0, transformer: new ColumnNumericTransformer() })
+  @Column('numeric', {
+    default: 0,
+    transformer: new ColumnNumericTransformer()
+  })
   balanceAfter: number;
 
   @Column({ unique: true, nullable: false })

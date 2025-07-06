@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node';
-import { configService } from '../config/config.service';
-import { ESwitchableFeature, isFeatureDisabled } from './helpers/env.helper';
+import { configService } from '../../config/config.service';
+import { ESwitchableFeature, isFeatureDisabled } from '../helpers/env.helper';
 
 const shouldCaptureBySentry = !isFeatureDisabled(ESwitchableFeature.SENTRY);
 

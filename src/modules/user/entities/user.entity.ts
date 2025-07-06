@@ -42,7 +42,7 @@ export class User extends BaseEntity {
   accountType: string;
 
   @Column({ nullable: true })
-  lastChangePasswordAt: string | Date;
+  lastChangePasswordAt: Date;
 
   @Column({ default: false })
   isFrozen: boolean;
@@ -57,5 +57,5 @@ export class User extends BaseEntity {
   twoFactorAuthSecret: string;
 
   @Column({ nullable: true })
-  timeActiveTwoFactorAuth: string | Date;
+  timeActiveTwoFactorAuth: Date;
 }

@@ -20,7 +20,7 @@ export class Budgets extends BaseEntity {
   userId: number;
 
   @Column({ nullable: false })
-  month: string | Date;
+  month: Date;
 
   @Column({ nullable: false })
   totalAmount: number;

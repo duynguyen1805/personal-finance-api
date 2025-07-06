@@ -9,7 +9,7 @@ import { EEnviroment } from '../helpers/env.helper';
 import { Settings } from '../../settings';
 import { createTransport } from 'nodemailer';
 import { configService } from '../../config/config.service';
-import { handleUnexpectedError } from '../handle-unexpected-error';
+import { handleUnexpectedError } from '../helpers/handle-unexpected-error';
 import { UserService } from '../../modules/user/user.service';
 interface IEmailInput {
   template: string;

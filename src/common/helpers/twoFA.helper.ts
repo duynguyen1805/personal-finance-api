@@ -1,6 +1,6 @@
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
-import { configService } from '../config/config.service';
+import { configService } from '../../config/config.service';
 
 export class TwoFa {
   static async generateSecret(email: string) {

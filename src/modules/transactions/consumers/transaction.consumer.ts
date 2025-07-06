@@ -8,7 +8,7 @@ import {
 } from '@nestjs/microservices';
 import { RmqService } from '../../rmq/rmq.service';
 import { TransactionsService } from '../transactions.service';
-import { delay } from '../../../common/common.helper';
+import { delay } from '../../../common/helpers/common.helper';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Transactions } from '../entities/transaction.entity';
 import { Repository } from 'typeorm';
@@ -35,7 +35,7 @@ export class TransactionConsumer {
     @Inject(ERmqQueueName.TRANSFER_FEE)
     private transferFeeRmqClient: ClientProxy,
     @InjectRepository(Transactions)
-    private transactionsRepo: Repository<Transactions>,
+    private transactionsRepo: Repository<Transactions>
   ) {}
 
   @EventPattern('updateFund')
