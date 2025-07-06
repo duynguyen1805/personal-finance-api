@@ -1,7 +1,15 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm';
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
+
+// financialGoals: danh sách đầu tư tiền
 
 @Entity()
 export class FinancialGoals extends BaseEntity {

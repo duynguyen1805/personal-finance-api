@@ -1,8 +1,16 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm';
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
 import { ECategoriesType } from '../dto/enum.dto';
+
+// categories: danh sách danh mục, có các type default và OTHER, cho phép define theo categoryName
 
 @Entity()
 export class Categories extends BaseEntity {
