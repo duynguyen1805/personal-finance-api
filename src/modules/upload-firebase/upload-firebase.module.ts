@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { UploadMinioController } from './upload-minio.controller';
-import { UploadMinioService } from './upload-minio.service';
+import { UploadFirebaseController } from './upload-firebase.controller';
+import { UploadFirebaseService } from './upload-firebase.service';
 import {
   SingleUploadInterceptor,
   MultiUploadInterceptor
@@ -8,12 +8,12 @@ import {
 
 @Module({
   imports: [],
-  controllers: [UploadMinioController],
+  controllers: [UploadFirebaseController],
   providers: [
-    UploadMinioService,
+    UploadFirebaseService,
     SingleUploadInterceptor,
     MultiUploadInterceptor
   ],
-  exports: [UploadMinioService]
+  exports: [UploadFirebaseService]
 })
 export class UploadModule {}
