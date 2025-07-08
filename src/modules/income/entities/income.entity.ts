@@ -8,6 +8,7 @@ import {
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
+import { EIncomeTypeSourceName } from '../interface/enum.interface';
 
 // income: số tiền đầu vào
 
@@ -20,7 +21,10 @@ export class Income extends BaseEntity {
   userId: number;
 
   @Column({ nullable: false })
-  sourceName: string;
+  sourceName: EIncomeTypeSourceName;
+
+  @Column({ nullable: false })
+  customName: string;
 
   @Column({ nullable: false })
   month: Date;
