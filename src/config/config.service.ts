@@ -114,7 +114,18 @@ const configService = new ConfigService(process.env).ensureValues([
   'SMTP_HOST',
   'SMTP_PORT',
   'SMTP_USER',
-  'SMTP_PASSWORD'
+  'SMTP_PASSWORD',
+  // MinIO configs
+  'STORAGE_LOCAL_ENDPOINT',
+  'MINIO_UPLOAD_LOCAL_PORT',
+  'USE_SSL',
+  'STORAGE_ENDPOINT',
+  'MINIO_UPLOAD_PORT',
+  'MINIO_UPLOAD_ACCESS_KEY',
+  'MINIO_UPLOAD_SECRET_KEY',
+  'MINIO_UPLOAD_BUCKET_NAME',
+  // JWT
+  'JWT_SECRET'
 ]);
 
 export { configService };

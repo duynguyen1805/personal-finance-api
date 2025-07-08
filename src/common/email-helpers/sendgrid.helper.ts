@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import * as sendgrid from '@sendgrid/mail';
-import { configService } from 'src/config/config.service';
+import { configService } from '../../config/config.service';
 import { EmailGenerator } from './email-generator.helper';
 import { IEmailDetail, IEmailInput } from './mailer';
 

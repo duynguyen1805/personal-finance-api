@@ -1,5 +1,5 @@
 import { defaultTo } from 'lodash';
-import { configService } from 'src/config/config.service';
+import { configService } from '../../config/config.service';
 
 export enum EEnviroment {
   TEST = 'test',

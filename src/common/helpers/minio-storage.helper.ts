@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Readable, pipeline } from 'stream';
 const fs = require('fs');
 import { promisify } from 'util';
-import { configService } from 'src/config/config.service';
+import { configService } from '../../config/config.service';
 
 const pipelineAsync = promisify(pipeline);
 

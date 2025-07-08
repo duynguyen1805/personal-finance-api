@@ -1,4 +1,4 @@
-import { configService } from 'src/config/config.service';
+import { configService } from '../../config/config.service';
 import * as nodemailer from 'nodemailer';
 import { IEmailDetail, IEmailInput } from './mailer';
 import { HttpException, HttpStatus } from '@nestjs/common';

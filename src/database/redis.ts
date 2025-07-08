@@ -1,17 +1,20 @@
-import redis from 'redis';
-import { configService } from 'src/config/config.service';
-import { promisify } from 'util';
+// import redis from 'redis';
+// import { createClient } from 'redis';
+// import { configService } from '../config/config.service';
+// import { promisify } from 'util';
+
+// // const redisClient = createClient({
+// //   url: `redis://${configService.getEnv('REDIS_HOST')}:${configService.getEnv(
+// //     'REDIS_PORT'
+// //   )}`
+// // });
 
 // const redisClient = redis.createClient({
-//   url: configService.getEnv('REDIS_URL')
+//   socket: {
+//     host: configService.getEnv('REDIS_HOST'),
+//     port: parseInt(configService.getEnv('REDIS_PORT'))
+//   }
 // });
-
-const redisClient = redis.createClient({
-  socket: {
-    host: configService.getEnv('REDIS_HOST'),
-    port: parseInt(configService.getEnv('REDIS_PORT'))
-  }
-});
 
 export enum ERedisKey {
   LATEST_NOTIFIED_BALANCE_CHANGE_TRANSACTION_ID = 'LATEST_NOTIFIED_BALANCE_CHANGE_TRANSACTION_ID',
@@ -34,38 +37,38 @@ export enum ERedisKey {
   LAST_BLOCK_NFT = 'LAST_BLOCK_NFT'
 }
 
-export class Redis {
-  static set(key: string, seconds: number, value: string) {
-    if (seconds === 0)
-      return promisify(redisClient.set).bind(redisClient)(key, value);
-    return promisify(redisClient.setEx).bind(redisClient)(key, seconds, value);
-  }
+// export class Redis {
+//   static set(key: string, seconds: number, value: string) {
+//     if (seconds === 0)
+//       return promisify(redisClient.set).bind(redisClient)(key, value);
+//     return promisify(redisClient.setEx).bind(redisClient)(key, seconds, value);
+//   }
 
-  static get(key: string) {
-    return promisify(redisClient.get).bind(redisClient)(key);
-  }
+//   static get(key: string) {
+//     return promisify(redisClient.get).bind(redisClient)(key);
+//   }
 
-  static async count(pattern: string) {
-    const records = await promisify(redisClient.keys).bind(redisClient)(
-      pattern
-    );
-    return records.length;
-  }
+//   static async count(pattern: string) {
+//     const records = await promisify(redisClient.keys).bind(redisClient)(
+//       pattern
+//     );
+//     return records.length;
+//   }
 
-  static del(key: string) {
-    return redisClient.del(key);
-  }
+//   static del(key: string) {
+//     return redisClient.del(key);
+//   }
 
-  static setJson<T>(key: string, seconds: number, value: T) {
-    return this.set(key, seconds, JSON.stringify(value));
-  }
+//   static setJson<T>(key: string, seconds: number, value: T) {
+//     return this.set(key, seconds, JSON.stringify(value));
+//   }
 
-  static async getJson<T>(key: string): Promise<T> {
-    const value = await this.get(key);
-    return JSON.parse(value);
-  }
+//   static async getJson<T>(key: string): Promise<T> {
+//     const value = await this.get(key);
+//     return JSON.parse(value);
+//   }
 
-  static async flushall() {
-    return promisify(redisClient.flushAll).bind(redisClient)();
-  }
-}
+//   static async flushall() {
+//     return promisify(redisClient.flushAll).bind(redisClient)();
+//   }
+// }

@@ -1,5 +1,5 @@
 import { merge } from 'lodash';
-import { configService } from 'src/config/config.service';
+import { configService } from '../../config/config.service';
 import { Sendgrid } from './sendgrid.helper';
 import { SMTP } from './smtp.helper';
 import { User } from 'src/modules/user/entities/user.entity';
