@@ -16,4 +16,4 @@ import {
   ],
   exports: [UploadMinioService]
 })
-export class UploadModule {}
+export class UploadMinIOModule {}

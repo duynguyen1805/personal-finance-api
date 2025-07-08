@@ -15,7 +15,7 @@ export class CreateIncomeDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  month: string | Date;
+  date: Date;
 
   @ApiProperty()
   @IsNotEmpty()

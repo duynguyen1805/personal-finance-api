@@ -75,3 +75,11 @@ export interface IPaymentPeriod {
   startAt: number;
   isSunday: boolean;
 }
+
+export function extractMonthYear(date: Date | string) {
+  const d = new Date(date);
+  return {
+    month: d.getMonth() + 1, // getMonth() trả về 0-11
+    year: d.getFullYear()
+  };
+}

@@ -25,6 +25,12 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 import { EServiceType } from './common/enums/service-type.enum';
 import { compact } from 'lodash';
 import { BlacklistMiddleware } from './common/middleware/blacklist-token.middleware';
+import { FileModule } from './modules/file/file.module';
+import { UploadMinIOModule } from './modules/upload-minio/upload-minio.module';
+import { UploadFirebaseModule } from './modules/upload-firebase/upload-firebase.module';
+import { IncomeModule } from './modules/income/income.module';
+// import { BudgetsModule } from './modules/budgets/budgets.module';
+
 const { host, port } = configService.getRedisConfig();
 
 @Module({
@@ -54,6 +60,11 @@ const { host, port } = configService.getRedisConfig();
     CustomeCacheModule,
     RmqModule,
     TransactionsModule,
+    IncomeModule,
+    // BudgetsModule,
+    UploadMinIOModule,
+    UploadFirebaseModule,
+    FileModule
   ]),
   controllers: [AppController],
   providers: [

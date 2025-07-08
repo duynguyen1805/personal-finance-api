@@ -16,4 +16,4 @@ import {
   ],
   exports: [UploadFirebaseService]
 })
-export class UploadModule {}
+export class UploadFirebaseModule {}

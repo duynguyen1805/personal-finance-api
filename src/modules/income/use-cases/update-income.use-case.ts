@@ -6,6 +6,7 @@ import { mustExist } from '../../../common/helpers/server-error.helper';
 import { Income } from '../entities/income.entity';
 import { EErrorIncome, EErrorDetail } from '../interface/enum.interface';
 import { UpdateIncomeDto } from '../dto/update-income.dto';
+import { extractMonthYear } from '../../../common/helpers/time-helper';
 
 @Injectable()
 export class UpdateIncomeUseCase {
@@ -18,9 +19,12 @@ export class UpdateIncomeUseCase {
 
   async execute(userId: number, dto: UpdateIncomeDto) {
     await this.validateUser(userId);
+    const { month, year } = extractMonthYear(dto.date);
     return await this.incomeRepository.update(userId, {
       ...dto,
-      userId: userId
+      userId: userId,
+      month: month,
+      year: year
     });
   }
 

@@ -27,7 +27,13 @@ export class Income extends BaseEntity {
   customName: string;
 
   @Column({ nullable: false })
-  month: Date;
+  date: Date;
+
+  @Column({ nullable: false })
+  month: number;
+
+  @Column({ nullable: false })
+  year: number;
 
   @Column({ nullable: false })
   amount: number;
