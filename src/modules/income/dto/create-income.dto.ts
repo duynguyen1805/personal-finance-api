@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
-import { EIncomeTypeSourceName } from '../interface/enum.interface';
+import { EIncomeTypeSourceName } from '../enums/income.enum';
 
 // export class UpdateUserDto extends PartialType(CreateUserDto) {}
 

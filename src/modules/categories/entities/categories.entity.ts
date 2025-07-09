@@ -8,7 +8,7 @@ import {
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
-import { ECategoriesType } from '../dto/enum.dto';
+import { ECategoriesType } from '../enums/categories.enum';
 
 // categories: danh sách danh mục, có các type default và OTHER, cho phép define theo categoryName
 

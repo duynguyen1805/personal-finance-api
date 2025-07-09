@@ -8,7 +8,7 @@ import {
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
-import { EIncomeTypeSourceName } from '../interface/enum.interface';
+import { EIncomeTypeSourceName } from '../enums/income.enum';
 
 // income: số tiền đầu vào
 

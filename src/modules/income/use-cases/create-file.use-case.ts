@@ -3,13 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { mustExist } from '../../../common/helpers/server-error.helper';
-// import { RoleService } from '../../role/role.service';
-import { UpdateFileDto } from '../dto/update-file.dto';
 import { File } from '../entities/file.entity';
-import { EErrorFile, EErrorDetail } from '../enums/file.enum';
+import { EErrorFile, EErrorDetail } from '../enums/income.enum';
+import { CreateFileDto } from '../dto/create-file.dto';
 
 @Injectable()
-export class UpdateFileUseCase {
+export class CreateFileUseCase {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
@@ -17,10 +16,10 @@ export class UpdateFileUseCase {
     private fileRepository: Repository<File>
   ) {}
 
-  async execute(userId: number, dto: UpdateFileDto) {
+  async execute(userId: number, dto: CreateFileDto) {
     await this.validateUser(userId);
     dto.userUploadId = userId;
-    return await this.fileRepository.update(userId, {
+    return await this.fileRepository.save({
       ...dto
     });
   }

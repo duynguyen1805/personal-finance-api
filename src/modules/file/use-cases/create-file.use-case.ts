@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { mustExist } from '../../../common/helpers/server-error.helper';
 import { File } from '../entities/file.entity';
-import { EErrorFile, EErrorDetail } from '../interface/enum.interface';
+import { EErrorFile, EErrorDetail } from '../enums/file.enum';
 import { CreateFileDto } from '../dto/create-file.dto';
 
 @Injectable()

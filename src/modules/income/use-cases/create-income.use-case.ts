@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { mustExist } from '../../../common/helpers/server-error.helper';
 import { Income } from '../entities/income.entity';
-import { EErrorIncome, EErrorDetail } from '../interface/enum.interface';
+import { EErrorIncome, EErrorDetail } from '../enums/income.enum';
 import { CreateIncomeDto } from '../dto/create-income.dto';
 import { Budgets } from '../../budgets/entities/budgets.entity';
 import { extractMonthYear } from '../../../common/helpers/time-helper';
