@@ -53,3 +53,13 @@ const defaultCategories = [
     categoryName: [] // cho phép user tự thêm
   }
 ];
+
+export enum EErrorCategories {
+  CANNOT_FIND_USER = 'CANNOT_FIND_USER',
+  CANNOT_FIND_BUDGET = 'CANNOT_FIND_BUDGET'
+}
+
+export enum EErrorDetail {
+  CANNOT_FIND_USER = 'CANNOT_FIND_USER',
+  CANNOT_FIND_BUDGET = 'CANNOT_FIND_BUDGET'
+}
