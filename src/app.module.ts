@@ -1,4 +1,9 @@
-import { CacheModule, MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import {
+  CacheModule,
+  MiddlewareConsumer,
+  Module,
+  RequestMethod
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -29,6 +34,8 @@ import { FileModule } from './modules/file/file.module';
 import { UploadMinIOModule } from './modules/upload-minio/upload-minio.module';
 import { UploadFirebaseModule } from './modules/upload-firebase/upload-firebase.module';
 import { IncomeModule } from './modules/income/income.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { ExpensesModule } from './modules/expenses/expenses.module';
 // import { BudgetsModule } from './modules/budgets/budgets.module';
 
 const { host, port } = configService.getRedisConfig();
@@ -64,7 +71,9 @@ const { host, port } = configService.getRedisConfig();
     // BudgetsModule,
     UploadMinIOModule,
     UploadFirebaseModule,
-    FileModule
+    FileModule,
+    CategoriesModule,
+    ExpensesModule
   ]),
   controllers: [AppController],
   providers: [
