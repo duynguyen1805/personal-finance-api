@@ -23,7 +23,17 @@ export class User extends BaseEntity {
   status: EnumUserStatus;
 
   @ManyToMany(() => Role)
-  @JoinTable()
+  @JoinTable({
+    name: 'user_roles_role',
+    joinColumn: {
+      name: 'userId', // <== tên bạn muốn đặt trong bảng trung gian
+      referencedColumnName: 'id' // <== cột thực tế trong bảng user
+    },
+    inverseJoinColumn: {
+      name: 'roleId', // <== tên cột trong bảng trung gian
+      referencedColumnName: 'id' // <== cột thực tế trong bảng role
+    }
+  })
   roles: Role[];
 
   @Column({ nullable: false })

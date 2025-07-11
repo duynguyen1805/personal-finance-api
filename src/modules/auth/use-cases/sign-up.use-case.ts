@@ -14,6 +14,8 @@ import { makeSure } from '../../../common/helpers/server-error.helper';
 import { isNil } from 'lodash';
 import { RegisterVerification } from '../../../modules/register-verification/entities/register-verification.entity';
 import { hash } from 'bcrypt';
+import { RoleService } from '../../../modules/role/role.service';
+import { EnumRole } from '../../../enums/role.enum';
 
 @Injectable()
 export class SignUpUseCase {
@@ -22,6 +24,7 @@ export class SignUpUseCase {
     private userRepository: Repository<User>,
     @InjectRepository(RegisterVerification)
     private registerVerification: Repository<RegisterVerification>,
+    private readonly roleService: RoleService,
     private Mailer: Mailer
   ) {}
 
@@ -72,10 +75,13 @@ export class SignUpUseCase {
 
   async saveUser(user: SignUpAuthAccountDto) {
     const passwordHash = await hash(user.password, 8);
+    const role = await this.roleService.findOneByName(EnumRole.USER);
     return this.userRepository.save({
       ...user,
       passwordHash: passwordHash,
-      status: EnumUserStatus.INACTIVE
+      status: EnumUserStatus.INACTIVE,
+      accountType: 'ACTIVE',
+      roles: [role]
     });
   }
 }

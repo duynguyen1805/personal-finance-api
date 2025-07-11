@@ -5,6 +5,7 @@ import { User } from '../../user/entities/user.entity';
 import { EErrorDetail, ESignInError } from '../../user/dto/enum.dto';
 import {
   makeSure,
+  mustExist,
   mustTwoFa
 } from '../../../common/helpers/server-error.helper';
 import { compare } from 'bcrypt';
@@ -47,11 +48,12 @@ export class SignInUseCase {
     const { email, password, twoFaCode } = userDto;
     // check if the user exists in the db
     const userInDb = await this.userRepository.findOne({
-      where: [{ email }, { walletAddress: email.toLowerCase() }]
+      where: [{ email }],
+      relations: ['roles']
     });
     const foundRole = await this.roleService.findOneByName(EnumRole.USER);
-    makeSure(
-      !foundRole,
+    mustExist(
+      foundRole,
       'Role User does not exist',
       'ROLE_USER_DOES_NOT_EXIST'
     );
