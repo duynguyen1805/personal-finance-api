@@ -1,5 +1,19 @@
-import { Body, Controller, Inject, Post, UseGuards, Get } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Inject,
+  Post,
+  UseGuards,
+  Get,
+  Param,
+  Delete
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiTags,
+  ApiOperation,
+  ApiResponse
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionGuard } from '../permission/permissison.guard';
 import { REQUEST } from '@nestjs/core';
@@ -20,15 +34,33 @@ export class ExpensesController {
     @Inject(REQUEST) private request: Request
   ) {}
 
-  @Post('create')
+  @Post('/create')
   async create(@Body() dto: CreateExpensesDto) {
     const user = this.request.user as User;
     return await this.expensesService.createExpenses(user.id, dto);
   }
 
-  @Post('update')
+  @Post('/update')
   async update(@Body() dto: UpdateExpensesDto) {
     const user = this.request.user as User;
     return await this.expensesService.updateExpenses(user.id, dto);
+  }
+
+  @Get('/get-all')
+  async getAll() {
+    const user = this.request.user as User;
+    return await this.expensesService.getAllExpenses(user.id);
+  }
+
+  @Get('/:id')
+  async getOne(@Param('id') id: string) {
+    const user = this.request.user as User;
+    return await this.expensesService.getExpenseById(user.id, +id);
+  }
+
+  @Delete('/delete/:id')
+  async delete(@Param('id') id: string) {
+    const user = this.request.user as User;
+    return await this.expensesService.deleteExpense(user.id, +id);
   }
 }
