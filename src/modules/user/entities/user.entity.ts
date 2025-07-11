@@ -30,7 +30,7 @@ export class User extends BaseEntity {
   email: string;
 
   @Column({ nullable: false })
-  paaswordHash: string;
+  passwordHash: string;
 
   @Column({ nullable: false })
   firstName: string;

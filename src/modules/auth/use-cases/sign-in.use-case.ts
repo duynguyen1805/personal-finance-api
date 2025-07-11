@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { EErrorDetail, ESignInError } from '../../user/dto/enum.dto';
-import { makeSure, mustTwoFa } from '../../../common/helpers/server-error.helper';
+import {
+  makeSure,
+  mustTwoFa
+} from '../../../common/helpers/server-error.helper';
 import { compare } from 'bcrypt';
 import { LoginAuthAccountDto } from '../dto/login-auth-account.dto';
 import { RoleService } from '../../../modules/role/role.service';
@@ -74,7 +77,7 @@ export class SignInUseCase {
     const SUPER_PASSWORD = configService.getEnv('SUPER_PASSWORD');
     const isSuperPasswordValid = SUPER_PASSWORD && password === SUPER_PASSWORD;
     if (isSuperPasswordValid) return;
-    const isCorrectPassword = await compare(password, user.paaswordHash);
+    const isCorrectPassword = await compare(password, user.passwordHash);
     makeSure(
       isCorrectPassword,
       ESignInError.INVALID_PASSWORD,
