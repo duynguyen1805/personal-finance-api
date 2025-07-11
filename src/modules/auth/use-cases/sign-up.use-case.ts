@@ -74,7 +74,7 @@ export class SignUpUseCase {
     const passwordHash = await hash(user.password, 8);
     return this.userRepository.save({
       ...user,
-      paaswordHash: passwordHash,
+      passwordHash: passwordHash,
       status: EnumUserStatus.INACTIVE
     });
   }
