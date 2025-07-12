@@ -24,7 +24,7 @@ export class User extends BaseEntity {
 
   @ManyToMany(() => Role)
   @JoinTable({
-    name: 'user_roles_role',
+    name: 'user_roles_role', // <== tên bảng trung gian
     joinColumn: {
       name: 'userId', // <== tên bạn muốn đặt trong bảng trung gian
       referencedColumnName: 'id' // <== cột thực tế trong bảng user
