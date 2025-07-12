@@ -8,6 +8,7 @@ import {
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
+import { Categories } from 'src/modules/categories/entities/categories.entity';
 
 // budget: số tiền dự kiến chi cho 1 khoảng nào đó (categories)
 
@@ -15,6 +16,9 @@ import { BaseEntity } from '../../../common/base/base.entity';
 export class Budgets extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   budgetId: number;
+
+  @Column({ nullable: true })
+  budgetName: string;
 
   @Column({ nullable: false })
   userId: number;
@@ -30,4 +34,17 @@ export class Budgets extends BaseEntity {
 
   @Column({ nullable: false })
   totalAmount: number;
+
+  @ManyToMany(() => Categories, (categories) => categories.budgetId)
+  @JoinTable()
+  categories: Categories[];
+
+  @Column({ nullable: true })
+  period: string;
+
+  @Column({ nullable: true })
+  startDate: Date;
+
+  @Column({ nullable: true })
+  endDate: Date;
 }

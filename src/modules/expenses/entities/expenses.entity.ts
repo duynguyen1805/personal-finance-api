@@ -28,5 +28,6 @@ export class Expenses extends BaseEntity {
   @Column({ nullable: false })
   expenseDate: Date;
 
-  // có thể thêm cột "note"
+  @Column({ nullable: true })
+  description: string;
 }

@@ -23,8 +23,11 @@ export class Income extends BaseEntity {
   @Column({ nullable: false })
   sourceName: EIncomeTypeSourceName;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   customName: string;
+
+  @Column({ nullable: true })
+  description: string;
 
   @Column({ nullable: false })
   date: Date;
