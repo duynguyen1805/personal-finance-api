@@ -28,4 +28,10 @@ export class Categories extends BaseEntity {
 
   @Column({ nullable: false })
   allocatedAmount: number;
+
+  @Column({ nullable: true })
+  categoryIcon: string;
+
+  @Column({ nullable: true })
+  categoryColor: string;
 }

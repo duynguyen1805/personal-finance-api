@@ -35,9 +35,9 @@ export class Budgets extends BaseEntity {
   @Column({ nullable: false })
   totalAmount: number;
 
-  @ManyToMany(() => Categories, (categories) => categories.budgetId)
-  @JoinTable()
-  categories: Categories[];
+  // @ManyToMany(() => Categories, (categories) => categories.budgetId)
+  // @JoinTable()
+  // categories: Categories[];
 
   @Column({ nullable: true })
   period: string;

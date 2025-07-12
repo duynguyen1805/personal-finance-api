@@ -20,9 +20,20 @@ export class addDescriptionAndUpdateBudgetTable1752340110387
         ADD "startDate" date,
         ADD "endDate" date`
     );
+    await queryRunner.query(
+      `ALTER TABLE "categories"
+        ADD "categoryIcon" character varying,
+        ADD "categoryColor" character varying`
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "categories" DROP COLUMN "categoryColor"`
+    );
+    await queryRunner.query(
+      `ALTER TABLE "categories" DROP COLUMN "categoryIcon"`
+    );
     await queryRunner.query(`ALTER TABLE "budgets" DROP COLUMN "endDate"`);
     await queryRunner.query(`ALTER TABLE "budgets" DROP COLUMN "startDate"`);
     await queryRunner.query(`ALTER TABLE "budgets" DROP COLUMN "period"`);
