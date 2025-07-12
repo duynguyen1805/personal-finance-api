@@ -45,34 +45,34 @@ export class UpdateCategoriesUseCase {
     const category = await this.categoriesRepository.findOne({
       where: { categoryId: dto.categoryId }
     });
-    const budget = await this.budgetsRepository.findOne({
-      where: { budgetId: category.budgetId }
-    });
+    // const budget = await this.budgetsRepository.findOne({
+    //   where: { budgetId: category.budgetId }
+    // });
 
-    // nếu budget vẫn đúng tháng thì update
-    if (budget.month == month && budget.year == year) {
-      await this.categoriesRepository.update(category.categoryId, {
-        ...dto
-      });
-    } else {
-      // thay đổi category qua budget của tháng khác
-      const budget = await this.budgetsRepository.findOne({
-        where: { userId: userId, month: month, year: year }
-      });
-      if (budget) {
-        await this.categoriesRepository.update(category.categoryId, {
-          ...dto,
-          budgetId: budget.budgetId
-        });
-      } else {
-        // tháng đó chưa có budget thì yêu cầu call api tạo income mới
-        makeSure(
-          false,
-          EErrorCategories.CANNOT_FIND_BUDGET,
-          EErrorDetail.CANNOT_FIND_BUDGET
-        );
-      }
-    }
+    // // nếu budget vẫn đúng tháng thì update
+    // if (budget.month == month && budget.year == year) {
+    //   await this.categoriesRepository.update(category.categoryId, {
+    //     ...dto
+    //   });
+    // } else {
+    //   // thay đổi category qua budget của tháng khác
+    //   const budget = await this.budgetsRepository.findOne({
+    //     where: { userId: userId, month: month, year: year }
+    //   });
+    //   if (budget) {
+    //     await this.categoriesRepository.update(category.categoryId, {
+    //       ...dto,
+    //       budgetId: budget.budgetId
+    //     });
+    //   } else {
+    //     // tháng đó chưa có budget thì yêu cầu call api tạo income mới
+    //     makeSure(
+    //       false,
+    //       EErrorCategories.CANNOT_FIND_BUDGET,
+    //       EErrorDetail.CANNOT_FIND_BUDGET
+    //     );
+    //   }
+    // }
 
     return await this.categoriesRepository.findOne({
       where: { categoryId: dto.categoryId }

@@ -24,6 +24,9 @@ export class Budgets extends BaseEntity {
   userId: number;
 
   @Column({ nullable: false })
+  categoryId: number;
+
+  @Column({ nullable: false })
   date: Date;
 
   @Column({ nullable: false })

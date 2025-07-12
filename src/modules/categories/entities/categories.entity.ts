@@ -18,7 +18,7 @@ export class Categories extends BaseEntity {
   categoryId: number;
 
   @Column({ nullable: false })
-  budgetId: number;
+  userId: number;
 
   @Column({ nullable: false })
   cateroryName: string;
