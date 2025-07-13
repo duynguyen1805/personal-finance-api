@@ -1,8 +1,10 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
 // base.entity.ts
@@ -26,6 +28,10 @@ export class Budgets extends BaseEntity {
   @Column({ nullable: false })
   categoryId: number;
 
+  @ManyToOne(() => Categories, (category) => category.budgets)
+  @JoinColumn({ name: 'categoryId' })
+  category: Categories;
+
   @Column({ nullable: false })
   date: Date;
 
@@ -37,10 +43,6 @@ export class Budgets extends BaseEntity {
 
   @Column({ nullable: false })
   totalAmount: number;
-
-  // @ManyToMany(() => Categories, (categories) => categories.budgetId)
-  // @JoinTable()
-  // categories: Categories[];
 
   @Column({ nullable: true })
   period: string;

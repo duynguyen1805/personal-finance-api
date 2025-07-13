@@ -37,7 +37,7 @@ import { IncomeModule } from './modules/income/income.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
 import { RecurringTransactionModule } from './modules/recurring-transaction/recurring-transaction.module';
-// import { BudgetsModule } from './modules/budgets/budgets.module';
+import { BudgetsModule } from './modules/budgets/budget.module';
 
 const { host, port } = configService.getRedisConfig();
 
@@ -69,7 +69,7 @@ const { host, port } = configService.getRedisConfig();
     RmqModule,
     TransactionsModule,
     IncomeModule,
-    // BudgetsModule,
+    BudgetsModule,
     UploadMinIOModule,
     UploadFirebaseModule,
     FileModule,

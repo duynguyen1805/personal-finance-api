@@ -3,12 +3,14 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn
 } from 'typeorm';
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
 import { ECategoriesType } from '../enums/categories.enum';
+import { Budgets } from '../../budgets/entities/budgets.entity';
 
 // categories: danh sách danh mục, có các type default và OTHER, cho phép define theo categoryName
 
@@ -34,4 +36,7 @@ export class Categories extends BaseEntity {
 
   @Column({ nullable: true })
   categoryColor: string;
+
+  @OneToMany(() => Budgets, (budget) => budget.category)
+  budgets: Budgets[];
 }
