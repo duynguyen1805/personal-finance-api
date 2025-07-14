@@ -20,11 +20,17 @@ export class UpdateIncomeUseCase {
   async execute(userId: number, dto: UpdateIncomeDto) {
     await this.validateUser(userId);
     const { month, year } = extractMonthYear(dto.date);
-    return await this.incomeRepository.update(userId, {
-      ...dto,
-      userId: userId,
-      month: month,
-      year: year
+    await this.incomeRepository.update(
+      { userId: userId, incomeId: dto.incomeId },
+      {
+        ...dto,
+        userId: userId,
+        month: month,
+        year: year
+      }
+    );
+    return await this.incomeRepository.findOne({
+      where: { incomeId: dto.incomeId }
     });
   }
 

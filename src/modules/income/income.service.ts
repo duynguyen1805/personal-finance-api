@@ -16,11 +16,11 @@ export class IncomeService {
     private readonly incomeRepository: Repository<Income>
   ) {}
 
-  async createIncome(userId: number, input: CreateIncomeDto) {
+  async createIncome(userId: number, input: CreateIncomeDto): Promise<Income> {
     return await this.createIncomeUseCase.execute(userId, input);
   }
 
-  async updateIncome(userId: number, input: UpdateIncomeDto) {
+  async updateIncome(userId: number, input: UpdateIncomeDto): Promise<Income> {
     return await this.updateIncomeUseCase.execute(userId, input);
   }
 

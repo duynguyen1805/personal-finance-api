@@ -20,4 +20,8 @@ export class CreateIncomeDto {
   @ApiProperty()
   @IsNotEmpty()
   amount: number;
+
+  @ApiProperty()
+  @IsOptional()
+  description: string;
 }
