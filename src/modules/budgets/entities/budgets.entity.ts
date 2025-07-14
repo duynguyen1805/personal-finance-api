@@ -10,7 +10,7 @@ import {
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
-import { Categories } from 'src/modules/categories/entities/categories.entity';
+import { Categories } from '../../../modules/categories/entities/categories.entity';
 
 // budget: số tiền dự kiến chi cho 1 khoảng nào đó (categories)
 
