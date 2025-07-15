@@ -4,8 +4,4 @@ import { IsNotEmpty } from 'class-validator';
 
 // export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
-export class UpdateIncomeDto extends PartialType(CreateIncomeDto) {
-  @ApiProperty()
-  @IsNotEmpty()
-  incomeId: number;
-}
+export class UpdateIncomeDto extends PartialType(CreateIncomeDto) {}

@@ -20,8 +20,12 @@ export class IncomeService {
     return await this.createIncomeUseCase.execute(userId, input);
   }
 
-  async updateIncome(userId: number, input: UpdateIncomeDto): Promise<Income> {
-    return await this.updateIncomeUseCase.execute(userId, input);
+  async updateIncome(
+    userId: number,
+    incomeId: number,
+    input: UpdateIncomeDto
+  ): Promise<Income> {
+    return await this.updateIncomeUseCase.execute(userId, incomeId, input);
   }
 
   async getAllIncome(userId: number) {

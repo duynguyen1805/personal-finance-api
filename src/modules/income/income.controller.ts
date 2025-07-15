@@ -42,12 +42,15 @@ export class IncomeController {
     return await this.incomeService.createIncome(user.id, dto);
   }
 
-  @Post('/update')
+  @Post('/update/:incomeId')
   //   @ApiOperation({ summary: 'Update income' })
   //   @ApiResponse({ status: 200, description: 'Income updated successfully.' })
-  async update(@Body() dto: UpdateIncomeDto) {
+  async update(
+    @Param('incomeId') incomeId: string,
+    @Body() dto: UpdateIncomeDto
+  ) {
     const user = this.request.user as User;
-    return await this.incomeService.updateIncome(user.id, dto);
+    return await this.incomeService.updateIncome(user.id, +incomeId, dto);
   }
 
   @Get('/get-all')
