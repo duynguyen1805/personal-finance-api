@@ -27,7 +27,7 @@ import { UpdateCategoriesDto } from './dto/update-categories.dto';
 @Controller('categories')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseGuards(PermissionGuard)
+// @UseGuards(PermissionGuard)
 export class CategoriesController {
   constructor(
     private readonly categoriesService: CategoriesService,

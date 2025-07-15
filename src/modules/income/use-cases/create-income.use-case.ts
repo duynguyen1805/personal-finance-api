@@ -28,22 +28,12 @@ export class CreateIncomeUseCase {
   ) {}
 
   async execute(userId: number, dto: CreateIncomeDto) {
-    await this.validateUser(userId);
     await this.validateInput(dto);
     // await this.updateTotalAmountBudget(userId, dto);
     return await this.incomeRepository.save({
       ...dto,
       userId: userId
     });
-  }
-
-  async validateUser(userId: number) {
-    const user = await this.userRepository.findOne({ id: userId });
-    mustExist(
-      user,
-      EErrorIncome.CANNOT_FIND_USER,
-      EErrorDetail.CANNOT_FIND_USER
-    );
   }
 
   async validateInput(dto: CreateIncomeDto) {

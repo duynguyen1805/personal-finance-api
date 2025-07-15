@@ -27,7 +27,7 @@ import { UpdateExpensesDto } from './dto/update-expenses.dto';
 @Controller('expenses')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseGuards(PermissionGuard)
+// @UseGuards(PermissionGuard)
 export class ExpensesController {
   constructor(
     private readonly expensesService: ExpensesService,

@@ -27,7 +27,7 @@ import { UpdateIncomeDto } from './dto/update-income.dto';
 @Controller('income')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseGuards(PermissionGuard)
+// @UseGuards(PermissionGuard)
 export class IncomeController {
   constructor(
     private readonly incomeService: IncomeService,

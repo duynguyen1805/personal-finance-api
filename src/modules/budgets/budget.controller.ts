@@ -27,7 +27,7 @@ import { User } from '../user/entities/user.entity';
 @Controller('budgets')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseGuards(PermissionGuard)
+// @UseGuards(PermissionGuard)
 export class BudgetController {
   constructor(
     private readonly budgetService: BudgetService,

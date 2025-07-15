@@ -24,7 +24,7 @@ import { CreateFileDto } from './dto/create-file.dto';
 @Controller('file')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseGuards(PermissionGuard)
+// @UseGuards(PermissionGuard)
 export class FileController {
   constructor(
     private readonly fileService: FileService,

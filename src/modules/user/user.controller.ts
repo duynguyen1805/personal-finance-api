@@ -24,7 +24,7 @@ import { Permissions } from '../permission/permission.decorator';
 @Controller('user')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseGuards(PermissionGuard)
+// @UseGuards(PermissionGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService,

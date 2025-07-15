@@ -23,7 +23,7 @@ import { User } from '../user/entities/user.entity';
 @Controller('recurring-transactions')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseGuards(PermissionGuard)
+// @UseGuards(PermissionGuard)
 export class RecurringTransactionController {
   constructor(
     private readonly service: RecurringTransactionService,
