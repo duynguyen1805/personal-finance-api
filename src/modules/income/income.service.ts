@@ -6,6 +6,7 @@ import { UpdateIncomeUseCase } from './use-cases/update-income.use-case';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Income } from './entities/income.entity';
+import { IIncomeCreateOutput } from './interface/income.interface';
 
 @Injectable()
 export class IncomeService {
@@ -16,7 +17,10 @@ export class IncomeService {
     private readonly incomeRepository: Repository<Income>
   ) {}
 
-  async createIncome(userId: number, input: CreateIncomeDto): Promise<Income> {
+  async createIncome(
+    userId: number,
+    input: CreateIncomeDto
+  ): Promise<IIncomeCreateOutput> {
     return await this.createIncomeUseCase.execute(userId, input);
   }
 

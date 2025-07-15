@@ -15,6 +15,7 @@ import {
 import { CreateIncomeDto } from '../dto/create-income.dto';
 import { Budgets } from '../../budgets/entities/budgets.entity';
 import { extractMonthYear } from '../../../common/helpers/time-helper';
+import { IIncomeCreateOutput } from '../interface/income.interface';
 
 @Injectable()
 export class CreateIncomeUseCase {
@@ -27,13 +28,24 @@ export class CreateIncomeUseCase {
     private budgetsRepository: Repository<Budgets>
   ) {}
 
-  async execute(userId: number, dto: CreateIncomeDto) {
+  async execute(
+    userId: number,
+    dto: CreateIncomeDto
+  ): Promise<IIncomeCreateOutput> {
     await this.validateInput(dto);
     // await this.updateTotalAmountBudget(userId, dto);
-    return await this.incomeRepository.save({
+    const incomes = await this.incomeRepository.save({
       ...dto,
       userId: userId
     });
+    const totalIncome = await this.incomeRepository.find({
+      where: { userId: userId }
+    });
+
+    return {
+      incomes: incomes,
+      totalIncome: totalIncome.reduce((sum, item) => sum + item.amount, 0)
+    };
   }
 
   async validateInput(dto: CreateIncomeDto) {
