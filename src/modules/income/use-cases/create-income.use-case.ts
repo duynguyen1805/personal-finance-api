@@ -2,9 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { mustExist } from '../../../common/helpers/server-error.helper';
+import {
+  makeSure,
+  mustExist
+} from '../../../common/helpers/server-error.helper';
 import { Income } from '../entities/income.entity';
-import { EErrorIncome, EErrorDetail } from '../enums/income.enum';
+import {
+  EErrorIncome,
+  EErrorDetail,
+  EIncomeTypeSourceName
+} from '../enums/income.enum';
 import { CreateIncomeDto } from '../dto/create-income.dto';
 import { Budgets } from '../../budgets/entities/budgets.entity';
 import { extractMonthYear } from '../../../common/helpers/time-helper';
@@ -22,7 +29,8 @@ export class CreateIncomeUseCase {
 
   async execute(userId: number, dto: CreateIncomeDto) {
     await this.validateUser(userId);
-    await this.updateTotalAmountBudget(userId, dto);
+    await this.validateInput(dto);
+    // await this.updateTotalAmountBudget(userId, dto);
     return await this.incomeRepository.save({
       ...dto,
       userId: userId
@@ -35,6 +43,14 @@ export class CreateIncomeUseCase {
       user,
       EErrorIncome.CANNOT_FIND_USER,
       EErrorDetail.CANNOT_FIND_USER
+    );
+  }
+
+  async validateInput(dto: CreateIncomeDto) {
+    makeSure(!isNaN(dto.amount), EErrorIncome.INVALID_AMOUNT);
+    makeSure(
+      Object.keys(EIncomeTypeSourceName).includes(dto.sourceName),
+      EErrorIncome.INVALID_SOURCE_NAME
     );
   }
 
