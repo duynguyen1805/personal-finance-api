@@ -33,18 +33,19 @@ export class CreateIncomeUseCase {
     dto: CreateIncomeDto
   ): Promise<IIncomeCreateOutput> {
     await this.validateInput(dto);
-    // await this.updateTotalAmountBudget(userId, dto);
     const incomes = await this.incomeRepository.save({
       ...dto,
       userId: userId
     });
-    const totalIncome = await this.incomeRepository.find({
-      where: { userId: userId }
-    });
+    const totalResult = await this.incomeRepository
+      .createQueryBuilder('income')
+      .select('SUM(income.amount)', 'total')
+      .where('income.userId = :userId', { userId })
+      .getRawOne();
 
     return {
       incomes: incomes,
-      totalIncome: totalIncome.reduce((sum, item) => sum + item.amount, 0)
+      totalIncome: totalResult.total
     };
   }
 
