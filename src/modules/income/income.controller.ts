@@ -69,7 +69,7 @@ export class IncomeController {
     return await this.incomeService.getIncomeById(user.id, +incomeId);
   }
 
-  @Delete('/:incomeId')
+  @Delete('/delete/:incomeId')
   //   @ApiOperation({ summary: 'Delete income by id' })
   //   @ApiResponse({ status: 200, description: 'Income deleted successfully.' })
   async delete(@Param('incomeId') incomeId: string) {

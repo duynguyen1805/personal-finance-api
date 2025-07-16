@@ -45,7 +45,7 @@ export class CreateIncomeUseCase {
 
     return {
       income: incomes,
-      totalIncome: totalResult.total
+      totalIncome: totalResult.total || 0
     };
   }
 

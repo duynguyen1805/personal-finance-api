@@ -20,7 +20,7 @@ export class Expenses extends BaseEntity {
   userId: number;
 
   @Column({ nullable: false })
-  categoryId: number;
+  budgetId: number;
 
   @Column({ nullable: false })
   amount: number;
@@ -30,4 +30,7 @@ export class Expenses extends BaseEntity {
 
   @Column({ nullable: true })
   description: string;
+
+  @Column({ nullable: true })
+  spent: number;
 }

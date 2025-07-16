@@ -27,7 +27,7 @@ export class GetsIncomeUseCase {
 
     return {
       incomes: incomes,
-      totalIncome: totalResult.total
+      totalIncome: totalResult.total || 0
     };
   }
 }
