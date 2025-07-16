@@ -6,13 +6,18 @@ import { UpdateIncomeUseCase } from './use-cases/update-income.use-case';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Income } from './entities/income.entity';
-import { IIncomeCreateOutput } from './interface/income.interface';
+import {
+  IIncomeCreateOutput,
+  IIncomeGetAllOutput
+} from './interface/income.interface';
+import { GetsIncomeUseCase } from './use-cases/gets-income.use-case';
 
 @Injectable()
 export class IncomeService {
   constructor(
     private readonly createIncomeUseCase: CreateIncomeUseCase,
     private readonly updateIncomeUseCase: UpdateIncomeUseCase,
+    private readonly getsIncomeUseCase: GetsIncomeUseCase,
     @InjectRepository(Income)
     private readonly incomeRepository: Repository<Income>
   ) {}
@@ -32,8 +37,8 @@ export class IncomeService {
     return await this.updateIncomeUseCase.execute(userId, incomeId, input);
   }
 
-  async getAllIncome(userId: number) {
-    return await this.incomeRepository.find({ where: { userId } });
+  async getAllIncome(userId: number): Promise<IIncomeGetAllOutput> {
+    return await this.getsIncomeUseCase.execute(userId);
   }
 
   async getIncomeById(userId: number, incomeId: number) {

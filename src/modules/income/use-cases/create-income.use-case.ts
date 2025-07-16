@@ -44,7 +44,7 @@ export class CreateIncomeUseCase {
       .getRawOne();
 
     return {
-      incomes: incomes,
+      income: incomes,
       totalIncome: totalResult.total
     };
   }
