@@ -37,7 +37,4 @@ export class Expenses extends BaseEntity {
 
   @Column({ nullable: true })
   description: string;
-
-  @Column({ nullable: true })
-  spent: number;
 }

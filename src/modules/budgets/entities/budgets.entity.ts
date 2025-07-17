@@ -57,4 +57,7 @@ export class Budgets extends BaseEntity {
 
   @OneToMany(() => Expenses, (expense) => expense.budgets)
   expenses: Expenses[];
+
+  @Column({ nullable: true })
+  spent: number;
 }
