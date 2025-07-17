@@ -1,13 +1,16 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
+import { Budgets } from '../../../modules/budgets/entities/budgets.entity';
 
 // expenses: số tiền đã chi của 1 categori nào đó trong tháng
 
@@ -21,6 +24,10 @@ export class Expenses extends BaseEntity {
 
   @Column({ nullable: false })
   budgetId: number;
+
+  @ManyToOne(() => Budgets, (budget) => budget.expenses)
+  @JoinColumn({ name: 'budgetId' })
+  budgets: Budgets;
 
   @Column({ nullable: false })
   amount: number;

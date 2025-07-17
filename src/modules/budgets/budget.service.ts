@@ -33,7 +33,10 @@ export class BudgetService {
   }
 
   async getAllBudgets(userId: number) {
-    const data = await this.budgetRepository.find({ where: { userId } });
+    const data = await this.budgetRepository.find({
+      where: { userId },
+      relations: ['categories']
+    });
     return { data, message: 'Budgets fetched successfully', statusCode: 200 };
   }
 

@@ -5,12 +5,14 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn
 } from 'typeorm';
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
 import { Categories } from '../../../modules/categories/entities/categories.entity';
+import { Expenses } from '../../../modules/expenses/entities/expenses.entity';
 
 // budget: số tiền dự kiến chi cho 1 khoảng nào đó (categories)
 
@@ -52,4 +54,7 @@ export class Budgets extends BaseEntity {
 
   @Column({ nullable: true })
   endDate: Date;
+
+  @OneToMany(() => Expenses, (expense) => expense.budgets)
+  expenses: Expenses[];
 }
