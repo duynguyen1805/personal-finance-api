@@ -23,7 +23,7 @@ export class Categories extends BaseEntity {
   userId: number;
 
   @Column({ nullable: false })
-  cateroryName: string;
+  categoryName: string;
 
   @Column({ nullable: false })
   typeCategory: ECategoriesType;

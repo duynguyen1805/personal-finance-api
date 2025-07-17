@@ -25,7 +25,11 @@ export class CategoriesService {
   }
 
   async getAllCategories(userId: number) {
-    return await this.categoriesRepository.find({ where: { userId } });
+    return await this.categoriesRepository
+      .createQueryBuilder('categories')
+      .where('categories.userId = :userId', { userId })
+      .andWhere('categories.userId = :userId', { userId: 1 })
+      .getMany();
   }
 
   async getCategoryById(userId: number, categoryId: number) {
