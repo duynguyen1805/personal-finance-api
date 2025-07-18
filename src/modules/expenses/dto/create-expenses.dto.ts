@@ -6,11 +6,15 @@ import { IsNotEmpty, IsOptional } from 'class-validator';
 export class CreateExpensesDto {
   @ApiProperty()
   @IsNotEmpty()
-  categoryId: number;
+  budgetId: number;
 
   @ApiProperty()
   @IsNotEmpty()
   amount: number;
+
+  @ApiProperty()
+  @IsOptional()
+  description: string;
 
   @ApiProperty()
   @IsNotEmpty()

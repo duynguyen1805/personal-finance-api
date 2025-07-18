@@ -40,7 +40,7 @@ export class BudgetController {
     return await this.budgetService.createBudget(user.id, dto);
   }
 
-  @Patch('/update/:id')
+  @Post('/update/:id')
   async update(@Param('id') id: string, @Body() dto: CreateBudgetDto) {
     const user = this.request.user as User;
     return await this.budgetService.updateBudget(user.id, +id, dto);

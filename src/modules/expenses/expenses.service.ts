@@ -25,7 +25,10 @@ export class ExpensesService {
   }
 
   async getAllExpenses(userId: number) {
-    return await this.expensesRepository.find({ where: { userId } });
+    return await this.expensesRepository.find({
+      where: { userId },
+      relations: ['budgets', 'budgets.category']
+    });
   }
 
   async getExpenseById(userId: number, expenseId: number) {
