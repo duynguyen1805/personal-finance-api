@@ -20,8 +20,12 @@ export class ExpensesService {
     return await this.createExpensesUseCase.execute(userId, input);
   }
 
-  async updateExpenses(userId: number, input: UpdateExpensesDto) {
-    return await this.updateExpensesUseCase.execute(userId, input);
+  async updateExpenses(
+    userId: number,
+    expenseId: number,
+    input: UpdateExpensesDto
+  ) {
+    return await this.updateExpensesUseCase.execute(userId, expenseId, input);
   }
 
   async getAllExpenses(userId: number) {

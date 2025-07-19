@@ -21,9 +21,9 @@ export class UpdateExpensesUseCase {
     private expensesRepository: Repository<Expenses>
   ) {}
 
-  async execute(userId: number, dto: UpdateExpensesDto) {
+  async execute(userId: number, expenseId: number, dto: UpdateExpensesDto) {
     await this.validateUser(userId);
-    return await this.updateCategory(userId, dto);
+    return await this.updateExpenses(userId, expenseId, dto);
   }
 
   async validateUser(userId: number) {
@@ -35,15 +35,16 @@ export class UpdateExpensesUseCase {
     );
   }
 
-  async updateCategory(
+  async updateExpenses(
     userId: number,
+    expenseId: number,
     dto: UpdateExpensesDto
   ): Promise<Expenses> {
     // const { month, year } = extractMonthYear(dto.expenseDate);
     await this.expensesRepository.update(
       {
         userId: userId,
-        expenseId: dto.expenseId
+        expenseId: expenseId
       },
       {
         ...dto,
@@ -54,7 +55,7 @@ export class UpdateExpensesUseCase {
     return await this.expensesRepository.findOne({
       where: {
         userId: userId,
-        expenseId: dto.expenseId
+        expenseId: expenseId
       }
     });
   }

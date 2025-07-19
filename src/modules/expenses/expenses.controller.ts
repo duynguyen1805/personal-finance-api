@@ -41,10 +41,9 @@ export class ExpensesController {
   }
 
   @Post('/update/:id')
-  async update(@Body() dto: UpdateExpensesDto) {
+  async update(@Param('id') id: string, @Body() dto: UpdateExpensesDto) {
     const user = this.request.user as User;
-    dto.expenseId = +dto.expenseId;
-    return await this.expensesService.updateExpenses(user.id, dto);
+    return await this.expensesService.updateExpenses(user.id, +id, dto);
   }
 
   @Get('/get-all')
