@@ -40,9 +40,10 @@ export class ExpensesController {
     return await this.expensesService.createExpenses(user.id, dto);
   }
 
-  @Post('/update')
+  @Post('/update/:id')
   async update(@Body() dto: UpdateExpensesDto) {
     const user = this.request.user as User;
+    dto.expenseId = +dto.expenseId;
     return await this.expensesService.updateExpenses(user.id, dto);
   }
 
