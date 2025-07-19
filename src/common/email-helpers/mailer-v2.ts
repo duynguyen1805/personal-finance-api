@@ -281,7 +281,7 @@ export class Mailer {
     return Sendgrid.process(emailInput);
   }
 
-  private static async sendDirectEmail(
+  public static async sendDirectEmail(
     email: string,
     template: EEmailTemplate,
     payload: object = {}

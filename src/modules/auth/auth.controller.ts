@@ -59,6 +59,48 @@ export class AuthController {
     return this.authService.resendVerifyRegistration(dto, user.id);
   }
 
+  @Post('/2fa/generate')
+  @UseGuards(JwtAuthGuard)
+  async generate2FA() {
+    const user = this.request.user as User;
+    return this.authService.generate2FASecret(user.id, user.email);
+  }
+
+  @Post('/2fa/verify')
+  @UseGuards(JwtAuthGuard)
+  async verify2FA(@Body('code') code: string) {
+    const user = this.request.user as User;
+    return this.authService.verify2FA(user.id, code);
+  }
+
+  @Post('/2fa/enable')
+  @UseGuards(JwtAuthGuard)
+  async enable2FA(@Body('code') code: string) {
+    const user = this.request.user as User;
+    return this.authService.enable2FA(user.id, code);
+  }
+
+  @Post('/2fa/disable')
+  @UseGuards(JwtAuthGuard)
+  async disable2FA(@Body('code') code: string, @Body('emailOtp') emailOtp?: string) {
+    const user = this.request.user as User;
+    return this.authService.disable2FA(user.id, code, emailOtp);
+  }
+
+  @Post('/2fa/status')
+  @UseGuards(JwtAuthGuard)
+  async get2FAStatus() {
+    const user = this.request.user as User;
+    return this.authService.get2FAStatus(user.id);
+  }
+
+  @Post('/2fa/send-disable-otp')
+  @UseGuards(JwtAuthGuard)
+  async sendDisable2FAOtp() {
+    const user = this.request.user as User;
+    return this.authService.sendDisable2FAOtp(user.id, user.email);
+  }
+
   @Post('/logout')
   @UseGuards(JwtAuthGuard)
   logout() {

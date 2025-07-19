@@ -15,4 +15,16 @@ export class UpdateUserDto {
   @ApiProperty()
   @IsOptional()
   avatar: number;
+
+  @ApiProperty()
+  @IsOptional()
+  isTwoFactorAuthEnabled?: boolean;
+
+  @ApiProperty()
+  @IsOptional()
+  twoFactorAuthSecret?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  timeActiveTwoFactorAuth?: Date;
 }

@@ -18,6 +18,7 @@ import { User } from '../user/entities/user.entity';
 import { Mailer } from '../../common/email-helpers/mailer';
 import { RoleService } from '../role/role.service';
 import { Role } from '../role/entities/role.entity';
+import { UserService } from '../user/user.service';
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { Role } from '../role/entities/role.entity';
     ResendVerifyRegistrationUseCase,
     LogOutUseCase,
     Mailer,
-    RoleService
+    RoleService,
+    UserService
   ],
   exports: [AuthService]
 })

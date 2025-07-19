@@ -11,6 +11,9 @@ import { ResendVerifyRegistrationAccountDto } from './dto/resend-verify-registra
 import { ResendVerifyRegistrationUseCase } from './use-cases/resend-verify-registration.use-case';
 import { CacheService } from '../cache/cache.service';
 import { LogOutUseCase } from './use-cases/logout.use-case';
+import { UserService } from '../user/user.service';
+import { TwoFa } from '../../common/helpers/twoFA.helper';
+import { Mailer, EEmailTemplate } from '../../common/email-helpers/mailer-v2';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +24,9 @@ export class AuthService {
     private readonly signInUseCase: SignInUseCase,
     private readonly verifyRegistrationUseCase: VerifyRegistrationUseCase,
     private readonly resendVerifyRegistrationUseCase: ResendVerifyRegistrationUseCase,
-    private readonly logoutUseCase: LogOutUseCase
+    private readonly logoutUseCase: LogOutUseCase,
+    private readonly userService: UserService,
+    private readonly cacheService: CacheService
   ) {}
 
   async signIn(user: LoginAuthAccountDto, isAdminLogin = false) {
@@ -81,5 +86,76 @@ export class AuthService {
 
   async logOut(token: string) {
     return this.logoutUseCase.addTokenToBlackList(token);
+  }
+
+  async generate2FASecret(userId: number, email: string) {
+    const secret = await TwoFa.generateSecret(email);
+    const qr = await TwoFa.generateQr(secret);
+    await this.userService.updateUserInfo(userId, {
+      lastName: undefined,
+      firstName: undefined,
+      avatar: undefined,
+      twoFactorAuthSecret: secret.base32,
+      isTwoFactorAuthEnabled: false,
+      timeActiveTwoFactorAuth: null
+    });
+    return { secret: secret.base32, otpauth_url: secret.otpauth_url, qr };
+  }
+
+  async verify2FA(userId: number, code: string) {
+    const user = await this.userService.findById(userId);
+    if (!user || !user.twoFactorAuthSecret) throw new UnauthorizedException('2FA not initialized');
+    const isValid = TwoFa.verifyTwoFa(code, user.twoFactorAuthSecret);
+    return { isValid };
+  }
+
+  async enable2FA(userId: number, code: string) {
+    const user = await this.userService.findById(userId);
+    if (!user || !user.twoFactorAuthSecret) throw new UnauthorizedException('2FA not initialized');
+    const isValid = TwoFa.verifyTwoFa(code, user.twoFactorAuthSecret);
+    if (!isValid) throw new UnauthorizedException('Invalid 2FA code');
+    await this.userService.updateUserInfo(userId, {
+      lastName: undefined,
+      firstName: undefined,
+      avatar: undefined,
+      isTwoFactorAuthEnabled: true,
+      timeActiveTwoFactorAuth: new Date()
+    });
+    return { success: true };
+  }
+
+  async disable2FA(userId: number, code: string, emailOtp?: string) {
+    if (emailOtp) {
+      const cachedOtp = await this.cacheService.get(`disable-2fa-otp:${userId}`);
+      if (!cachedOtp || cachedOtp !== emailOtp) {
+        throw new UnauthorizedException('Invalid or expired email OTP');
+      }
+      await this.cacheService.del(`disable-2fa-otp:${userId}`);
+    }
+    const user = await this.userService.findById(userId);
+    if (!user || !user.twoFactorAuthSecret) throw new UnauthorizedException('2FA not initialized');
+    const isValid = TwoFa.verifyTwoFa(code, user.twoFactorAuthSecret);
+    if (!isValid) throw new UnauthorizedException('Invalid 2FA code');
+    await this.userService.updateUserInfo(userId, {
+      isTwoFactorAuthEnabled: false,
+      twoFactorAuthSecret: null,
+      timeActiveTwoFactorAuth: null
+    });
+    return { success: true };
+  }
+
+  async sendDisable2FAOtp(userId: number, email: string) {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.cacheService.setWithTTL(`disable-2fa-otp:${userId}`, otp, 300);
+    await Mailer.sendDirectEmail(email, EEmailTemplate.OTP_TWO_FA, { code: otp, email });
+    return { success: true };
+  }
+
+  async get2FAStatus(userId: number) {
+    const user = await this.userService.findById(userId);
+    return {
+      isTwoFactorAuthEnabled: user?.isTwoFactorAuthEnabled || false,
+      timeActiveTwoFactorAuth: user?.timeActiveTwoFactorAuth || null
+    };
   }
 }

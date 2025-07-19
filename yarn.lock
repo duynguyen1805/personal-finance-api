@@ -8027,7 +8027,7 @@ punycode@^2.1.0, punycode@^2.1.1, punycode@^2.3.1:
 
 qrcode@^1.5.4:
   version "1.5.4"
-  resolved "https://registry.npmjs.org/qrcode/-/qrcode-1.5.4.tgz"
+  resolved "https://registry.yarnpkg.com/qrcode/-/qrcode-1.5.4.tgz#5cb81d86eb57c675febb08cf007fff963405da88"
   integrity sha512-1ca71Zgiu6ORjHqFBDpnSMTR2ReToX4l1Au1VFLyVeBTFavzQnv5JxMFr3ukHVKpSrSA2MCk0lNJSykjUfz7Zg==
   dependencies:
     dijkstrajs "^1.0.1"
@@ -8753,7 +8753,7 @@ sourcemap-codec@^1.4.4:
 
 speakeasy@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.npmjs.org/speakeasy/-/speakeasy-2.0.0.tgz"
+  resolved "https://registry.yarnpkg.com/speakeasy/-/speakeasy-2.0.0.tgz#85c91a071b09a5cb8642590d983566165f57613a"
   integrity sha512-lW2A2s5LKi8rwu77ewisuUOtlCydF/hmQSOJjpTqTj1gZLkNgTaYnyvfxy2WBr4T/h+9c4g8HIITfj83OkFQFw==
   dependencies:
     base32.js "0.0.1"

@@ -14,7 +14,7 @@ export class UpdateUserUseCase {
     private userRepository: Repository<User> // private roleService: RoleService
   ) {}
 
-  async execute(userId: number, dto: UpdateUserDto) {
+  async execute(userId: number, dto: Partial<UpdateUserDto>) {
     const user = await this.userRepository.findOne({ id: userId });
     mustExist(
       user,

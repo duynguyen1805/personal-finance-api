@@ -124,7 +124,7 @@ export class UserService {
     return this.userRepository.softDelete(id);
   }
 
-  async updateUserInfo(userId: number, dto: UpdateUserDto) {
+  async updateUserInfo(userId: number, dto: Partial<UpdateUserDto>) {
     return this.updateUserUseCase.execute(userId, dto);
   }
 }

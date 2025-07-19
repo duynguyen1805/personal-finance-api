@@ -77,4 +77,10 @@ export class CacheService {
     );
     return null;
   }
+
+  async setWithTTL(key: string, data: any, ttl: number) {
+    // Lưu cache với thời gian sống (giây)
+    await this.cacheManager.set(key, JSON.stringify(data), { ttl });
+    return true;
+  }
 }
