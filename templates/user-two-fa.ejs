@@ -1,0 +1,40 @@
+<%- include('header') %>
+    <table style="width:100%;max-width:620px;margin:0 auto;background-color:#ffffff;border:1px solid #e3edf8;border-bottom:4px solid #74ba41;">
+        <tbody>
+            <tr>
+                <td style="padding: 0 30px 20px">
+                    <p style="margin-bottom: 10px;">Dear
+                        <%= translate('$.email') %>,</p>
+                    <p style="margin-bottom: 10px;">You have requested to enable two-factor authentication (2FA) for your Decot account.</p>
+                    <p style="margin-bottom: 10px;">To verify your identity and complete the 2FA activation process, please click the button below to receive an OTP (One-Time Password).</p>
+                    <p style="margin-bottom: 25px;"><b>OTP Activate 2FA</b></p>
+                    <a href="#" style="background-color:#004522;border-radius:4px;color:#ffffff;display:inline-block;font-size:13px;font-weight:600;line-height:44px;text-align:center;text-decoration:none;text-transform: uppercase; padding: 0 30px">
+                        <%= translate('$.code') %>
+                    </a>
+                    <p style="margin-bottom: 10px;"><strong>This OTP is valid for
+                        <%= translate('$.codeExpiredTime') %> hours.</strong></p>
+                    <p style="margin-bottom: 25px;"><strong>After enabling 2FA:</strong></p>
+                    <p style="margin-bottom: 10px;">Whenever you log in to your Decot account, you will be asked to enter your password and an OTP sent to your mobile device. This will help protect your account from unauthorized access.</p>
+                    <p style="margin-bottom: 25px;"><strong>Please note:</strong></p>
+                    <ul>
+                        <li>To use 2FA, you will need a smartphone with an internet connection.</li>
+                        <li>You can choose to use an authenticator app or SMS messages to receive your OTP.</li>
+                    </ul>
+                    <p style="margin-bottom: 25px; "><strong>If you did not request this 2FA activation:</strong></p>
+                    <p style="margin-bottom: 10px; ">Please disregard this email. 2FA will not be activated for your account.</p>
+                    <p style="margin-bottom: 25px; "><b>If you have any questions or concerns:</b></p>
+                    <p style="margin-bottom: 10px; ">Please contact our customer support at
+                        <%= translate('$.emailSupport') %>.</p>
+                    <p style="margin-bottom: 25px; "><strong>Sincerely,</strong></p>
+                    <p style="margin-bottom: 10px; ">The Decot Team</p>
+                    <p style="margin-bottom: 25px;"><strong>Note:</strong></p>
+                    <ul>
+                        <li>Please do not reply directly to this email as it is automated.</li>
+                        <li>To keep your account secure, always keep your Decot password updated and confidential.</li>
+                        <li>Beware of phishing scams. Decotwill never ask for your password via email.</li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <%- include('footer') %>

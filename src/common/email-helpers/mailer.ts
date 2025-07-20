@@ -58,6 +58,8 @@ export class Mailer {
         return 'Timeoff Balance Export';
       case EEmailTemplate.EXPORT_TIME_OFF_REQUESTS:
         return 'Export time off requests';
+      case EEmailTemplate.OTP_TWO_FA:
+        return 'Two factor authentication';
       default:
         throw new Error('Cannot find subject.');
     }
