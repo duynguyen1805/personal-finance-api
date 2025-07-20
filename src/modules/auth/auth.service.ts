@@ -13,7 +13,7 @@ import { CacheService } from '../cache/cache.service';
 import { LogOutUseCase } from './use-cases/logout.use-case';
 import { UserService } from '../user/user.service';
 import { TwoFa } from '../../common/helpers/twoFA.helper';
-import { Mailer, EEmailTemplate } from '../../common/email-helpers/mailer-v2';
+import { Mailer, EEmailTemplate } from '../../common/email-helpers/mailer';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +26,8 @@ export class AuthService {
     private readonly resendVerifyRegistrationUseCase: ResendVerifyRegistrationUseCase,
     private readonly logoutUseCase: LogOutUseCase,
     private readonly userService: UserService,
-    private readonly cacheService: CacheService
+    private readonly cacheService: CacheService,
+    private readonly mailer: Mailer
   ) {}
 
   async signIn(user: LoginAuthAccountDto, isAdminLogin = false) {
@@ -104,14 +105,16 @@ export class AuthService {
 
   async verify2FA(userId: number, code: string) {
     const user = await this.userService.findById(userId);
-    if (!user || !user.twoFactorAuthSecret) throw new UnauthorizedException('2FA not initialized');
+    if (!user || !user.twoFactorAuthSecret)
+      throw new UnauthorizedException('2FA not initialized');
     const isValid = TwoFa.verifyTwoFa(code, user.twoFactorAuthSecret);
     return { isValid };
   }
 
   async enable2FA(userId: number, code: string) {
     const user = await this.userService.findById(userId);
-    if (!user || !user.twoFactorAuthSecret) throw new UnauthorizedException('2FA not initialized');
+    if (!user || !user.twoFactorAuthSecret)
+      throw new UnauthorizedException('2FA not initialized');
     const isValid = TwoFa.verifyTwoFa(code, user.twoFactorAuthSecret);
     if (!isValid) throw new UnauthorizedException('Invalid 2FA code');
     await this.userService.updateUserInfo(userId, {
@@ -126,14 +129,17 @@ export class AuthService {
 
   async disable2FA(userId: number, code: string, emailOtp?: string) {
     if (emailOtp) {
-      const cachedOtp = await this.cacheService.get(`disable-2fa-otp:${userId}`);
+      const cachedOtp = await this.cacheService.get(
+        `disable-2fa-otp:${userId}`
+      );
       if (!cachedOtp || cachedOtp !== emailOtp) {
         throw new UnauthorizedException('Invalid or expired email OTP');
       }
       await this.cacheService.del(`disable-2fa-otp:${userId}`);
     }
     const user = await this.userService.findById(userId);
-    if (!user || !user.twoFactorAuthSecret) throw new UnauthorizedException('2FA not initialized');
+    if (!user || !user.twoFactorAuthSecret)
+      throw new UnauthorizedException('2FA not initialized');
     const isValid = TwoFa.verifyTwoFa(code, user.twoFactorAuthSecret);
     if (!isValid) throw new UnauthorizedException('Invalid 2FA code');
     await this.userService.updateUserInfo(userId, {
@@ -147,7 +153,16 @@ export class AuthService {
   async sendDisable2FAOtp(userId: number, email: string) {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await this.cacheService.setWithTTL(`disable-2fa-otp:${userId}`, otp, 300);
-    await Mailer.sendDirectEmail(email, EEmailTemplate.OTP_TWO_FA, { code: otp, email });
+    const user = await this.userService.findById(userId);
+    await this.mailer.send(
+      this.mailer.getSubjectByTemplate(EEmailTemplate.OTP_TWO_FA),
+      user,
+      EEmailTemplate.OTP_TWO_FA,
+      {
+        code: otp,
+        email
+      }
+    );
     return { success: true };
   }
 
