@@ -27,4 +27,12 @@ export class UpdateUserDto {
   @ApiProperty()
   @IsOptional()
   timeActiveTwoFactorAuth?: Date;
+
+  @ApiProperty()
+  @IsOptional()
+  theme?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  currency?: string;
 }

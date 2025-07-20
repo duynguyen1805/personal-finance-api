@@ -68,4 +68,10 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true })
   timeActiveTwoFactorAuth: Date;
+
+  @Column({ nullable: false })
+  theme: string; // 'light' | 'dark' | 'system';
+
+  @Column({ nullable: false })
+  currency: string; // 'VND' | 'USD' | 'EUR' | 'GBP';
 }

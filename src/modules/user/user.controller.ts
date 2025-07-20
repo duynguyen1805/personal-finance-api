@@ -36,17 +36,17 @@ export class UserController {
     return this.userService.findAll(query);
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
 
-  @Post('update-user-info')
+  @Post('/update/profile')
   // @Permissions('EDIT_USER')
   updateUserInfo(@Body() dto: UpdateUserDto) {
     const user = this.request.user as User;

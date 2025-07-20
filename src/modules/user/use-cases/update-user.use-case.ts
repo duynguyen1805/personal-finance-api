@@ -21,6 +21,7 @@ export class UpdateUserUseCase {
       EUserServiceError.CANNOT_FIND_USER,
       EErrorDetail.CANNOT_FIND_USER
     );
-    return this.userRepository.update(userId, dto);
+    Object.assign(user, dto);
+    return this.userRepository.save(user);
   }
 }
