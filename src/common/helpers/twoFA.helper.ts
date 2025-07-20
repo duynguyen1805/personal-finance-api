@@ -14,11 +14,21 @@ export class TwoFa {
     return await QRCode.toDataURL(secret.otpauth_url);
   }
 
+  // static verifyTwoFa(code: string, base32secret: string) {
+  //   return speakeasy.totp.verify({
+  //     secret: base32secret,
+  //     encoding: 'base32',
+  //     token: code
+  //   });
+  // }
+
   static verifyTwoFa(code: string, base32secret: string) {
+    // bỏ mọi ký tự không phải số
+    const cleanCode = code.replace(/\\D/g, '');
     return speakeasy.totp.verify({
       secret: base32secret,
       encoding: 'base32',
-      token: code
+      token: cleanCode
     });
   }
 }
