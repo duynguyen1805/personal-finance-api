@@ -93,9 +93,6 @@ export class AuthService {
     const secret = await TwoFa.generateSecret(email);
     const qr = await TwoFa.generateQr(secret);
     await this.userService.updateUserInfo(userId, {
-      lastName: undefined,
-      firstName: undefined,
-      avatar: undefined,
       twoFactorAuthSecret: secret.base32,
       isTwoFactorAuthEnabled: false,
       timeActiveTwoFactorAuth: null

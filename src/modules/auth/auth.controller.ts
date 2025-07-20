@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginAuthDto } from './dto/login-auth-wallet.dto';
@@ -59,7 +59,7 @@ export class AuthController {
     return this.authService.resendVerifyRegistration(dto, user.id);
   }
 
-  @Post('/2fa/generate')
+  @Get('/2fa/generate')
   @UseGuards(JwtAuthGuard)
   async generate2FA() {
     const user = this.request.user as User;
@@ -82,7 +82,10 @@ export class AuthController {
 
   @Post('/2fa/disable')
   @UseGuards(JwtAuthGuard)
-  async disable2FA(@Body('code') code: string, @Body('emailOtp') emailOtp?: string) {
+  async disable2FA(
+    @Body('code') code: string,
+    @Body('emailOtp') emailOtp?: string
+  ) {
     const user = this.request.user as User;
     return this.authService.disable2FA(user.id, code, emailOtp);
   }
