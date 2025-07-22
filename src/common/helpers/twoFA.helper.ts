@@ -23,12 +23,14 @@ export class TwoFa {
   // }
 
   static verifyTwoFa(code: string, base32secret: string) {
-    // bỏ mọi ký tự không phải số
-    const cleanCode = code.replace(/\\D/g, '');
+    let formattedCode = code;
+    if (/^\d{6}$/.test(code)) {
+      formattedCode = code.slice(0, 3) + ' ' + code.slice(3);
+    }
     return speakeasy.totp.verify({
       secret: base32secret,
       encoding: 'base32',
-      token: cleanCode
+      token: formattedCode
     });
   }
 }
