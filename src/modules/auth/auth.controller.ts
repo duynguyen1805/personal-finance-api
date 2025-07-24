@@ -106,9 +106,14 @@ export class AuthController {
 
   @Post('/logout')
   @UseGuards(JwtAuthGuard)
-  logout() {
+  logout(@Body('refreshToken') refreshToken: string) {
     const authHeader = this.request.headers['authorization'] || '';
     const token = authHeader.replace('Bearer ', '');
-    return this.authService.logOut(token);
+    return this.authService.logOut(token, refreshToken);
+  }
+
+  @Post('/refresh-token')
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    return this.authService.refreshToken(refreshToken);
   }
 }

@@ -14,6 +14,7 @@ import { LogOutUseCase } from './use-cases/logout.use-case';
 import { UserService } from '../user/user.service';
 import { TwoFa } from '../../common/helpers/twoFA.helper';
 import { Mailer, EEmailTemplate } from '../../common/email-helpers/mailer';
+import { ERedisKey } from '../../database/redis';
 
 @Injectable()
 export class AuthService {
@@ -52,12 +53,48 @@ export class AuthService {
       profile: validateResult.profile
     };
 
+    const token = this.jwtService.sign({ data: payload });
+    const refreshToken = this.jwtService.sign(
+      { data: payload },
+      { expiresIn: '7d' }
+    );
+
     return {
-      token: this.jwtService.sign({
-        data: payload
-      }),
+      token,
+      refreshToken,
       user: validateResult
     };
+  }
+
+  async refreshToken(oldRefreshToken: string) {
+    try {
+      const decoded = this.jwtService.verify(oldRefreshToken);
+      const payload = decoded.data;
+      // Có thể kiểm tra blacklist hoặc revoked token ở đây nếu cần
+      const isBlacklisted = await this.cacheService.get(
+        `${ERedisKey.BLACKLIST_TOKEN_PREFIX}${oldRefreshToken}`
+      );
+      if (isBlacklisted) {
+        throw new UnauthorizedException('Refresh token is blacklisted');
+      }
+      const isBlacklistedRefreshToken = await this.cacheService.get(
+        `${ERedisKey.BLACKLIST_TOKEN_PREFIX}${oldRefreshToken}`
+      );
+      if (isBlacklistedRefreshToken) {
+        throw new UnauthorizedException('Refresh token is blacklisted');
+      }
+      const token = this.jwtService.sign({ data: payload });
+      const refreshToken = this.jwtService.sign(
+        { data: payload },
+        { expiresIn: '7d' }
+      );
+      return {
+        token,
+        refreshToken
+      };
+    } catch (err) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 
   async signUp(user: SignUpAuthAccountDto) {
@@ -85,8 +122,8 @@ export class AuthService {
     );
   }
 
-  async logOut(token: string) {
-    return this.logoutUseCase.addTokenToBlackList(token);
+  async logOut(token: string, refreshToken: string) {
+    return this.logoutUseCase.addTokenToBlackList(token, refreshToken);
   }
 
   async generate2FASecret(userId: number, email: string) {
