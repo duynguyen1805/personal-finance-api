@@ -13,7 +13,7 @@ import { CacheService } from '../cache/cache.service';
 import { LogOutUseCase } from './use-cases/logout.use-case';
 import { UserService } from '../user/user.service';
 import { TwoFa } from '../../common/helpers/twoFA.helper';
-import { Mailer, EEmailTemplate } from '../../common/email-helpers/mailer';
+import { Mailer, EEmailTemplate } from '../../common/email-helpers/mailer-v2';
 import { ERedisKey } from '../../database/redis';
 
 @Injectable()
@@ -27,8 +27,7 @@ export class AuthService {
     private readonly resendVerifyRegistrationUseCase: ResendVerifyRegistrationUseCase,
     private readonly logoutUseCase: LogOutUseCase,
     private readonly userService: UserService,
-    private readonly cacheService: CacheService,
-    private readonly mailer: Mailer
+    private readonly cacheService: CacheService
   ) {}
 
   async signIn(user: LoginAuthAccountDto, isAdminLogin = false) {
@@ -188,9 +187,8 @@ export class AuthService {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await this.cacheService.setWithTTL(`disable-2fa-otp:${userId}`, otp, 300);
     const user = await this.userService.findById(userId);
-    await this.mailer.send(
-      this.mailer.getSubjectByTemplate(EEmailTemplate.OTP_TWO_FA),
-      user,
+    await Mailer.sendDirectEmail(
+      email,
       EEmailTemplate.OTP_TWO_FA,
       {
         code: otp,

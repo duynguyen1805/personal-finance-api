@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EEmailTemplate, Mailer } from '../../../common/email-helpers/mailer';
+import { EEmailTemplate, Mailer } from '../../../common/email-helpers/mailer-v2';
 import { User } from '../../user/entities/user.entity';
 import { SignUpAuthAccountDto } from '../dto/signup-auth-account.dto';
 import {
@@ -24,8 +24,7 @@ export class SignUpUseCase {
     private userRepository: Repository<User>,
     @InjectRepository(RegisterVerification)
     private registerVerification: Repository<RegisterVerification>,
-    private readonly roleService: RoleService,
-    private Mailer: Mailer
+    private readonly roleService: RoleService
   ) {}
 
   async signUpAccount(user: SignUpAuthAccountDto) {
@@ -36,38 +35,34 @@ export class SignUpUseCase {
       currentUserWithRegisterEmail &&
       currentUserWithRegisterEmail.status === EnumUserStatus.INACTIVE
     ) {
-      const code = generateRandomCodeNumber(6);
-      this.Mailer.send(
-        this.Mailer.getSubjectByTemplate(
-          EEmailTemplate.REGISTRATION_CONFIRMATION
-        ),
-        currentUserWithRegisterEmail,
-        EEmailTemplate.REGISTRATION_CONFIRMATION,
-        { code }
-      );
-      await this.saveRegisterVerification(code, currentUserWithRegisterEmail);
-      return currentUserWithRegisterEmail;
-    } else {
       makeSure(
         isNil(currentUserWithRegisterEmail),
         ESignInError.USER_EXIST,
         EErrorDetail.USER_EXIST
       );
+    } else {
+      const userRegistered = await this.saveUser(user);
+      const code = generateRandomCodeNumber(6);
+      await Mailer.sendRegistrationConfirmationEmail(
+        userRegistered.id,
+        { code, email: userRegistered.email }
+      );
+      await this.saveRegisterVerification(code, userRegistered);
+      return userRegistered;
     }
 
-    const userRegistered = await this.saveUser(user);
-    return userRegistered;
+    return null;
   }
 
-  async getCurrentUserWithRegisterEmail(email) {
+  async getCurrentUserWithRegisterEmail(email: string) {
     const filter = { email: email };
-    return this.userRepository.findOne(filter);
+    return await this.userRepository.findOne(filter);
   }
 
   async saveRegisterVerification(code: string, { id: userId }: User) {
     await this.registerVerification.findOne({ userId });
     await this.registerVerification.delete({ userId });
-    return this.registerVerification.create({
+    return await this.registerVerification.save({
       userId,
       code
     });
@@ -76,7 +71,7 @@ export class SignUpUseCase {
   async saveUser(user: SignUpAuthAccountDto) {
     const passwordHash = await hash(user.password, 8);
     const role = await this.roleService.findOneByName(EnumRole.USER);
-    return this.userRepository.save({
+    return await this.userRepository.save({
       ...user,
       passwordHash: passwordHash,
       status: EnumUserStatus.INACTIVE,

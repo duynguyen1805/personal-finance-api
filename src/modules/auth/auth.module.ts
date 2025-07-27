@@ -15,7 +15,7 @@ import { VerifyRegistrationUseCase } from './use-cases/verify-registration.use-c
 import { ResendVerifyRegistrationUseCase } from './use-cases/resend-verify-registration.use-case';
 import { LogOutUseCase } from './use-cases/logout.use-case';
 import { User } from '../user/entities/user.entity';
-import { Mailer } from '../../common/email-helpers/mailer';
+// import { Mailer } from '../../common/email-helpers/mailer-v2';
 import { RoleService } from '../role/role.service';
 import { Role } from '../role/entities/role.entity';
 import { UserService } from '../user/user.service';
@@ -42,7 +42,7 @@ import { UpdateUserUseCase } from '../user/use-cases/update-user.use-case';
     ResendVerifyRegistrationUseCase,
     UpdateUserUseCase,
     LogOutUseCase,
-    Mailer,
+    // Mailer,
     RoleService,
     UserService
   ],

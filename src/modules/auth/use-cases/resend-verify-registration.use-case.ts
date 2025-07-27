@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EEmailTemplate, Mailer } from '../../../common/email-helpers/mailer';
+import { EEmailTemplate, Mailer } from '../../../common/email-helpers/mailer-v2';
 import { User } from '../../user/entities/user.entity';
 import {
   EErrorDetail,
@@ -22,8 +22,7 @@ export class ResendVerifyRegistrationUseCase {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(RegisterVerification)
-    private registerVerification: Repository<RegisterVerification>,
-    private Mailer: Mailer
+    private registerVerification: Repository<RegisterVerification>
   ) {}
 
   async validateUser(userId: number, email: string) {
@@ -47,13 +46,9 @@ export class ResendVerifyRegistrationUseCase {
     await this.validateUser(userId, email);
     const code = generateRandomCodeNumber(6);
     await this.saveRegisterVerification(userId, code);
-    this.Mailer.send(
-      this.Mailer.getSubjectByTemplate(
-        EEmailTemplate.REGISTRATION_CONFIRMATION
-      ),
-      this.user,
-      EEmailTemplate.REGISTRATION_CONFIRMATION,
-      { code }
+    await Mailer.sendRegistrationConfirmationEmail(
+      this.user.id,
+      { code, email: this.user.email }
     );
     return;
   }

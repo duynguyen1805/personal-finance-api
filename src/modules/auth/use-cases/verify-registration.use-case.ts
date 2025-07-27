@@ -26,7 +26,7 @@ export class VerifyRegistrationUseCase {
   async verifyRegistration(email: string, code: string) {
     this.registerVerification =
       await this.registerVerificationRepository.findOne({ code: code });
-    this.enforceRegisterVerificationExists(email);
+    await this.enforceRegisterVerificationExists(email);
     this.enforceRegisterIsInValidTime();
     await this.markUserStatusIsEmailVerified();
     await this.removeCurrentRegisterVerification();

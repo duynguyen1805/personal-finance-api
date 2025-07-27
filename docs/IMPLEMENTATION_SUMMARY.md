@@ -40,6 +40,47 @@
    - Modified `Mailer` class to use Google App Mail
    - Updated `send` method implementation
 
+3. **`src/common/email-helpers/mailer-v2.ts`**
+   - Commented out old imports (Postmark, SendGrid, nodemailer)
+   - Added Google App Mail import
+   - Enhanced EmailGenerator with template path resolution
+   - Added GoogleAppMailV2 class
+   - Updated Mailer class to use Google App Mail by default
+   - Changed to static methods for better usage
+
+4. **`src/common/email-helpers/email-generator.helper.ts`**
+   - Enhanced template path resolution
+   - Added multiple path fallbacks
+   - Improved error handling and logging
+   - Added template existence validation
+
+5. **`nest-cli.json`**
+   - Added assets configuration to copy templates
+   - Configured template copying to dist folder
+
+6. **`package.json`**
+   - Added postbuild script to copy templates
+   - Enhanced build process for template handling
+
+7. **`src/modules/auth/auth.module.ts`**
+   - Updated import from mailer to mailer-v2
+   - Removed Mailer provider (no longer needed)
+
+8. **`src/modules/auth/auth.service.ts`**
+   - Updated import from mailer to mailer-v2
+   - Removed Mailer injection
+   - Updated method calls to use static methods
+
+9. **`src/modules/auth/use-cases/sign-up.use-case.ts`**
+   - Updated import from mailer to mailer-v2
+   - Removed Mailer injection
+   - Updated method calls to use static methods
+
+10. **`src/modules/auth/use-cases/resend-verify-registration.use-case.ts`**
+    - Updated import from mailer to mailer-v2
+    - Removed Mailer injection
+    - Updated method calls to use static methods
+
 ### Files Created
 1. **`src/common/email-helpers/google-app-mail.helper.ts`** - Main implementation
 2. **`src/common/email-helpers/google-app-mail.helper.spec.ts`** - Unit tests
@@ -48,6 +89,11 @@
 5. **`docs/email-migration-guide.md`** - Migration guide
 6. **`docs/env.example`** - Environment variables template
 7. **`docs/IMPLEMENTATION_SUMMARY.md`** - This summary
+8. **`docs/template-troubleshooting.md`** - Template troubleshooting guide
+9. **`scripts/copy-templates.js`** - Template copy script
+10. **`scripts/test-template-path.js`** - Template path test script
+11. **`src/common/email-helpers/mailer-v2.spec.ts`** - Mailer V2 unit tests
+12. **`docs/mailer-v2-migration-guide.md`** - Mailer V2 migration guide
 
 ## 🚀 Key Features
 
@@ -207,6 +253,8 @@ GMAIL_ACCESS_TOKEN=your-access-token
 - [x] Migration guide provided
 - [x] Security best practices followed
 - [x] Error handling implemented
+- [x] Template path issue resolved
+- [x] Build configuration updated for templates
 
 ## 🎉 Conclusion
 

@@ -62,6 +62,8 @@ export class Mailer {
         return 'Timeoff Balance Export';
       case EEmailTemplate.EXPORT_TIME_OFF_REQUESTS:
         return 'Export time off requests';
+      case EEmailTemplate.REGISTRATION_CONFIRMATION:
+        return 'Welcome to Expenses Tracker! Confirm Your Registration';
       case EEmailTemplate.OTP_TWO_FA:
         return 'Two factor authentication';
       default:
@@ -91,7 +93,7 @@ export class Mailer {
           androidAppUrl: '',
           iosAppUrl: ''
         }),
-        to: 'Anonymous',
+        to: user.email,
         attachments
       };
 

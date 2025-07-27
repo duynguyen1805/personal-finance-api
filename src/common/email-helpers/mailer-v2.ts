@@ -1,16 +1,18 @@
 /* istanbul ignore file */
 import { merge } from 'lodash';
-import * as postmark from 'postmark';
+// import * as postmark from 'postmark';
 import ejs from 'ejs';
 import Polyglot from 'node-polyglot';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import sendgrid from '@sendgrid/mail';
+import * as path from 'path';
+// import sendgrid from '@sendgrid/mail';
 import { EEnviroment } from '../helpers/env.helper';
 import { Settings } from '../../settings';
-import { createTransport } from 'nodemailer';
+// import { createTransport } from 'nodemailer';
 import { configService } from '../../config/config.service';
 import { handleUnexpectedError } from '../helpers/handle-unexpected-error';
 import { UserService } from '../../modules/user/user.service';
+import { GoogleAppMail } from './google-app-mail.helper';
 interface IEmailInput {
   template: string;
   subject: string;
@@ -91,9 +93,9 @@ class EmailGenerator {
 
   static async generate(input: IEmailInput): Promise<IEmailDetail> {
     const { template, from, to } = input;
-    const path = `./templates/${template}.ejs`;
+    const templatePath = this.getTemplatePath(template);
     const translate = this.getTranslator(input);
-    const body = await ejs.renderFile<string>(path, { translate });
+    const body = await ejs.renderFile<string>(templatePath, { translate });
     const SHOULD_PRINT_BODY = false;
     if (
       configService.getEnv('NODE_ENV') === EEnviroment.TEST &&
@@ -106,6 +108,32 @@ class EmailGenerator {
       from,
       to
     };
+  }
+
+  private static getTemplatePath(template: string): string {
+    // Try multiple possible paths for template files
+    const possiblePaths = [
+      // Development path (from src directory)
+      path.join(process.cwd(), 'templates', 'email', `${template}.ejs`),
+      // Production path (from dist directory)
+      path.join(process.cwd(), 'dist', 'templates', 'email', `${template}.ejs`),
+      // Alternative production path
+      path.join(__dirname, '..', '..', '..', 'templates', 'email', `${template}.ejs`),
+      // Fallback path
+      path.join(__dirname, '..', '..', '..', '..', 'templates', 'email', `${template}.ejs`)
+    ];
+
+    for (const templatePath of possiblePaths) {
+      if (existsSync(templatePath)) {
+        console.log(`Found template at: ${templatePath}`);
+        return templatePath;
+      }
+    }
+
+    // If no template found, throw error with all attempted paths
+    throw new Error(
+      `Template file not found: ${template}.ejs. Tried paths: ${possiblePaths.join(', ')}`
+    );
   }
 }
 
@@ -126,53 +154,76 @@ abstract class EmailSender {
   }
 }
 
-sendgrid.setApiKey(configService.getEnv('SENDGRID_API_KEY'));
+// sendgrid.setApiKey(configService.getEnv('SENDGRID_API_KEY'));
 
-export class Sendgrid extends EmailSender {
-  static async send({ to, body, subject }: IEmailDetail) {
-    return sendgrid.send({
-      from: Settings.POSTMARK_SENDER_EMAIL,
-      to,
-      html: body,
-      subject
-    });
-  }
-}
+// export class Sendgrid extends EmailSender {
+//   static async send({ to, body, subject }: IEmailDetail) {
+//     return sendgrid.send({
+//       from: Settings.POSTMARK_SENDER_EMAIL,
+//       to,
+//       html: body,
+//       subject
+//     });
+//   }
+// }
 
-export class Mailguns extends EmailSender {
-  private static mailgun = createTransport({
-    host: 'smtp.mailgun.org',
-    port: 587,
-    secure: false,
-    tls: { ciphers: 'SSLv3' },
-    auth: {
-      user: 'postmaster@mg.kokatrade.com',
-      pass: configService.getEnv('MAILGUN_API_KEY')
-    }
-  });
+// export class Mailguns extends EmailSender {
+//   private static mailgun = createTransport({
+//     host: 'smtp.mailgun.org',
+//     port: 587,
+//     secure: false,
+//     tls: { ciphers: 'SSLv3' },
+//     auth: {
+//       user: 'postmaster@mg.kokatrade.com',
+//       pass: configService.getEnv('MAILGUN_API_KEY')
+//     }
+//   });
 
-  static async send({ to, body, subject }: IEmailDetail) {
-    return this.mailgun.sendMail({
-      from: Settings.POSTMARK_SENDER_EMAIL,
-      to,
-      html: body,
-      subject
-    });
-  }
-}
+//   static async send({ to, body, subject }: IEmailDetail) {
+//     return this.mailgun.sendMail({
+//       from: Settings.POSTMARK_SENDER_EMAIL,
+//       to,
+//       html: body,
+//       subject
+//     });
+//   }
+// }
 
-export class Postmark extends EmailSender {
-  private static client = new postmark.ServerClient(
-    configService.getEnv('POSTMARK_SERVER_API_TOKEN')
-  );
+// export class Postmark extends EmailSender {
+//   private static client = new postmark.ServerClient(
+//     configService.getEnv('POSTMARK_SERVER_API_TOKEN')
+//   );
+
+//   static async send({ to, body, subject, from }: IEmailDetail) {
+//     return this.client.sendEmail({
+//       From: from,
+//       To: to,
+//       HtmlBody: body,
+//       Subject: subject
+//     });
+//   }
+// }
+
+export class GoogleAppMailV2 extends EmailSender {
+  private static googleAppMail = new GoogleAppMail();
 
   static async send({ to, body, subject, from }: IEmailDetail) {
-    return this.client.sendEmail({
-      From: from,
-      To: to,
-      HtmlBody: body,
-      Subject: subject
-    });
+    // Since we already have the rendered body, we can send it directly
+    // But we need to create a proper email input for GoogleAppMail
+    const emailInput = {
+      template: 'registration-confirmation', // Default template
+      subject,
+      payload: {},
+      from,
+      to,
+      locale: 'en_us', // Default locale
+      attachments: []
+    };
+    
+    // For now, we'll use the existing EmailGenerator to generate the email
+    // and then send it through GoogleAppMail
+    const emailDetail = await EmailGenerator.generate(emailInput);
+    return this.googleAppMail.send(emailDetail);
   }
 }
 
@@ -274,11 +325,14 @@ export class Mailer {
     };
     console.log(emailInput);
 
-    if (configService.getEnv('EMAIL_PROVIDER') === 'POSTMARK')
-      return Postmark.process(emailInput);
-    if (configService.getEnv('EMAIL_PROVIDER') === 'MAILGUN')
-      return Mailguns.process(emailInput);
-    return Sendgrid.process(emailInput);
+    if (configService.getEnv('EMAIL_PROVIDER') === 'GOOGLE_APP_MAIL')
+      return GoogleAppMailV2.process(emailInput);
+    // if (configService.getEnv('EMAIL_PROVIDER') === 'POSTMARK')
+    //   return Postmark.process(emailInput);
+    // if (configService.getEnv('EMAIL_PROVIDER') === 'MAILGUN')
+    //   return Mailguns.process(emailInput);
+    // return Sendgrid.process(emailInput);
+    return GoogleAppMailV2.process(emailInput);
   }
 
   public static async sendDirectEmail(
@@ -297,11 +351,14 @@ export class Mailer {
       }),
       to: email
     };
-    if (configService.getEnv('EMAIL_PROVIDER') === 'POSTMARK')
-      return Postmark.process(emailInput);
-    if (configService.getEnv('EMAIL_PROVIDER') === 'MAILGUN')
-      return Mailguns.process(emailInput);
-    return Sendgrid.process(emailInput);
+    if (configService.getEnv('EMAIL_PROVIDER') === 'GOOGLE_APP_MAIL')
+      return GoogleAppMailV2.process(emailInput);
+    // if (configService.getEnv('EMAIL_PROVIDER') === 'POSTMARK')
+    //   return Postmark.process(emailInput);
+    // if (configService.getEnv('EMAIL_PROVIDER') === 'MAILGUN')
+    //   return Mailguns.process(emailInput);
+    // return Sendgrid.process(emailInput);
+    return GoogleAppMailV2.process(emailInput);
   }
 
   public static sendRegistrationConfirmationEmail(

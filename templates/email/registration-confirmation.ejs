@@ -1,0 +1,51 @@
+<%- include('header') %>
+    <table
+        style="width:100%;max-width:620px;margin:0 auto;background-color:#ffffff;border:1px solid #e3edf8;border-bottom:4px solid #74ba41;">
+        <tbody>
+            <tr>
+                <td style="padding: 0 30px 20px">
+                    <p style="margin-bottom: 10px;">Dear
+                        <%= translate('$.email') %>,
+                    </p>
+                    <p style="margin-bottom: 10px;">Welcome to Expenses Tracker! We're excited to have you on board.</p>
+                    <p style="margin-bottom: 10px;">To complete your registration, please click the button below to
+                        verify your email address.</p>
+                    <p style="margin-bottom: 25px;"><b>Verify Email</b></p>
+                    <a href="#"
+                        style="background-color:#004522;border-radius:4px;color:#ffffff;display:inline-block;font-size:13px;font-weight:600;line-height:44px;text-align:center;text-decoration:none;text-transform: uppercase; padding: 0 30px">
+                        <%= translate('$.code') %>
+                    </a>
+                    <p style="margin-bottom: 10px;"><strong>This OTP is valid for
+                            <%= translate('$.codeExpiredTime') %> hours.
+                        </strong></p>
+                    <p style="margin-bottom: 25px;"><strong>Security Tips:</strong></p>
+                    <ul>
+                        <li>This verification link is for your account only. Please do not share it with anyone.</li>
+                        <li>Be cautious of phishing attempts. We will never ask you for your password via email.</li>
+                        <li>If you suspect any unauthorized activity on your account, please reset your password
+                            immediately and contact Team Support.</li>
+                    </ul>
+                    <p style="margin-bottom: 25px; "><strong>Don't recognize this activity?</strong></p>
+                    <p style="margin-bottom: 10px; ">If you didn't create a Expenses Tracker account, please disregard
+                        this email.
+                    </p>
+                    <p style="margin-bottom: 25px; "><b>Regards,</b></p>
+                    <p style="margin-bottom: 10px; ">The Expenses Tracker Team</p>
+                    <p style="margin-bottom: 10px; "><strong>P.S.</strong> This is an automated message, please do not
+                        reply directly to this email.</p>
+                    <p style="margin-bottom: 25px; "><strong>Important Notice:</strong></p>
+                    <ul>
+                        <li>Beware of phishing scams. Always ensure you're visiting the official Expenses Tracker
+                            website (
+                            <a href=" <%= translate( '$.websiteLink') %>">
+                                <%= translate('$.websiteLink') %>
+                            </a>) when entering sensitive information.
+                        </li>
+                    </ul>
+
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <%- include('footer') %>
