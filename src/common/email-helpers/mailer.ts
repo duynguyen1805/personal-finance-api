@@ -1,7 +1,8 @@
 import { merge } from 'lodash';
 import { configService } from '../../config/config.service';
-import { Sendgrid } from './sendgrid.helper';
-import { SMTP } from './smtp.helper';
+// import { Sendgrid } from './sendgrid.helper';
+// import { SMTP } from './smtp.helper';
+import { GoogleAppMail } from './google-app-mail.helper';
 import { User } from 'src/modules/user/entities/user.entity';
 const moment = require('moment');
 
@@ -38,16 +39,19 @@ export interface IEmailCotent {
 
 export enum EEmailProvider {
   SMTP = 'SMTP',
-  SENDGRID = 'SENDGRID'
+  SENDGRID = 'SENDGRID',
+  GOOGLE_APP_MAIL = 'GOOGLE_APP_MAIL'
 }
 
 export class Mailer {
-  private smtp: SMTP;
-  private sendgrid: Sendgrid;
+  // private smtp: SMTP;
+  // private sendgrid: Sendgrid;
+  private googleAppMail: GoogleAppMail;
 
   public constructor() {
     // this.smtp = new SMTP();
     // this.sendgrid = new Sendgrid();
+    this.googleAppMail = new GoogleAppMail();
   }
 
   getSubjectByTemplate(template: EEmailTemplate): string {
@@ -91,12 +95,16 @@ export class Mailer {
         attachments
       };
 
-      // switch (configs.emailProvider) {
-      //   case EEmailProvider.SENDGRID:
-      //     return this.sendgrid.process(emailInput);
-      //   case EEmailProvider.SMTP:
-      //     return this.smtp.process(emailInput);
-      // }
+      switch (configs.emailProvider) {
+        case EEmailProvider.GOOGLE_APP_MAIL:
+          return this.googleAppMail.process(emailInput);
+        // case EEmailProvider.SENDGRID:
+        //   return this.sendgrid.process(emailInput);
+        // case EEmailProvider.SMTP:
+        //   return this.smtp.process(emailInput);
+        default:
+          return this.googleAppMail.process(emailInput);
+      }
     }
   }
 }

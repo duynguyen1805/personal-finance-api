@@ -93,7 +93,13 @@ class ConfigService {
       smtpHost: this.getEnv('SMTP_HOST'),
       smtpPort: this.getEnv('SMTP_PORT'),
       smtpUser: this.getEnv('SMTP_USER'),
-      smtpPassword: this.getEnv('SMTP_PASSWORD')
+      smtpPassword: this.getEnv('SMTP_PASSWORD'),
+      // Google App Mail configs
+      gmailUser: this.getEnv('GMAIL_USER'),
+      gmailClientId: this.getEnv('GMAIL_CLIENT_ID'),
+      gmailClientSecret: this.getEnv('GMAIL_CLIENT_SECRET'),
+      gmailRefreshToken: this.getEnv('GMAIL_REFRESH_TOKEN'),
+      gmailAccessToken: this.getEnv('GMAIL_ACCESS_TOKEN')
     };
   }
 }
@@ -115,6 +121,12 @@ const configService = new ConfigService(process.env).ensureValues([
   'SMTP_PORT',
   'SMTP_USER',
   'SMTP_PASSWORD',
+  // Google App Mail configs
+  'GMAIL_USER',
+  'GMAIL_CLIENT_ID',
+  'GMAIL_CLIENT_SECRET',
+  'GMAIL_REFRESH_TOKEN',
+  'GMAIL_ACCESS_TOKEN',
   // MinIO configs
   'STORAGE_LOCAL_ENDPOINT',
   'MINIO_UPLOAD_LOCAL_PORT',
