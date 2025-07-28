@@ -50,10 +50,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  const port = 4000;
+  const port = process.env.PORT || 4000;
   await app.startAllMicroservices();
   await app.listen(port);
-  Logger.log(`Listening on http://localhost:${port}/api`);
+  Logger.log(`Listening on http://localhost:${port}`);
 
   if (module.hot) {
     module.hot.accept();
