@@ -2,7 +2,17 @@
 // src/config/config.service.ts
 const path = require('path');
 
-require('dotenv').config();
+// Load environment file based on NODE_ENV
+const nodeEnv = process.env.NODE_ENV || 'development';
+const envFile = nodeEnv === 'production' ? '.env.prod' : '.env.dev';
+
+try {
+  require('dotenv').config({ path: envFile });
+  console.log(`Loaded environment from: ${envFile}`);
+} catch (error) {
+  console.log(`Environment file ${envFile} not found, using default .env`);
+  require('dotenv').config();
+}
 
 class ConfigService {
   constructor(private env: { [k: string]: string | undefined }) {}
