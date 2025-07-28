@@ -1,21 +1,15 @@
 {
   "type": "postgres",
-  "host": "yamabiko.proxy.rlwy.net",
-  "port": 56222,
+  "host": "localhost",
+  "port": 5432,
   "username": "postgres",
-  "password": "DmmurmqfGUvTRCNgaKFERMOJuXsxJVhC",
-  "database": "railway",
-  "entities": [
-    "dist/src/**/*.entity{.ts,.js}"
-  ],
-  "migrations": [
-    "dist/src/migration/**/*{.js,.ts}"
-  ],
+  "password": "123123",
+  "database": "personal-finance",
+  "entities": ["dist/src/**/*.entity{.ts,.js}"],
+  "migrations": ["dist/src/migration/**/*{.js,.ts}"],
   "migrationsTableName": "migration",
   "migrationsRun": false,
-  "seeds": [
-    "dist/src/database/seeds/**/*.seed{.js,.ts}"
-  ],
+  "seeds": ["dist/src/database/seeds/**/*.seed{.js,.ts}"],
   "cli": {
     "migrationsDir": "src/migration"
   }
