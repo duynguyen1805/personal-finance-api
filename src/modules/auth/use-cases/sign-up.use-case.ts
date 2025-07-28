@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EEmailTemplate, Mailer } from '../../../common/email-helpers/mailer-v2';
+import {
+  EEmailTemplate,
+  Mailer
+} from '../../../common/email-helpers/mailer-v2';
 import { User } from '../../user/entities/user.entity';
 import { SignUpAuthAccountDto } from '../dto/signup-auth-account.dto';
 import {
@@ -43,11 +46,15 @@ export class SignUpUseCase {
     } else {
       const userRegistered = await this.saveUser(user);
       const code = generateRandomCodeNumber(6);
-      await Mailer.sendRegistrationConfirmationEmail(
-        userRegistered.id,
-        { code, email: userRegistered.email }
+      await Mailer.sendRegistrationConfirmationEmail(userRegistered.id, {
+        code,
+        email: userRegistered.email
+      });
+      const registerVerification = await this.saveRegisterVerification(
+        code,
+        userRegistered
       );
-      await this.saveRegisterVerification(code, userRegistered);
+      console.log('registerVerification', registerVerification);
       return userRegistered;
     }
 

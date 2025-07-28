@@ -118,9 +118,26 @@ class EmailGenerator {
       // Production path (from dist directory)
       path.join(process.cwd(), 'dist', 'templates', 'email', `${template}.ejs`),
       // Alternative production path
-      path.join(__dirname, '..', '..', '..', 'templates', 'email', `${template}.ejs`),
+      path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'templates',
+        'email',
+        `${template}.ejs`
+      ),
       // Fallback path
-      path.join(__dirname, '..', '..', '..', '..', 'templates', 'email', `${template}.ejs`)
+      path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'templates',
+        'email',
+        `${template}.ejs`
+      )
     ];
 
     for (const templatePath of possiblePaths) {
@@ -132,7 +149,9 @@ class EmailGenerator {
 
     // If no template found, throw error with all attempted paths
     throw new Error(
-      `Template file not found: ${template}.ejs. Tried paths: ${possiblePaths.join(', ')}`
+      `Template file not found: ${template}.ejs. Tried paths: ${possiblePaths.join(
+        ', '
+      )}`
     );
   }
 }
@@ -142,6 +161,7 @@ abstract class EmailSender {
     try {
       const emailDetail = await EmailGenerator.generate(input);
       if (configService.getEnv('NODE_ENV') === EEnviroment.TEST) return;
+      // console.log('Email detail class EmailSender: ', emailDetail);
       this.send(emailDetail);
     } catch (error) {
       handleUnexpectedError(error as any);
@@ -208,42 +228,70 @@ export class GoogleAppMailV2 extends EmailSender {
   private static googleAppMail = new GoogleAppMail();
 
   static async send({ to, body, subject, from }: IEmailDetail) {
-    // Since we already have the rendered body, we can send it directly
-    // But we need to create a proper email input for GoogleAppMail
-    const emailInput = {
-      template: 'registration-confirmation', // Default template
-      subject,
-      payload: {},
-      from,
-      to,
-      locale: 'en_us', // Default locale
-      attachments: []
-    };
-    
-    // For now, we'll use the existing EmailGenerator to generate the email
-    // and then send it through GoogleAppMail
-    const emailDetail = await EmailGenerator.generate(emailInput);
-    return this.googleAppMail.send(emailDetail);
+    return this.googleAppMail.send({ to, body, subject, from });
+  }
+
+  static async process(input: IEmailInput) {
+    try {
+      const emailDetail = await EmailGenerator.generate(input);
+      if (configService.getEnv('NODE_ENV') === EEnviroment.TEST) return;
+      // console.log('Email detail GoogleAppMailV2: ', emailDetail);
+      return this.send(emailDetail);
+    } catch (error) {
+      handleUnexpectedError(error as any);
+    }
   }
 }
 
 export class Mailer {
-  private static async getReceiver(userId: number): Promise<IReceiver> {
-    // const user = await User.findById(userId);
-    const user = { email: 'a@b.com', firstName: 'a', lastName: 'b' };
-    // const language = await Language.findById(2);
+  private static userService: UserService;
+
+  static setUserService(userService: UserService) {
+    Mailer.userService = userService;
+  }
+
+  static initialize(userService: UserService) {
+    Mailer.setUserService(userService);
+  }
+
+  private static async getReceiver(
+    userId: number,
+    payload: any
+  ): Promise<IReceiver> {
+    try {
+      if (this.userService) {
+        const user = await this.userService.findOne(userId);
+
+        if (!user) {
+          throw new Error(`User with ID ${userId} not found`);
+        }
+
+        // thông tin language (có thể mở rộng sau)
+        const language = { code: 'en_us' }; // Default language
+
+        return {
+          email: user.email,
+          locale: language.code,
+          firstName: user.firstName,
+          lastName: user.lastName
+        };
+      }
+    } catch (error) {
+      console.error('Error getting receiver from database:', error);
+    }
+
     const language = { code: 'en_us' };
     return {
-      email: user.email,
+      email: payload.email || 'fallback@example.com',
       locale: language.code,
-      firstName: user.firstName,
-      lastName: user.lastName
+      firstName: payload.firstName || 'User',
+      lastName: payload.lastName || ''
     };
   }
 
   private static getSubjectByTemplate(template: EEmailTemplate): string {
     if (template === EEmailTemplate.REGISTRATION_CONFIRMATION)
-      return 'Welcome to Decot! Confirm Your Registration';
+      return 'Welcome to Expenses Tracker! Confirm Your Registration';
     if (template === EEmailTemplate.PASSWORD_RESET)
       return 'Reset Your Password for <%= translate("$.productName") %>';
     if (template === EEmailTemplate.APPROVED_KYC)
@@ -301,7 +349,7 @@ export class Mailer {
     payload: object = {},
     receiverEmail?: string
   ) {
-    const user = await this.getReceiver(receiverId);
+    const user = await this.getReceiver(receiverId, payload);
     let toEmail = '';
     if (
       template == EEmailTemplate.OTP_LINK_EMAIL ||

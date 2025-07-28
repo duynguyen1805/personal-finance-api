@@ -1,7 +1,7 @@
 export const Settings = {
   PRODUCT_NAME: 'Personal-finance-api',
-  POSTMARK_SENDER_EMAIL: 'no-reply@abc.io',
-  EMAIL_SUPPORT: 'support@abc.io',
+  POSTMARK_SENDER_EMAIL: 'no-reply@expense-tracker.io',
+  EMAIL_SUPPORT: 'support@expense-tracker.io',
   FORGOT_PASSWORD_EXPIRED_TIME: 86400000, // 1 day
   CHANGE_PASSWORD_EXPIRED_TIME: 86400000, // 1 day
   REGISTER_VERIFICATION_EXPIRED_TIME: 86400000, // 1 day

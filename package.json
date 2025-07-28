@@ -29,7 +29,9 @@
     "typeorm:migration:run": "npm run build && npm run typeorm -- migration:run",
     "typeorm:migration:revert": "npm run typeorm -- migration:revert",
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
-    "seed:run": "npm run build && ts-node ./node_modules/typeorm-seeding/dist/cli.js seed"
+    "seed:run": "npm run build && ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
+    "test:google-oauth": "node scripts/test-google-oauth.js",
+    "setup:google-oauth": "node scripts/get-google-refresh-token.js"
   },
   "dependencies": {
     "@ethersproject/hash": "^5.7.0",
@@ -69,6 +71,7 @@
     "ejs": "^2.7.1",
     "ethers": "^5.7.1",
     "firebase": "^11.10.0",
+    "googleapis": "^154.0.0",
     "ipfs-http-client": "^50.1.2",
     "lodash": "^4.17.21",
     "minio": "^8.0.5",

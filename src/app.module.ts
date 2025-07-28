@@ -38,6 +38,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { ExpensesModule } from './modules/expenses/expenses.module';
 import { RecurringTransactionModule } from './modules/recurring-transaction/recurring-transaction.module';
 import { BudgetsModule } from './modules/budgets/budget.module';
+import { EmailModule } from './common/email-helpers/email.module';
 
 const { host, port } = configService.getRedisConfig();
 
@@ -75,7 +76,8 @@ const { host, port } = configService.getRedisConfig();
     FileModule,
     CategoriesModule,
     ExpensesModule,
-    RecurringTransactionModule
+    RecurringTransactionModule,
+    EmailModule
   ]),
   controllers: [AppController],
   providers: [
