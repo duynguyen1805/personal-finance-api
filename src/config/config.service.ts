@@ -111,6 +111,7 @@ const configService = new ConfigService(process.env).ensureValues([
   'DB_USERNAME',
   'DB_PASSWORD',
   'DB_DATABASE',
+  'REDIS_URL',
   'REDIS_HOST',
   'REDIS_PORT',
   // Email service configs
