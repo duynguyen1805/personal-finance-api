@@ -31,7 +31,8 @@
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
     "seed:run": "npm run build && ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
     "test:google-oauth": "node scripts/test-google-oauth.js",
-    "setup:google-oauth": "node scripts/get-google-refresh-token.js"
+    "setup:google-oauth": "node scripts/get-google-refresh-token.js",
+    "test:keep-alive": "node scripts/test-keep-alive.js"
   },
   "dependencies": {
     "@ethersproject/hash": "^5.7.0",
@@ -59,6 +60,7 @@
     "@types/lodash": "^4.17.16",
     "amqp-connection-manager": "^4.1.13",
     "amqplib": "^0.10.3",
+    "axios": "^1.11.0",
     "bcrypt": "^5.0.1",
     "bs58": "^6.0.0",
     "cache-manager": "^3.6.3",

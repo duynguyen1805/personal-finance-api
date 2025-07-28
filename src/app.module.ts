@@ -39,6 +39,7 @@ import { ExpensesModule } from './modules/expenses/expenses.module';
 import { RecurringTransactionModule } from './modules/recurring-transaction/recurring-transaction.module';
 import { BudgetsModule } from './modules/budgets/budget.module';
 import { EmailModule } from './common/email-helpers/email.module';
+import { KeepAliveModule } from './modules/keep-alive/keep-alive.module';
 
 const configRedis = configService.getRedisConfig();
 
@@ -79,7 +80,8 @@ const configRedis = configService.getRedisConfig();
     CategoriesModule,
     ExpensesModule,
     RecurringTransactionModule,
-    EmailModule
+    EmailModule,
+    KeepAliveModule
   ]),
   controllers: [AppController],
   providers: [
