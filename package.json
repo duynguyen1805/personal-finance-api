@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf dist && npm run pretypeorm",
     "build": "nest build",
     "postbuild": "node scripts/copy-templates.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

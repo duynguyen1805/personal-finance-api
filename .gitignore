@@ -42,3 +42,6 @@ Dockerfile
 .cursor
 .cursorrules
 SCRATCHPAD.md
+
+# Generated config files
+ormconfig.json
