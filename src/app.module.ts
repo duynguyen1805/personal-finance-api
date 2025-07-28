@@ -40,7 +40,7 @@ import { RecurringTransactionModule } from './modules/recurring-transaction/recu
 import { BudgetsModule } from './modules/budgets/budget.module';
 import { EmailModule } from './common/email-helpers/email.module';
 
-const { host, port } = configService.getRedisConfig();
+const configRedis = configService.getRedisConfig();
 
 @Module({
   imports: compact([
@@ -58,7 +58,9 @@ const { host, port } = configService.getRedisConfig();
     CacheModule.register<RedisClientOptions>({
       isGlobal: true,
       store: redisStore,
-      url: `redis://${host}:${port}`,
+      url:
+        configRedis?.redisURL ||
+        `redis://${configRedis?.host}:${configRedis?.port}`,
       ttl: 0
     }),
     UserModule,

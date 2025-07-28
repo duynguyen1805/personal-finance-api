@@ -32,6 +32,7 @@ class ConfigService {
 
   public getRedisConfig() {
     return {
+      redisURL: this.getEnv('REDIS_URL'),
       host: this.getEnv('REDIS_HOST'),
       port: parseInt(this.getEnv('REDIS_PORT'))
     };
