@@ -129,6 +129,13 @@ export class NotificationSchedulerService {
   }
 
   private async sendUrgentNotification(userId: number, goal: any) {
+    // Check if user wants goal reminders
+    const shouldSend = await this.userService.shouldSendNotification(userId, 'goalReminders');
+    if (!shouldSend) {
+      this.logger.log(`Skipping urgent notification for user ${userId} - goal reminders disabled`);
+      return;
+    }
+
     const notification = await this.notificationsService.createNotification({
       userId,
       title: '🚨 Mục tiêu tài chính sắp đến hạn!',
@@ -147,6 +154,13 @@ export class NotificationSchedulerService {
   }
 
   private async sendWeeklyNotification(userId: number, goal: any) {
+    // Check if user wants goal reminders
+    const shouldSend = await this.userService.shouldSendNotification(userId, 'goalReminders');
+    if (!shouldSend) {
+      this.logger.log(`Skipping weekly notification for user ${userId} - goal reminders disabled`);
+      return;
+    }
+
     const daysUntilDeadline = this.calculateDaysUntilDeadline(goal.deadline);
     
     const notification = await this.notificationsService.createNotification({
@@ -167,6 +181,13 @@ export class NotificationSchedulerService {
   }
 
   private async sendMonthlyNotification(userId: number, goal: any) {
+    // Check if user wants goal reminders
+    const shouldSend = await this.userService.shouldSendNotification(userId, 'goalReminders');
+    if (!shouldSend) {
+      this.logger.log(`Skipping monthly notification for user ${userId} - goal reminders disabled`);
+      return;
+    }
+
     const notification = await this.notificationsService.createNotification({
       userId,
       title: '📊 Cập nhật mục tiêu tài chính',
@@ -184,6 +205,13 @@ export class NotificationSchedulerService {
   }
 
   private async sendWeeklySummaryNotification(userId: number, goals: any[]) {
+    // Check if user wants goal reminders
+    const shouldSend = await this.userService.shouldSendNotification(userId, 'goalReminders');
+    if (!shouldSend) {
+      this.logger.log(`Skipping weekly summary for user ${userId} - goal reminders disabled`);
+      return;
+    }
+
     const notification = await this.notificationsService.createNotification({
       userId,
       title: '📋 Tóm tắt mục tiêu tuần này',

@@ -8,6 +8,7 @@ import {
 } from './entities/notification.entity';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { Mailer } from '../../common/email-helpers/mailer-v2';
+import { UserService } from '../user/user.service';
 import { EEmailTemplate } from '../../common/email-helpers/mailer-v2';
 import { LessThanOrEqual } from 'typeorm';
 
@@ -17,7 +18,8 @@ export class NotificationsService {
 
   constructor(
     @InjectRepository(Notifications)
-    private readonly notificationRepository: Repository<Notifications>
+    private readonly notificationRepository: Repository<Notifications>,
+    private readonly userService: UserService
   ) {}
 
   async createNotification(dto: CreateNotificationDto): Promise<Notifications> {
@@ -27,6 +29,14 @@ export class NotificationsService {
 
   async sendNotification(notification: Notifications): Promise<boolean> {
     try {
+      // Check user preferences before sending
+      const shouldSend = await this.checkUserPreferences(notification);
+      if (!shouldSend) {
+        this.logger.log(`Skipping notification ${notification.notificationId} - user preferences disabled`);
+        await this.updateNotificationStatus(notification.notificationId, NotificationStatus.SENT);
+        return true; // Mark as sent to avoid retry
+      }
+
       switch (notification.type) {
         case NotificationType.EMAIL:
           return await this.sendEmailNotification(notification);
@@ -45,6 +55,37 @@ export class NotificationsService {
         NotificationStatus.FAILED
       );
       return false;
+    }
+  }
+
+  private async checkUserPreferences(notification: Notifications): Promise<boolean> {
+    try {
+      // Determine notification type based on metadata or related entity
+      let notificationType = 'general';
+      
+      if (notification.relatedEntityType === 'financial_goal') {
+        notificationType = 'goalReminders';
+      } else if (notification.relatedEntityType === 'budget') {
+        notificationType = 'budgetAlerts';
+      } else if (notification.relatedEntityType === 'expense') {
+        notificationType = 'expenseAlerts';
+      } else if (notification.relatedEntityType === 'income') {
+        notificationType = 'incomeAlerts';
+      } else if (notification.metadata?.type === 'weekly_report') {
+        notificationType = 'weeklyReports';
+      } else if (notification.metadata?.type === 'monthly_report') {
+        notificationType = 'monthlyReports';
+      } else if (notification.metadata?.type === 'achievement') {
+        notificationType = 'achievementCelebrations';
+      } else if (notification.metadata?.type === 'system_update') {
+        notificationType = 'systemUpdates';
+      }
+
+      // Check if user wants this type of notification
+      return await this.userService.shouldSendNotification(notification.userId, notificationType);
+    } catch (error) {
+      this.logger.error(`Error checking user preferences: ${error.message}`);
+      return true; // Default to true if error
     }
   }
 

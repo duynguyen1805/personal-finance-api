@@ -11,6 +11,7 @@ import { Income } from '../income/entities/income.entity';
 import { Expenses } from '../expenses/entities/expenses.entity';
 import { Categories } from '../categories/entities/categories.entity';
 import { Budgets } from '../budgets/entities/budgets.entity';
+import { UserNotificationPreferences } from './entities/user-notification-preferences.entity';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { Budgets } from '../budgets/entities/budgets.entity';
       Income,
       Expenses,
       Categories,
-      Budgets
+      Budgets,
+      UserNotificationPreferences
     ]),
     RoleModule
   ],

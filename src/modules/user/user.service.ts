@@ -7,6 +7,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 // import { mustExist } from 'src/common/server-error.helper';
 // import { EErrorDetail, EUserServiceError } from './dto/enum.dto';
 import { UpdateUserUseCase } from './use-cases/update-user.use-case';
+import { UserNotificationPreferences } from './entities/user-notification-preferences.entity';
+import { UpdateNotificationPreferencesDto } from './dto/notification-preferences.dto';
 // import { hashMessage } from '@ethersproject/hash';
 // import { BigNumber, utils } from 'ethers';
 // import moment from 'moment';
@@ -21,6 +23,8 @@ export class UserService {
     private userRepository: Repository<User>,
     @InjectRepository(User)
     private treeUserRepository: TreeRepository<User>,
+    @InjectRepository(UserNotificationPreferences)
+    private notificationPreferencesRepository: Repository<UserNotificationPreferences>,
     @InjectConnection() private readonly connection: Connection,
     private readonly updateUserUseCase: UpdateUserUseCase
   ) {}
@@ -72,7 +76,6 @@ export class UserService {
   //       (select count(*) from user_closure where parentId = uc.parentId and level = 1) as reportingStaffNumber
   //     from user_closure uc
   //     left join user u on u.id = uc.parentId
-  //     left join department d on u.departmentId = d.id
   //     left join location l on u.locationId = l.id
   //     where uc.level ${
   //       depth ? `<= ${depth}` : `>= 1`
@@ -90,7 +93,6 @@ export class UserService {
   //     (select count(*) from user_closure where parentId = uc.childId and level = 1) as reportingStaffNumber
   //   from user_closure uc
   //   left join user u on u.id = uc.childId
-  //   left join department d on u.departmentId = d.id
   //   left join location l on u.locationId = l.id
   //   where uc.level ${
   //     depth ? `<= ${depth}` : `>= 1`
@@ -125,6 +127,100 @@ export class UserService {
   }
 
   async updateUserInfo(userId: number, dto: Partial<UpdateUserDto>) {
-    return this.updateUserUseCase.execute(userId, dto);
+    return await this.updateUserUseCase.execute(userId, dto);
+  }
+
+  // Notification Preferences Methods
+  async getNotificationPreferences(userId: number) {
+    let preferences = await this.notificationPreferencesRepository.findOne({
+      where: { userId }
+    });
+
+    if (!preferences) {
+      // Create default preferences if not exists
+      preferences = await this.createDefaultNotificationPreferences(userId);
+    }
+
+    return preferences;
+  }
+
+  async updateNotificationPreferences(
+    userId: number,
+    dto: UpdateNotificationPreferencesDto
+  ) {
+    let preferences = await this.notificationPreferencesRepository.findOne({
+      where: { userId }
+    });
+
+    if (!preferences) {
+      // Create default preferences if not exists
+      preferences = await this.createDefaultNotificationPreferences(userId);
+    }
+
+    // Update only provided fields
+    Object.assign(preferences, dto);
+
+    return await this.notificationPreferencesRepository.save(preferences);
+  }
+
+  async resetNotificationPreferences(userId: number) {
+    const defaultPreferences = await this.createDefaultNotificationPreferences(
+      userId
+    );
+    return await this.notificationPreferencesRepository.save(
+      defaultPreferences
+    );
+  }
+
+  private async createDefaultNotificationPreferences(userId: number) {
+    const defaultPreferences = this.notificationPreferencesRepository.create({
+      userId,
+      email: true,
+      push: false,
+      budgetAlerts: true,
+      goalReminders: true,
+      expenseAlerts: true,
+      incomeAlerts: true,
+      weeklyReports: true,
+      monthlyReports: true,
+      achievementCelebrations: true,
+      systemUpdates: true
+    });
+
+    return await this.notificationPreferencesRepository.save(
+      defaultPreferences
+    );
+  }
+
+  async shouldSendNotification(
+    userId: number,
+    notificationType: string
+  ): Promise<boolean> {
+    const preferences = await this.getNotificationPreferences(userId);
+
+    switch (notificationType) {
+      case 'email':
+        return preferences.email;
+      case 'push':
+        return preferences.push;
+      case 'budgetAlerts':
+        return preferences.budgetAlerts;
+      case 'goalReminders':
+        return preferences.goalReminders;
+      case 'expenseAlerts':
+        return preferences.expenseAlerts;
+      case 'incomeAlerts':
+        return preferences.incomeAlerts;
+      case 'weeklyReports':
+        return preferences.weeklyReports;
+      case 'monthlyReports':
+        return preferences.monthlyReports;
+      case 'achievementCelebrations':
+        return preferences.achievementCelebrations;
+      case 'systemUpdates':
+        return preferences.systemUpdates;
+      default:
+        return true; // Default to true for unknown types
+    }
   }
 }

@@ -19,6 +19,8 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { User } from './entities/user.entity';
 import { Permissions } from '../permission/permission.decorator';
+import { UpdateNotificationPreferencesDto } from './dto/notification-preferences.dto';
+import { NotificationPreferencesResponseDto } from './dto/notification-preferences.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -51,5 +53,33 @@ export class UserController {
   updateUserInfo(@Body() dto: UpdateUserDto) {
     const user = this.request.user as User;
     return this.userService.updateUserInfo(user.id, dto);
+  }
+
+  // Notification Preferences Endpoints
+  @Get('/notification-preferences')
+  @ApiTags('notification-preferences')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async getNotificationPreferences() {
+    const user = this.request.user as User;
+    return await this.userService.getNotificationPreferences(user.id);
+  }
+
+  @Post('/notification-preferences')
+  @ApiTags('notification-preferences')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async updateNotificationPreferences(@Body() dto: UpdateNotificationPreferencesDto) {
+    const user = this.request.user as User;
+    return await this.userService.updateNotificationPreferences(user.id, dto);
+  }
+
+  @Post('/notification-preferences/reset')
+  @ApiTags('notification-preferences')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async resetNotificationPreferences() {
+    const user = this.request.user as User;
+    return await this.userService.resetNotificationPreferences(user.id);
   }
 }
