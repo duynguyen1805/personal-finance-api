@@ -20,7 +20,7 @@ export enum NotificationStatus {
 }
 
 @Entity()
-export class Notification {
+export class Notifications {
   @PrimaryGeneratedColumn('increment')
   notificationId: number;
 
@@ -70,4 +70,4 @@ export class Notification {
 
   @UpdateDateColumn()
   updatedAt: Date;
-} 
+}

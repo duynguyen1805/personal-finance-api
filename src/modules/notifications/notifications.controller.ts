@@ -23,7 +23,7 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { Notification } from './entities/notification.entity';
+import { Notifications } from './entities/notification.entity';
 
 @ApiTags('notifications')
 @Controller('notifications')
@@ -37,19 +37,27 @@ export class NotificationsController {
 
   @Get()
   @ApiOperation({ summary: 'Get user notifications' })
-  @ApiQuery({ name: 'limit', required: false, description: 'Number of notifications to return', example: 50 })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of notifications to return',
+    example: 50
+  })
   @ApiResponse({
     status: 200,
     description: 'Notifications fetched successfully.',
-    type: [Notification]
+    type: [Notifications]
   })
   async getUserNotifications(@Query('limit') limit?: string) {
     const user = this.request.user as any;
     const limitNumber = limit ? parseInt(limit) : 50;
-    return await this.notificationsService.getUserNotifications(user.id, limitNumber);
+    return await this.notificationsService.getUserNotifications(
+      user.id,
+      limitNumber
+    );
   }
 
-  @Get('unread-count')
+  @Get('/unread-count')
   @ApiOperation({ summary: 'Get unread notifications count' })
   @ApiResponse({
     status: 200,
@@ -63,11 +71,10 @@ export class NotificationsController {
   })
   async getUnreadCount() {
     const user = this.request.user as any;
-    const count = await this.notificationsService.getUnreadCount(user.id);
-    return { count };
+    return await this.notificationsService.getUnreadCount(user.id);
   }
 
-  @Patch(':id/read')
+  @Patch('/:id/read')
   @ApiOperation({ summary: 'Mark notification as read' })
   @ApiParam({ name: 'id', description: 'Notification ID' })
   @ApiResponse({
@@ -76,11 +83,10 @@ export class NotificationsController {
   })
   async markAsRead(@Param('id') id: string) {
     const user = this.request.user as any;
-    await this.notificationsService.markAsRead(+id, user.id);
-    return { message: 'Notification marked as read successfully' };
+    return await this.notificationsService.markAsRead(+id, user.id);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   @ApiOperation({ summary: 'Delete notification' })
   @ApiParam({ name: 'id', description: 'Notification ID' })
   @ApiResponse({
@@ -89,24 +95,21 @@ export class NotificationsController {
   })
   async deleteNotification(@Param('id') id: string) {
     const user = this.request.user as any;
-    await this.notificationsService.deleteNotification(+id, user.id);
-    return { message: 'Notification deleted successfully' };
+    return await this.notificationsService.deleteNotification(+id, user.id);
   }
 
-  @Post('send')
+  @Post('/send')
   @ApiOperation({ summary: 'Send notification manually (for testing)' })
   @ApiResponse({
     status: 201,
     description: 'Notification sent successfully.'
   })
   async sendNotification(@Body() dto: CreateNotificationDto) {
-    const notification = await this.notificationsService.createNotification(dto);
-    const success = await this.notificationsService.sendNotification(notification);
-    
-    return {
-      success,
-      message: success ? 'Notification sent successfully' : 'Failed to send notification',
-      notificationId: notification.notificationId
-    };
+    const notification = await this.notificationsService.createNotification(
+      dto
+    );
+    await this.notificationsService.sendNotification(notification);
+
+    return notification;
   }
-} 
+}
