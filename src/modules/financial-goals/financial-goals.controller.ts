@@ -38,7 +38,7 @@ export class FinancialGoalsController {
     @Inject(REQUEST) private request: Request
   ) {}
 
-  @Post('create')
+  @Post('/create')
   @ApiOperation({ summary: 'Create financial goal' })
   @ApiResponse({
     status: 201,
@@ -50,7 +50,7 @@ export class FinancialGoalsController {
     return await this.goalsService.createGoal(user.id, dto);
   }
 
-  @Patch(':id')
+  @Patch('/:id')
   @ApiOperation({ summary: 'Update financial goal' })
   @ApiParam({ name: 'id', description: 'Financial goal ID' })
   @ApiResponse({
@@ -63,7 +63,7 @@ export class FinancialGoalsController {
     return await this.goalsService.updateGoal(user.id, +id, dto);
   }
 
-  @Get('all')
+  @Get('/get-all')
   @ApiOperation({ summary: 'Get all financial goals' })
   @ApiResponse({
     status: 200,
@@ -75,9 +75,14 @@ export class FinancialGoalsController {
     return await this.goalsService.getAllGoals(user.id);
   }
 
-  @Get('upcoming')
+  @Get('/upcoming')
   @ApiOperation({ summary: 'Get upcoming financial goals' })
-  @ApiQuery({ name: 'days', required: false, description: 'Number of days to look ahead', example: 30 })
+  @ApiQuery({
+    name: 'days',
+    required: false,
+    description: 'Number of days to look ahead',
+    example: 30
+  })
   @ApiResponse({
     status: 200,
     description: 'Upcoming financial goals fetched successfully.',
@@ -89,7 +94,7 @@ export class FinancialGoalsController {
     return await this.goalsService.getUpcomingDeadlines(user.id, daysNumber);
   }
 
-  @Get(':id')
+  @Get('/:id')
   @ApiOperation({ summary: 'Get financial goal by id' })
   @ApiParam({ name: 'id', description: 'Financial goal ID' })
   @ApiResponse({
@@ -102,7 +107,7 @@ export class FinancialGoalsController {
     return await this.goalsService.getGoalById(user.id, +id);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   @ApiOperation({ summary: 'Delete financial goal by id' })
   @ApiParam({ name: 'id', description: 'Financial goal ID' })
   @ApiResponse({
