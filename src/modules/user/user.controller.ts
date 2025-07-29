@@ -35,7 +35,6 @@ export class UserController {
 
   @Get()
   findAll(@Query() query: FetchUserDto) {
-    console.log('this.request.user', this.request.user);
     return this.userService.findAll(query);
   }
 
@@ -45,7 +44,6 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async getNotificationPreferences() {
-    console.log('this.request.user', this.request.user);
     const user = this.request.user as User;
     return await this.userService.getNotificationPreferences(user.id);
   }
