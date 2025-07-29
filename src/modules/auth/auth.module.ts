@@ -20,6 +20,7 @@ import { RoleService } from '../role/role.service';
 import { Role } from '../role/entities/role.entity';
 import { UserService } from '../user/user.service';
 import { UpdateUserUseCase } from '../user/use-cases/update-user.use-case';
+import { UserNotificationPreferences } from '../user/entities/user-notification-preferences.entity';
 
 @Module({
   imports: [
@@ -31,7 +32,7 @@ import { UpdateUserUseCase } from '../user/use-cases/update-user.use-case';
     }),
     CustomeCacheModule,
     HttpModule,
-    TypeOrmModule.forFeature([User, Role, RegisterVerification])
+    TypeOrmModule.forFeature([User, Role, RegisterVerification, UserNotificationPreferences])
   ],
   controllers: [AuthController],
   providers: [

@@ -27,6 +27,6 @@ import { UserNotificationPreferences } from './entities/user-notification-prefer
   ],
   controllers: [UserController, DashboardController],
   providers: [UserService, UpdateUserUseCase, DashboardService],
-  exports: [UserService]
+  exports: [UserService, UserNotificationPreferences]
 })
 export class UserModule {}

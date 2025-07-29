@@ -7,9 +7,20 @@ import { User } from '../../modules/user/entities/user.entity';
 import { FetchUserDto } from '../../modules/user/dto/fetch-user.dto';
 import { UpdateUserDto } from '../../modules/user/dto/update-user.dto';
 import { Mailer } from './mailer-v2';
+import { Notifications } from '../../modules/notifications/entities/notification.entity';
+import { NotificationsModule } from '../../modules/notifications/notifications.module';
+import { UserNotificationPreferences } from '../../modules/user/entities/user-notification-preferences.entity';
 
 @Module({
-  imports: [UserModule, TypeOrmModule.forFeature([User])],
+  imports: [
+    UserModule,
+    TypeOrmModule.forFeature([
+      User,
+      Notifications,
+      UserNotificationPreferences
+    ]),
+    NotificationsModule
+  ],
   providers: [UserService, UpdateUserUseCase],
   exports: [UserService]
 })
@@ -18,4 +29,4 @@ export class EmailModule {
     // initialize Mailer with UserService
     Mailer.initialize(this.userService);
   }
-} 
+}
