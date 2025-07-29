@@ -26,7 +26,12 @@ import { UserNotificationPreferences } from './entities/user-notification-prefer
     RoleModule
   ],
   controllers: [UserController, DashboardController],
-  providers: [UserService, UpdateUserUseCase, DashboardService],
+  providers: [
+    UserService,
+    UpdateUserUseCase,
+    DashboardService,
+    UserNotificationPreferences
+  ],
   exports: [UserService, UserNotificationPreferences]
 })
 export class UserModule {}
