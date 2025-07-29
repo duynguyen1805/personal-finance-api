@@ -9,22 +9,24 @@ Dự án Personal Finance API đã được mở rộng với module Financial G
 ### 1. Financial Goals Module
 
 #### API Endpoints
+
 - `POST /financial-goals/create` - Tạo mục tiêu tài chính mới
-- `GET /financial-goals/all` - Lấy tất cả mục tiêu của user
+- `GET /financial-goals/get-all` - Lấy tất cả mục tiêu của user
 - `GET /financial-goals/upcoming?days=30` - Lấy mục tiêu sắp đến hạn
 - `GET /financial-goals/:id` - Lấy chi tiết mục tiêu cụ thể
 - `PATCH /financial-goals/:id` - Cập nhật mục tiêu
 - `DELETE /financial-goals/:id` - Xóa mục tiêu
 
 #### Dữ liệu mục tiêu
+
 ```typescript
 {
   goalId: number;
   userId: number;
-  goalName: string;        // Tên mục tiêu
-  targetAmount: number;    // Số tiền mục tiêu
-  deadline: Date;          // Ngày hạn chót
-  autoDeduct: boolean;     // Tự động trừ tiền
+  goalName: string; // Tên mục tiêu
+  targetAmount: number; // Số tiền mục tiêu
+  deadline: Date; // Ngày hạn chót
+  autoDeduct: boolean; // Tự động trừ tiền
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,17 +35,20 @@ Dự án Personal Finance API đã được mở rộng với module Financial G
 ### 2. Notification System
 
 #### Loại thông báo
+
 - **EMAIL**: Gửi email qua Google App Mail
 - **PUSH**: Push notification (đang phát triển)
 - **IN_APP**: Thông báo trong ứng dụng
 
 #### Trạng thái thông báo
+
 - **PENDING**: Chờ gửi
 - **SENT**: Đã gửi thành công
 - **FAILED**: Gửi thất bại
 - **READ**: Đã đọc
 
 #### API Endpoints
+
 - `GET /notifications?limit=50` - Lấy thông báo của user
 - `GET /notifications/unread-count` - Số thông báo chưa đọc
 - `PATCH /notifications/:id/read` - Đánh dấu đã đọc
@@ -55,6 +60,7 @@ Dự án Personal Finance API đã được mở rộng với module Financial G
 Hệ thống tự động chạy các task sau:
 
 #### 9:00 AM - Kiểm tra deadline hàng ngày
+
 - Quét tất cả mục tiêu sắp đến hạn trong 30 ngày
 - Gửi thông báo phù hợp dựa trên mức độ khẩn cấp:
   - **≤ 1 ngày**: Thông báo khẩn cấp qua email
@@ -62,9 +68,11 @@ Hệ thống tự động chạy các task sau:
   - **≤ 14 ngày**: Thông báo tháng qua in-app
 
 #### 10:00 AM - Nhắc nhở tuần
+
 - Gửi email tóm tắt các mục tiêu sắp đến hạn trong 7 ngày
 
 #### 2:00 PM - Nhắc nhở khẩn cấp
+
 - Gửi thông báo khẩn cấp cho mục tiêu đến hạn trong 1 ngày
 
 ## Cách sử dụng
@@ -145,11 +153,13 @@ Template email được tạo tại `templates/email/financial-goal-reminder.ejs
 ## Monitoring & Logging
 
 ### Logs
+
 - Tất cả hoạt động notification được log với level phù hợp
 - Lỗi gửi notification được ghi log chi tiết
 - Scheduled tasks có log start/end
 
 ### Monitoring
+
 - Số lượng notification được gửi
 - Tỷ lệ thành công/thất bại
 - Performance của scheduled tasks
@@ -157,16 +167,19 @@ Template email được tạo tại `templates/email/financial-goal-reminder.ejs
 ## Troubleshooting
 
 ### 1. Email không gửi được
+
 - Kiểm tra cấu hình Google App Mail
 - Verify refresh token còn hạn
 - Check logs trong `notification-scheduler.service.ts`
 
 ### 2. Scheduled tasks không chạy
+
 - Đảm bảo `ScheduleModule` đã được import
 - Kiểm tra timezone của server
 - Verify cron expressions
 
 ### 3. Database errors
+
 - Chạy migration: `npm run typeorm:migration:run`
 - Kiểm tra kết nối database
 - Verify entity relationships
@@ -174,6 +187,7 @@ Template email được tạo tại `templates/email/financial-goal-reminder.ejs
 ## Roadmap
 
 ### Phase 3 - Advanced Features
+
 1. **Firebase Cloud Messaging** - Push notifications
 2. **Progress Tracking** - Theo dõi tiến độ mục tiêu
 3. **Auto-deduct** - Tự động trừ tiền từ thu nhập
@@ -182,6 +196,7 @@ Template email được tạo tại `templates/email/financial-goal-reminder.ejs
 6. **Analytics & Reporting** - Báo cáo và phân tích
 
 ### Technical Improvements
+
 1. **Real-time Notifications** - WebSocket integration
 2. **Notification Preferences** - Cài đặt thông báo cá nhân
 3. **Batch Processing** - Xử lý hàng loạt cho performance
@@ -202,7 +217,8 @@ Khi thêm tính năng mới:
 ## Support
 
 Nếu gặp vấn đề, vui lòng:
+
 1. Kiểm tra logs trong console
 2. Verify cấu hình environment variables
 3. Test API endpoints với Postman
-4. Check database connection và migrations 
+4. Check database connection và migrations
