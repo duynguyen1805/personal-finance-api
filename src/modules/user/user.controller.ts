@@ -35,7 +35,39 @@ export class UserController {
 
   @Get()
   findAll(@Query() query: FetchUserDto) {
+    console.log('this.request.user', this.request.user);
     return this.userService.findAll(query);
+  }
+
+  // Notification Preferences Endpoints - Must be before /:id to avoid route conflicts
+  @Get('/notification-preferences')
+  // @ApiTags('notification-preferences')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async getNotificationPreferences() {
+    console.log('this.request.user', this.request.user);
+    const user = this.request.user as User;
+    return await this.userService.getNotificationPreferences(user.id);
+  }
+
+  @Post('/notification-preferences')
+  // @ApiTags('notification-preferences')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async updateNotificationPreferences(
+    @Body() dto: UpdateNotificationPreferencesDto
+  ) {
+    const user = this.request.user as User;
+    return await this.userService.updateNotificationPreferences(user.id, dto);
+  }
+
+  @Post('/notification-preferences/reset')
+  // @ApiTags('notification-preferences')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async resetNotificationPreferences() {
+    const user = this.request.user as User;
+    return await this.userService.resetNotificationPreferences(user.id);
   }
 
   @Get('/:id')
@@ -53,33 +85,5 @@ export class UserController {
   updateUserInfo(@Body() dto: UpdateUserDto) {
     const user = this.request.user as User;
     return this.userService.updateUserInfo(user.id, dto);
-  }
-
-  // Notification Preferences Endpoints
-  @Get('/notification-preferences')
-  @ApiTags('notification-preferences')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  async getNotificationPreferences() {
-    const user = this.request.user as User;
-    return await this.userService.getNotificationPreferences(user.id);
-  }
-
-  @Post('/notification-preferences')
-  @ApiTags('notification-preferences')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  async updateNotificationPreferences(@Body() dto: UpdateNotificationPreferencesDto) {
-    const user = this.request.user as User;
-    return await this.userService.updateNotificationPreferences(user.id, dto);
-  }
-
-  @Post('/notification-preferences/reset')
-  @ApiTags('notification-preferences')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  async resetNotificationPreferences() {
-    const user = this.request.user as User;
-    return await this.userService.resetNotificationPreferences(user.id);
   }
 }
