@@ -4,6 +4,7 @@ import { Repository, Between } from 'typeorm';
 import { FinancialGoals } from './entities/financial-goals.entity';
 import { CreateFinancialGoalDto } from './dto/create-financial-goal.dto';
 import { UpdateFinancialGoalDto } from './dto/update-financial-goal.dto';
+import { mustExist } from '../../common/helpers/server-error.helper';
 
 @Injectable()
 export class FinancialGoalsService {
@@ -14,38 +15,44 @@ export class FinancialGoalsService {
 
   async createGoal(userId: number, dto: CreateFinancialGoalDto) {
     const entity = this.goalsRepository.create({ ...dto, userId });
-    const data = await this.goalsRepository.save(entity);
-    return { data, message: 'Financial goal created successfully', statusCode: 201 };
+    return await this.goalsRepository.save(entity);
   }
 
-  async updateGoal(userId: number, goalId: number, dto: UpdateFinancialGoalDto) {
+  async updateGoal(
+    userId: number,
+    goalId: number,
+    dto: UpdateFinancialGoalDto
+  ) {
     await this.getGoalById(userId, goalId);
     await this.goalsRepository.update({ userId, goalId }, dto);
-    const data = await this.getGoalById(userId, goalId);
-    return { data, message: 'Financial goal updated successfully', statusCode: 200 };
+    return await this.getGoalById(userId, goalId);
   }
 
   async getAllGoals(userId: number) {
-    const data = await this.goalsRepository.find({ 
+    return await this.goalsRepository.find({
       where: { userId },
       order: { createdAt: 'DESC' }
     });
-    return { data, message: 'Financial goals fetched successfully', statusCode: 200 };
   }
 
   async getGoalById(userId: number, goalId: number) {
-    const data = await this.goalsRepository.findOne({ where: { userId, goalId } });
-    if (!data) throw new NotFoundException('Financial goal not found');
+    const data = await this.goalsRepository.findOne({
+      where: { userId, goalId }
+    });
+    mustExist(data, 'Financial goal not found');
     return data;
   }
 
   async deleteGoal(userId: number, goalId: number) {
     await this.getGoalById(userId, goalId);
-    await this.goalsRepository.delete({ userId, goalId });
-    return { data: null, message: 'Financial goal deleted successfully', statusCode: 200 };
+    return await this.goalsRepository.delete({ userId, goalId });
   }
 
-  async getGoalsByDeadlineRange(userId: number, startDate: Date, endDate: Date) {
+  async getGoalsByDeadlineRange(
+    userId: number,
+    startDate: Date,
+    endDate: Date
+  ) {
     const data = await this.goalsRepository.find({
       where: {
         userId,
@@ -60,7 +67,7 @@ export class FinancialGoalsService {
     const startDate = new Date();
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + days);
-    
+
     return await this.getGoalsByDeadlineRange(userId, startDate, endDate);
   }
 }
