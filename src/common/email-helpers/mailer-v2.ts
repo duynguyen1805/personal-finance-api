@@ -54,7 +54,8 @@ export enum EEmailTemplate {
   WELCOME_TO_CORPORATION = 'welcome-to-corporation',
   SEND_CONTRACT_TO_EMPLOYEE_BY_ROLE = 'send-contract-to-employee-by-role',
   CONTRACT_APPROVAL_NOTIFICATION = 'contract-approval-notification',
-  PACKAGE_TO_SIGN = 'package-to-sign'
+  PACKAGE_TO_SIGN = 'package-to-sign',
+  FINANCIAL_GOAL_REMINDER = 'financial-goal-reminder'
 }
 
 export interface IReceiver {
