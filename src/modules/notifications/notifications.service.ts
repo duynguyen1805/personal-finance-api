@@ -32,8 +32,13 @@ export class NotificationsService {
       // Check user preferences before sending
       const shouldSend = await this.checkUserPreferences(notification);
       if (!shouldSend) {
-        this.logger.log(`Skipping notification ${notification.notificationId} - user preferences disabled`);
-        await this.updateNotificationStatus(notification.notificationId, NotificationStatus.SENT);
+        this.logger.log(
+          `Skipping notification ${notification.notificationId} - user preferences disabled`
+        );
+        await this.updateNotificationStatus(
+          notification.notificationId,
+          NotificationStatus.SENT
+        );
         return true; // Mark as sent to avoid retry
       }
 
@@ -58,11 +63,13 @@ export class NotificationsService {
     }
   }
 
-  private async checkUserPreferences(notification: Notifications): Promise<boolean> {
+  private async checkUserPreferences(
+    notification: Notifications
+  ): Promise<boolean> {
     try {
       // Determine notification type based on metadata or related entity
       let notificationType = 'general';
-      
+
       if (notification.relatedEntityType === 'financial_goal') {
         notificationType = 'goalReminders';
       } else if (notification.relatedEntityType === 'budget') {
@@ -82,7 +89,10 @@ export class NotificationsService {
       }
 
       // Check if user wants this type of notification
-      return await this.userService.shouldSendNotification(notification.userId, notificationType);
+      return await this.userService.shouldSendNotification(
+        notification.userId,
+        notificationType
+      );
     } catch (error) {
       this.logger.error(`Error checking user preferences: ${error.message}`);
       return true; // Default to true if error
@@ -213,8 +223,6 @@ export class NotificationsService {
         status: NotificationStatus.SENT
       }
     });
-    console.log('count', count);
-
     return count;
   }
 
