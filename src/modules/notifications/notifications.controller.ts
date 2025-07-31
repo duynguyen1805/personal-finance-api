@@ -43,11 +43,11 @@ export class NotificationsController {
     description: 'Number of notifications to return',
     example: 50
   })
-  @ApiResponse({
-    status: 200,
-    description: 'Notifications fetched successfully.',
-    type: [Notifications]
-  })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Notifications fetched successfully.',
+  //   type: [Notifications]
+  // })
   async getUserNotifications(@Query('limit') limit?: string) {
     const user = this.request.user as any;
     const limitNumber = limit ? parseInt(limit) : 50;
