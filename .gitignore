@@ -42,6 +42,7 @@ lerna-debug.log*
 .env.*.local
 .gitlab-ci.yml
 docker-compose.dev.yml
+docker-compose.test.yml
 Dockerfile
 
 .cursor
