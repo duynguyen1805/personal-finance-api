@@ -15,6 +15,7 @@ import { UserService } from '../user/user.service';
 import { TwoFa } from '../../common/helpers/twoFA.helper';
 import { Mailer, EEmailTemplate } from '../../common/email-helpers/mailer-v2';
 import { ERedisKey } from '../../database/redis';
+import { makeSure, mustExist } from '../../common/helpers/server-error.helper';
 
 @Injectable()
 export class AuthService {
@@ -165,16 +166,16 @@ export class AuthService {
       const cachedOtp = await this.cacheService.get(
         `disable-2fa-otp:${userId}`
       );
-      if (!cachedOtp || cachedOtp !== emailOtp) {
-        throw new UnauthorizedException('Invalid or expired email OTP');
+      if (!cachedOtp || (cachedOtp && cachedOtp !== emailOtp)) {
+        makeSure(false, 'INVALID_OTP', 'Invalid or expired email OTP');
       }
       await this.cacheService.del(`disable-2fa-otp:${userId}`);
     }
     const user = await this.userService.findById(userId);
     if (!user || !user.twoFactorAuthSecret)
-      throw new UnauthorizedException('2FA not initialized');
+      makeSure(false, '2FA_NOT_INITIALIZED', '2FA not initialized');
     const isValid = TwoFa.verifyTwoFa(code, user.twoFactorAuthSecret);
-    if (!isValid) throw new UnauthorizedException('Invalid 2FA code');
+    if (!isValid) makeSure(false, 'INVALID_2FA_CODE', 'Invalid 2FA code');
     await this.userService.updateUserInfo(userId, {
       isTwoFactorAuthEnabled: false,
       twoFactorAuthSecret: null,
@@ -187,14 +188,10 @@ export class AuthService {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await this.cacheService.setWithTTL(`disable-2fa-otp:${userId}`, otp, 300);
     const user = await this.userService.findById(userId);
-    await Mailer.sendDirectEmail(
-      email,
-      EEmailTemplate.OTP_TWO_FA,
-      {
-        code: otp,
-        email
-      }
-    );
+    await Mailer.sendDirectEmail(email, EEmailTemplate.OTP_TWO_FA, {
+      code: otp,
+      email
+    });
     return { success: true };
   }
 
