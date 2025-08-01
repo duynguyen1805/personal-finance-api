@@ -1,0 +1,86 @@
+version: '3'
+
+services:
+  api-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: '${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}'
+    ports:
+      - '4000:4000'
+    volumes:
+      - /Users/duynguyen/expense-tracker/.env.test:/app/.env
+      - /Users/duynguyen/expense-tracker/files:/app/files
+    environment:
+      - TZ=Asia/Bangkok
+      - SERVICE_TYPE=MainService
+    dns:
+      - 8.8.8.8
+    deploy:
+      mode: replicated
+      placement:
+        constraints: [node.role == manager]
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: any
+    networks:
+      - expense-tracker_net
+  postgres-server:
+    image: 'postgres'
+    volumes:
+      - /Users/duynguyen/expense-tracker/postgres:/data/postgres
+    ports:
+      - '6434:5432'
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGDATA=/data/postgres
+      - POSTGRES_DB=${DB_DATABASE}
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: any
+    networks:
+      - expense-tracker_net
+  redis-server:
+    image: 'redis:6.0-alpine'
+    volumes:
+      - /Users/duynguyen/expense-tracker/redis:/data
+      - /Users/duynguyen/expense-tracker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - '7379:6379'
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: any
+    networks:
+      - expense-tracker_net
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'asdi-mvp-rabbitmq'
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    ports:
+      - 5772:5672
+      - 15772:15672
+    volumes:
+      - /Users/duynguyen/expense-tracker/rabbitmq/data/:/var/lib/rabbitmq/
+      - /Users/duynguyen/expense-tracker/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - expense-tracker_net
+
+networks:
+  expense-tracker_net:
+    # driver: overlay # chỉ sử dụng khi docker đang ở Swarm mode
+    driver: bridge
