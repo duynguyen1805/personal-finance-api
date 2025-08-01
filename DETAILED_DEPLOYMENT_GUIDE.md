@@ -1,6 +1,7 @@
 # Detailed Deployment Guide - Docker + VPS + GitHub Actions CI/CD
 
 ## Table of Contents
+
 1. [Prerequisites](#prerequisites)
 2. [Local Development Setup](#local-development-setup)
 3. [Docker Setup](#docker-setup)
@@ -15,12 +16,14 @@
 ## Prerequisites
 
 ### Required Software & Accounts:
+
 - **GitHub Account** - để lưu trữ code và setup CI/CD
 - **VPS Server** (Ubuntu 20.04+ recommended)
 - **Domain Name** (optional, nhưng recommended)
 - **Docker Hub Account** (optional, để push images)
 
 ### Local Machine Requirements:
+
 - **Git** - để clone/push code
 - **Docker Desktop** - để test Docker locally
 - **Code Editor** (VS Code recommended)
@@ -31,16 +34,19 @@
 ## Local Development Setup
 
 ### Step 1: Clone Repository
+
 ```bash
 git clone https://github.com/your-username/personal-finance-api.git
 cd personal-finance-api
 ```
 
-**Giải thích:** 
+**Giải thích:**
+
 - Clone code từ GitHub về máy local
 - Di chuyển vào thư mục project
 
 ### Step 2: Environment Configuration
+
 ```bash
 # Copy environment template
 cp docs/env.example .env
@@ -50,6 +56,7 @@ nano .env
 ```
 
 **Cấu hình cần thiết trong .env:**
+
 ```env
 # Database Configuration
 DB_HOST=localhost
@@ -78,11 +85,13 @@ REDIS_PORT=6379
 ```
 
 **Giải thích:**
+
 - File `.env` chứa tất cả biến môi trường cần thiết
 - Mỗi biến có mục đích cụ thể (DB, JWT, Email, etc.)
 - Không bao giờ commit file `.env` lên Git
 
 ### Step 3: Test Local Development
+
 ```bash
 # Install dependencies
 npm install
@@ -92,10 +101,12 @@ npm run start:dev
 ```
 
 **Giải thích:**
+
 - `npm install`: Cài đặt tất cả dependencies từ package.json
 - `npm run start:dev`: Khởi động server development với hot reload
 
 **Expected Output:**
+
 ```
 [Nest] 1234   - MM/DD/YYYY, HH:mm:ss AM   [NestFactory] Starting Nest application...
 [Nest] 1234   - MM/DD/YYYY, HH:mm:ss AM   [InstanceLoader] AppModule dependencies initialized
@@ -109,6 +120,7 @@ npm run start:dev
 ## Docker Setup
 
 ### Step 1: Understanding Dockerfile
+
 Hãy xem file `Dockerfile` hiện tại:
 
 ```dockerfile
@@ -138,6 +150,7 @@ CMD [ "npm", "start" ]
 ```
 
 **Giải thích từng bước:**
+
 1. `FROM node:20.18.1-alpine`: Sử dụng Node.js 20.18.1 với Alpine Linux (nhẹ)
 2. `WORKDIR /app`: Tạo và set thư mục làm việc trong container
 3. `COPY . .`: Copy toàn bộ source code vào container
@@ -147,6 +160,7 @@ CMD [ "npm", "start" ]
 7. `CMD [ "npm", "start" ]`: Lệnh mặc định khi chạy container
 
 ### Step 2: Test Docker Locally
+
 ```bash
 # Build Docker image
 docker build -t personal-finance-api:latest .
@@ -166,6 +180,7 @@ docker rm pf-api-test
 ```
 
 **Giải thích:**
+
 - `docker build`: Tạo image từ Dockerfile
 - `docker run`: Chạy container từ image
 - `-d`: Chạy ở background (detached mode)
@@ -173,6 +188,7 @@ docker rm pf-api-test
 - `--env-file .env`: Truyền biến môi trường từ file .env
 
 ### Step 3: Create Docker Compose (Optional)
+
 Tạo file `docker-compose.yml` để dễ quản lý:
 
 ```yaml
@@ -182,7 +198,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
     env_file:
@@ -200,7 +216,7 @@ services:
       MYSQL_USER: dbuser
       MYSQL_PASSWORD: dbpassword
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
     restart: unless-stopped
@@ -208,7 +224,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     restart: unless-stopped
 
 volumes:
@@ -216,9 +232,13 @@ volumes:
 ```
 
 **Sử dụng Docker Compose:**
+
 ```bash
 # Start all services
 docker-compose up -d
+
+# or
+docker-compose --env-file .env.test.local -f docker-compose.test.yml up --build
 
 # View logs
 docker-compose logs -f app
@@ -232,6 +252,7 @@ docker-compose down
 ## VPS Server Setup
 
 ### Step 1: Connect to VPS
+
 ```bash
 # Connect via SSH
 ssh root@your-server-ip
@@ -241,6 +262,7 @@ apt update && apt upgrade -y
 ```
 
 ### Step 2: Install Required Software
+
 ```bash
 # Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -261,6 +283,7 @@ apt install certbot python3-certbot-nginx -y
 ```
 
 **Giải thích:**
+
 - Docker: Để chạy containers
 - Docker Compose: Để quản lý multiple containers
 - Git: Để clone code từ GitHub
@@ -268,6 +291,7 @@ apt install certbot python3-certbot-nginx -y
 - Certbot: Tự động tạo SSL certificates
 
 ### Step 3: Create Application Directory
+
 ```bash
 # Create directory for application
 mkdir -p /var/www/personal-finance-api
@@ -278,12 +302,14 @@ chown -R $USER:$USER /var/www/personal-finance-api
 ```
 
 ### Step 4: Setup Environment Variables
+
 ```bash
 # Create environment file
 nano .env
 ```
 
 **Production .env example:**
+
 ```env
 # Database Configuration
 DB_HOST=localhost
@@ -315,12 +341,14 @@ CORS_ORIGIN=https://yourdomain.com
 ```
 
 ### Step 5: Setup Nginx Reverse Proxy
+
 ```bash
 # Create Nginx configuration
 nano /etc/nginx/sites-available/personal-finance-api
 ```
 
 **Nginx configuration:**
+
 ```nginx
 server {
     listen 80;
@@ -352,6 +380,7 @@ systemctl restart nginx
 ```
 
 ### Step 6: Setup SSL Certificate
+
 ```bash
 # Get SSL certificate
 certbot --nginx -d yourdomain.com -d www.yourdomain.com
@@ -365,9 +394,11 @@ certbot renew --dry-run
 ## GitHub Actions CI/CD
 
 ### Step 1: Create GitHub Secrets
+
 Vào GitHub repository → Settings → Secrets and variables → Actions
 
 **Thêm các secrets:**
+
 - `VPS_HOST`: IP address của VPS
 - `VPS_USERNAME`: Username để SSH (thường là root)
 - `VPS_PRIVATE_KEY`: Private SSH key
@@ -375,6 +406,7 @@ Vào GitHub repository → Settings → Secrets and variables → Actions
 - `DOCKER_HUB_PASSWORD`: Docker Hub password (nếu dùng)
 
 ### Step 2: Create GitHub Actions Workflow
+
 Tạo file `.github/workflows/deploy.yml`:
 
 ```yaml
@@ -382,56 +414,57 @@ name: Deploy to VPS
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run tests
-      run: npm test
-    
-    - name: Build application
-      run: npm run build
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build application
+        run: npm run build
 
   deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - name: Deploy to VPS
-      uses: appleboy/ssh-action@v0.1.5
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USERNAME }}
-        key: ${{ secrets.VPS_PRIVATE_KEY }}
-        script: |
-          cd /var/www/personal-finance-api
-          git pull origin main
-          docker-compose down
-          docker-compose build --no-cache
-          docker-compose up -d
-          docker system prune -f
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          script: |
+            cd /var/www/personal-finance-api
+            git pull origin main
+            docker-compose down
+            docker-compose build --no-cache
+            docker-compose up -d
+            docker system prune -f
 ```
 
 **Giải thích workflow:**
+
 1. **Trigger**: Chạy khi push vào branch main hoặc tạo pull request
-2. **Test Job**: 
+2. **Test Job**:
    - Checkout code
    - Setup Node.js 20
    - Install dependencies
@@ -446,6 +479,7 @@ jobs:
    - Cleanup Docker cache
 
 ### Step 3: Setup SSH Key Authentication
+
 ```bash
 # Generate SSH key pair (on local machine)
 ssh-keygen -t rsa -b 4096 -C "your-email@example.com"
@@ -462,6 +496,7 @@ ssh root@your-server-ip
 ## Deployment Process
 
 ### Step 1: Initial Deployment
+
 ```bash
 # On VPS
 cd /var/www/personal-finance-api
@@ -482,6 +517,7 @@ docker-compose logs -f app
 ```
 
 ### Step 2: Database Setup
+
 ```bash
 # Run migrations
 docker-compose exec app npm run typeorm:migration:run
@@ -491,6 +527,7 @@ docker-compose exec app npm run seed:run
 ```
 
 ### Step 3: Verify Deployment
+
 ```bash
 # Check if application is running
 curl http://localhost:3000
@@ -507,6 +544,7 @@ curl https://yourdomain.com
 ## Monitoring & Maintenance
 
 ### Step 1: Setup Logging
+
 ```bash
 # View application logs
 docker-compose logs -f app
@@ -520,6 +558,7 @@ nano /etc/logrotate.d/personal-finance-api
 ```
 
 ### Step 2: Setup Monitoring
+
 ```bash
 # Install monitoring tools
 apt install htop iotop nethogs -y
@@ -531,12 +570,14 @@ free -h
 ```
 
 ### Step 3: Backup Strategy
+
 ```bash
 # Create backup script
 nano /root/backup.sh
 ```
 
 **Backup script:**
+
 ```bash
 #!/bin/bash
 DATE=$(date +%Y%m%d_%H%M%S)
@@ -572,6 +613,7 @@ crontab -e
 ### Common Issues & Solutions
 
 #### 1. Container Won't Start
+
 ```bash
 # Check container logs
 docker-compose logs app
@@ -584,6 +626,7 @@ docker-compose restart
 ```
 
 #### 2. Database Connection Issues
+
 ```bash
 # Check if database is running
 docker-compose ps mysql
@@ -596,6 +639,7 @@ docker-compose exec app npm run typeorm:migration:run
 ```
 
 #### 3. Nginx Issues
+
 ```bash
 # Check Nginx status
 systemctl status nginx
@@ -608,6 +652,7 @@ systemctl restart nginx
 ```
 
 #### 4. SSL Certificate Issues
+
 ```bash
 # Check certificate status
 certbot certificates
@@ -620,6 +665,7 @@ openssl s_client -connect yourdomain.com:443
 ```
 
 #### 5. Memory Issues
+
 ```bash
 # Check memory usage
 free -h
@@ -634,6 +680,7 @@ docker system prune -a
 ### Performance Optimization
 
 #### 1. Docker Optimization
+
 ```dockerfile
 # Multi-stage build for smaller image
 FROM node:20.18.1-alpine as build
@@ -653,6 +700,7 @@ CMD ["npm", "run", "start:prod"]
 ```
 
 #### 2. Nginx Optimization
+
 ```nginx
 # Add to nginx.conf
 worker_processes auto;
@@ -664,6 +712,7 @@ gzip_types text/plain text/css application/json application/javascript text/xml 
 ```
 
 #### 3. Application Optimization
+
 ```javascript
 // Add to main.ts
 import { NestFactory } from '@nestjs/core';
@@ -671,16 +720,16 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   // Enable CORS
   app.enableCors({
     origin: process.env.CORS_ORIGIN,
-    credentials: true,
+    credentials: true
   });
-  
+
   // Global prefix
   app.setGlobalPrefix('api');
-  
+
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
@@ -691,6 +740,7 @@ bootstrap();
 ## Summary
 
 ### Deployment Checklist:
+
 - [ ] VPS server setup with Docker
 - [ ] Environment variables configured
 - [ ] Nginx reverse proxy setup
@@ -703,6 +753,7 @@ bootstrap();
 - [ ] Performance optimization applied
 
 ### Regular Maintenance:
+
 - [ ] Update system packages monthly
 - [ ] Renew SSL certificates (automatic)
 - [ ] Monitor disk space and logs
@@ -710,4 +761,4 @@ bootstrap();
 - [ ] Update application dependencies
 - [ ] Monitor application performance
 
-This detailed guide ensures a robust, scalable deployment with proper monitoring and maintenance procedures. 
+This detailed guide ensures a robust, scalable deployment with proper monitoring and maintenance procedures.
