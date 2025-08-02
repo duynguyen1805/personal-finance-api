@@ -12,6 +12,7 @@ import { Expenses } from '../expenses/entities/expenses.entity';
 import { Categories } from '../categories/entities/categories.entity';
 import { Budgets } from '../budgets/entities/budgets.entity';
 import { UserNotificationPreferences } from './entities/user-notification-preferences.entity';
+import { UserAuthProvider } from './entities/user-auth-provider.entity';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { UserNotificationPreferences } from './entities/user-notification-prefer
       Expenses,
       Categories,
       Budgets,
-      UserNotificationPreferences
+      UserNotificationPreferences,
+      UserAuthProvider
     ]),
     RoleModule
   ],

@@ -36,7 +36,8 @@ export enum EAuthProvider {
   EMAIL = 'EMAIL',
   GOOGLE = 'GOOGLE',
   FACEBOOK = 'FACEBOOK',
-  APPLE = 'APPLE'
+  APPLE = 'APPLE',
+  FIREBASE = 'FIREBASE'
 }
 
 export enum EAccountType {}

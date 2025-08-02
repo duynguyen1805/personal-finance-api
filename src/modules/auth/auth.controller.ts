@@ -7,16 +7,19 @@ import { LoginAuthAccountDto } from './dto/login-auth-account.dto';
 import { SignUpAuthAccountDto } from './dto/signup-auth-account.dto';
 import { VerifyRegistrationAccountDto } from './dto/verify-registration.dto';
 import { ResendVerifyRegistrationAccountDto } from './dto/resend-verify-registration.dto';
+import { FirebaseLoginDto, FirebaseVerifyDto } from './dto/firebase-login.dto';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { User } from '../user/entities/user.entity';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { FirebaseAuthService } from './firebase-auth.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly firebaseAuthService: FirebaseAuthService,
     @Inject(REQUEST) private request: Request
   ) {}
 
@@ -43,6 +46,18 @@ export class AuthController {
   @ApiBody({ type: LoginAuthAccountDto })
   loginAccount(@Body() dto: LoginAuthAccountDto) {
     return this.authService.signIn(dto);
+  }
+
+  @Post('/firebase/login')
+  @ApiBody({ type: FirebaseLoginDto })
+  async firebaseLogin(@Body() dto: FirebaseLoginDto) {
+    return this.firebaseAuthService.firebaseLogin(dto.idToken);
+  }
+
+  @Post('/firebase/verify')
+  @ApiBody({ type: FirebaseVerifyDto })
+  async verifyFirebaseToken(@Body() dto: FirebaseVerifyDto) {
+    return this.firebaseAuthService.verifyFirebaseToken(dto.idToken);
   }
 
   @Post('/verify-registration')

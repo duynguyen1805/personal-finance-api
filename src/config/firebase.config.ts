@@ -10,6 +10,8 @@ import { initializeApp } from '@firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { getFirestore } from 'firebase/firestore';
+import * as admin from 'firebase-admin';
+import { configService } from './config.service';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -22,6 +24,7 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
+// Initialize Firebase for client-side
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 export { auth, firebase };
@@ -30,3 +33,24 @@ export const app = initializeApp(firebaseConfig);
 // export const auth = getAuth();
 export const storage = getStorage(app);
 export const db = getFirestore(app);
+
+// Initialize Firebase Admin SDK for server-side
+if (!admin.apps.length) {
+  try {
+    const firebaseConfig = configService.getFirebaseConfig();
+    
+    admin.initializeApp({
+      credential: admin.credential.cert({
+        projectId: firebaseConfig.projectId,
+        privateKey: firebaseConfig.privateKey?.replace(/\\n/g, '\n'),
+        clientEmail: firebaseConfig.clientEmail
+      }),
+      databaseURL: firebaseConfig.databaseURL
+    });
+  } catch (error) {
+    console.warn('Firebase Admin SDK initialization failed:', error.message);
+    console.warn('Firebase authentication will not work without proper configuration');
+  }
+}
+
+export const adminAuth = admin.auth();

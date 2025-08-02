@@ -10,6 +10,7 @@ import { Mailer } from './mailer-v2';
 import { Notifications } from '../../modules/notifications/entities/notification.entity';
 import { NotificationsModule } from '../../modules/notifications/notifications.module';
 import { UserNotificationPreferences } from '../../modules/user/entities/user-notification-preferences.entity';
+import { UserAuthProvider } from '../../modules/user/entities/user-auth-provider.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { UserNotificationPreferences } from '../../modules/user/entities/user-no
     TypeOrmModule.forFeature([
       User,
       Notifications,
-      UserNotificationPreferences
+      UserNotificationPreferences,
+      UserAuthProvider
     ]),
     NotificationsModule
   ],

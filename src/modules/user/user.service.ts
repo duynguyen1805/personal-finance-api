@@ -9,6 +9,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserUseCase } from './use-cases/update-user.use-case';
 import { UserNotificationPreferences } from './entities/user-notification-preferences.entity';
 import { UpdateNotificationPreferencesDto } from './dto/notification-preferences.dto';
+import { UserAuthProvider } from './entities/user-auth-provider.entity';
+import { EAuthProvider, EPermission } from './dto/enum.dto';
 // import { hashMessage } from '@ethersproject/hash';
 // import { BigNumber, utils } from 'ethers';
 // import moment from 'moment';
@@ -25,6 +27,8 @@ export class UserService {
     private treeUserRepository: TreeRepository<User>,
     @InjectRepository(UserNotificationPreferences)
     private notificationPreferencesRepository: Repository<UserNotificationPreferences>,
+    @InjectRepository(UserAuthProvider)
+    private userAuthProviderRepository: Repository<UserAuthProvider>,
     @InjectConnection() private readonly connection: Connection,
     private readonly updateUserUseCase: UpdateUserUseCase
   ) {}
@@ -64,6 +68,52 @@ export class UserService {
     return this.userRepository.findOne(id, {
       relations: ['roles']
     });
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { email },
+      relations: ['roles']
+    });
+  }
+
+  async findByFirebaseUid(firebaseUid: string): Promise<User | null> {
+    const authProvider = await this.userAuthProviderRepository.findOne({
+      where: {
+        authProviderId: firebaseUid,
+        authProvider: EAuthProvider.FIREBASE
+      },
+      relations: ['user']
+    });
+    
+    return authProvider?.user || null;
+  }
+
+  async createUser(userData: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    passwordHash: string;
+    accountType: string;
+  }): Promise<User> {
+    const user = this.userRepository.create({
+      ...userData,
+      status: 'ACTIVE' as any,
+      theme: 'light',
+      currency: 'VND'
+    });
+    
+    return this.userRepository.save(user);
+  }
+
+  async createAuthProvider(authProviderData: {
+    userId: number;
+    authProvider: EAuthProvider;
+    authProviderId: string;
+    permission: EPermission;
+  }): Promise<UserAuthProvider> {
+    const authProvider = this.userAuthProviderRepository.create(authProviderData);
+    return this.userAuthProviderRepository.save(authProvider);
   }
 
   // async getAncestors(id: number, depth?: number) {
@@ -110,20 +160,23 @@ export class UserService {
   // }
 
   async findById(id: number) {
-    return await this.userRepository.findOne(id);
+    return this.userRepository.findOne(id, {
+      relations: ['roles']
+    });
   }
 
   findByIds(ids: number[]) {
-    return this.userRepository.findByIds(ids);
+    return this.userRepository.findByIds(ids, {
+      relations: ['roles']
+    });
   }
 
   async remove(id: number) {
-    const foundUser = await this.userRepository.findOne(id);
-    if (!foundUser) {
-      throw new HttpException('User does not exist.', HttpStatus.BAD_REQUEST);
+    const user = await this.userRepository.findOne(id);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-
-    return this.userRepository.softDelete(id);
+    return this.userRepository.remove(user);
   }
 
   async updateUserInfo(userId: number, dto: Partial<UpdateUserDto>) {

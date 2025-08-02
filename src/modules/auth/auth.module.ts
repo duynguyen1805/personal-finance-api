@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { FirebaseAuthService } from './firebase-auth.service';
 import { jwtConstants } from './constants';
 import { PassportModule } from '@nestjs/passport';
 import { UserModule } from '../user/user.module';
@@ -21,6 +22,7 @@ import { Role } from '../role/entities/role.entity';
 import { UserService } from '../user/user.service';
 import { UpdateUserUseCase } from '../user/use-cases/update-user.use-case';
 import { UserNotificationPreferences } from '../user/entities/user-notification-preferences.entity';
+import { UserAuthProvider } from '../user/entities/user-auth-provider.entity';
 
 @Module({
   imports: [
@@ -32,11 +34,18 @@ import { UserNotificationPreferences } from '../user/entities/user-notification-
     }),
     CustomeCacheModule,
     HttpModule,
-    TypeOrmModule.forFeature([User, Role, RegisterVerification, UserNotificationPreferences])
+    TypeOrmModule.forFeature([
+      User,
+      Role,
+      RegisterVerification,
+      UserNotificationPreferences,
+      UserAuthProvider
+    ])
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
+    FirebaseAuthService,
     SignUpUseCase,
     SignInUseCase,
     VerifyRegistrationUseCase,
@@ -47,6 +56,6 @@ import { UserNotificationPreferences } from '../user/entities/user-notification-
     RoleService,
     UserService
   ],
-  exports: [AuthService]
+  exports: [AuthService, FirebaseAuthService]
 })
 export class AuthModule {}

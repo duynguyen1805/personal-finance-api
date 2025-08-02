@@ -105,12 +105,28 @@ class ConfigService {
       smtpPort: this.getEnv('SMTP_PORT'),
       smtpUser: this.getEnv('SMTP_USER'),
       smtpPassword: this.getEnv('SMTP_PASSWORD'),
-      // Google App Mail configs
       gmailUser: this.getEnv('GMAIL_USER'),
       gmailClientId: this.getEnv('GMAIL_CLIENT_ID'),
       gmailClientSecret: this.getEnv('GMAIL_CLIENT_SECRET'),
       gmailRefreshToken: this.getEnv('GMAIL_REFRESH_TOKEN'),
       gmailAccessToken: this.getEnv('GMAIL_ACCESS_TOKEN')
+    };
+  }
+
+  public getFirebaseConfig() {
+    return {
+      projectId: this.getEnv('FIREBASE_PROJECT_ID'),
+      privateKeyId: this.getEnv('FIREBASE_PRIVATE_KEY_ID'),
+      privateKey: this.getEnv('FIREBASE_PRIVATE_KEY'),
+      clientEmail: this.getEnv('FIREBASE_CLIENT_EMAIL'),
+      clientId: this.getEnv('FIREBASE_CLIENT_ID'),
+      authUri: this.getEnv('FIREBASE_AUTH_URI'),
+      tokenUri: this.getEnv('FIREBASE_TOKEN_URI'),
+      authProviderX509CertUrl: this.getEnv(
+        'FIREBASE_AUTH_PROVIDER_X509_CERT_URL'
+      ),
+      clientX509CertUrl: this.getEnv('FIREBASE_CLIENT_X509_CERT_URL'),
+      databaseURL: this.getEnv('NEXT_PUBLIC_FIREBASE_DATABASE_URL')
     };
   }
 }
@@ -139,6 +155,11 @@ const configService = new ConfigService(process.env).ensureValues([
   'GMAIL_CLIENT_SECRET',
   'GMAIL_REFRESH_TOKEN',
   'GMAIL_ACCESS_TOKEN',
+  // Firebase configs
+  'FIREBASE_PROJECT_ID',
+  'FIREBASE_PRIVATE_KEY',
+  'FIREBASE_CLIENT_EMAIL',
+  'NEXT_PUBLIC_FIREBASE_DATABASE_URL',
   // MinIO configs
   'STORAGE_LOCAL_ENDPOINT',
   'MINIO_UPLOAD_LOCAL_PORT',
