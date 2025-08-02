@@ -85,7 +85,7 @@ export class UserService {
       },
       relations: ['user']
     });
-    
+
     return authProvider?.user || null;
   }
 
@@ -102,7 +102,7 @@ export class UserService {
       theme: 'light',
       currency: 'VND'
     });
-    
+
     return this.userRepository.save(user);
   }
 
@@ -110,9 +110,10 @@ export class UserService {
     userId: number;
     authProvider: EAuthProvider;
     authProviderId: string;
-    permission: EPermission;
+    // permission: EPermission;
   }): Promise<UserAuthProvider> {
-    const authProvider = this.userAuthProviderRepository.create(authProviderData);
+    const authProvider =
+      this.userAuthProviderRepository.create(authProviderData);
     return this.userAuthProviderRepository.save(authProvider);
   }
 

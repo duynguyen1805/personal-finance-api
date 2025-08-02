@@ -39,15 +39,15 @@ export class FirebaseAuthService {
   async firebaseLogin(idToken: string) {
     // 1. Verify Firebase token
     const firebaseUser = await this.verifyFirebaseToken(idToken);
-    
+
     // 2. Find or create user
     let user = await this.userService.findByEmail(firebaseUser.email);
-    
+
     if (!user) {
       // Create new user
       const firstName = firebaseUser.name?.split(' ')[0] || '';
       const lastName = firebaseUser.name?.split(' ').slice(1).join(' ') || '';
-      
+
       user = await this.userService.createUser({
         email: firebaseUser.email,
         firstName,
@@ -60,8 +60,8 @@ export class FirebaseAuthService {
       await this.userService.createAuthProvider({
         userId: user.id,
         authProvider: EAuthProvider.FIREBASE,
-        authProviderId: firebaseUser.uid,
-        permission: EPermission.VIEW
+        authProviderId: firebaseUser.uid
+        // permission: EPermission.VIEW
       });
     }
 
@@ -69,7 +69,8 @@ export class FirebaseAuthService {
     const payload = {
       email: user.email,
       id: user.id,
-      permissions: user.roles?.map(role => JSON.parse(role.permissions)).flat(1) || [],
+      permissions:
+        user.roles?.map((role) => JSON.parse(role.permissions)).flat(1) || [],
       profile: {
         firstName: user.firstName,
         lastName: user.lastName,
@@ -92,4 +93,4 @@ export class FirebaseAuthService {
       }
     };
   }
-} 
+}

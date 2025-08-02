@@ -1,4 +1,12 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn
+} from 'typeorm';
 // base.entity.ts
 
 import { BaseEntity } from '../../../common/base/base.entity';
@@ -13,8 +21,8 @@ export class UserAuthProvider extends BaseEntity {
   @Column({ nullable: false })
   userId: number;
 
-  @Column({ nullable: false })
-  permission: EPermission;
+  // @Column({ nullable: false })
+  // permission: EPermission;
 
   @Column({ nullable: false })
   authProvider: EAuthProvider;
