@@ -88,8 +88,8 @@ export class FirebaseAuthService {
       token,
       refreshToken,
       user: {
-        ...user,
-        firebaseUid: firebaseUser.uid
+        ...user
+        // firebaseUid: firebaseUser.uid
       }
     };
   }
