@@ -43,6 +43,7 @@
     "@ethersproject/hash": "^5.7.0",
     "@firebase/app": "^0.13.2",
     "@nestjs/axios": "0.0.8",
+    "@nestjs/cli": "^8.0.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.0.1",
     "@nestjs/core": "^8.0.0",
@@ -114,7 +115,6 @@
     "whatwg-url": "^14.2.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
     "@types/bcrypt": "^5.0.2",
