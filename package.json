@@ -109,6 +109,7 @@
     "tweetnacl-util": "^0.15.1",
     "typeorm": "^0.2.45",
     "typeorm-seeding": "^1.6.1",
+    "typescript": "^5.0.0",
     "uuidv4": "^6.2.13",
     "whatwg-url": "^14.2.0"
   },
@@ -147,7 +148,6 @@
     "supertest": "^6.1.3",
     "ts-jest": "28.0.1",
     "ts-loader": "^9.2.3",
-    "typescript": "^5.0.0",
     "webpack": "^5.72.1",
     "webpack-node-externals": "^3.0.0"
   },
