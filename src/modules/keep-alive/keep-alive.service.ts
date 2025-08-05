@@ -22,15 +22,15 @@ export class KeepAliveService {
    */
   getHealthStatus(): HealthStatus {
     const memoryUsage = process.memoryUsage();
-    
+
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       memory: {
         used: memoryUsage.heapUsed,
-        total: memoryUsage.heapTotal,
-      },
+        total: memoryUsage.heapTotal
+      }
     };
   }
 
@@ -40,7 +40,7 @@ export class KeepAliveService {
   ping(): PingResponse {
     return {
       message: 'pong',
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
   }
 
@@ -48,14 +48,15 @@ export class KeepAliveService {
    * Self-ping to keep server alive
    * Runs every 5 minutes
    */
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async selfPing() {
     try {
-      const baseUrl = this.configService.get<string>('APP_URL') || 'http://localhost:4000';
+      const baseUrl =
+        this.configService.get<string>('APP_URL') || 'http://localhost:4000';
       const response = await axios.get(`${baseUrl}/keep-alive/ping`, {
-        timeout: KEEP_ALIVE_CONFIG.TIMEOUTS.SELF_PING,
+        timeout: KEEP_ALIVE_CONFIG.TIMEOUTS.SELF_PING
       });
-      
+
       this.logger.log(`Self-ping successful: ${response.status}`);
     } catch (error) {
       this.logger.error(`Self-ping failed: ${error.message}`);
@@ -66,14 +67,16 @@ export class KeepAliveService {
    * Ping external services to keep server active
    * Runs every 10 minutes
    */
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async pingExternalServices() {
     for (const url of KEEP_ALIVE_CONFIG.EXTERNAL_URLS) {
       try {
         const response = await axios.get(url, {
-          timeout: KEEP_ALIVE_CONFIG.TIMEOUTS.EXTERNAL_PING,
+          timeout: KEEP_ALIVE_CONFIG.TIMEOUTS.EXTERNAL_PING
         });
-        this.logger.log(`External ping successful: ${url} - ${response.status}`);
+        this.logger.log(
+          `External ping successful: ${url} - ${response.status}`
+        );
       } catch (error) {
         this.logger.warn(`External ping failed: ${url} - ${error.message}`);
       }
@@ -99,7 +102,7 @@ export class KeepAliveService {
    * Memory usage monitoring
    * Runs every 30 minutes
    */
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_30_SECONDS)
   async monitorMemoryUsage() {
     const memoryUsage = this.getMemoryUsage();
     this.logger.log(`Memory usage: ${JSON.stringify(memoryUsage)} MB`);
@@ -114,7 +117,7 @@ export class KeepAliveService {
       rss: Math.round(memoryUsage.rss / 1024 / 1024),
       heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024),
       heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024),
-      external: Math.round(memoryUsage.external / 1024 / 1024),
+      external: Math.round(memoryUsage.external / 1024 / 1024)
     };
   }
 
@@ -127,24 +130,24 @@ export class KeepAliveService {
 
     try {
       const response = await axios.get(targetUrl, {
-        timeout: 15000,
+        timeout: 15000
       });
-      
+
       const responseTime = Date.now() - startTime;
-      
+
       return {
         success: true,
         url: targetUrl,
         status: response.status,
         responseTime,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       };
     } catch (error) {
       return {
         success: false,
         url: targetUrl,
         error: error.message,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toISOString()
       };
     }
   }
@@ -154,20 +157,20 @@ export class KeepAliveService {
    */
   getDetailedStatus(): DetailedStatus {
     const memoryUsage = this.getMemoryUsage();
-    
+
     return {
       server: {
         uptime: process.uptime(),
         version: process.version,
-        environment: process.env.NODE_ENV || 'development',
+        environment: process.env.NODE_ENV || 'development'
       },
       memory: memoryUsage,
       process: {
         pid: process.pid,
         platform: process.platform,
-        nodeVersion: process.version,
+        nodeVersion: process.version
       },
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString()
     };
   }
-} 
+}
