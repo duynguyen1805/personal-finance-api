@@ -1,9 +1,9 @@
 export const KEEP_ALIVE_CONFIG = {
   // External URLs to ping for keeping server active
   EXTERNAL_URLS: [
-    'https://httpbin.org/get',
-    'https://jsonplaceholder.typicode.com/posts/1',
-    'https://api.github.com/zen'
+    'https://httpbin.org/get'
+    // 'https://jsonplaceholder.typicode.com/posts/1',
+    // 'https://api.github.com/zen'
   ],
 
   // Ping intervals (in minutes)
@@ -17,7 +17,7 @@ export const KEEP_ALIVE_CONFIG = {
   // Timeout settings (in milliseconds)
   TIMEOUTS: {
     SELF_PING: 10000, // 10 seconds
-    EXTERNAL_PING: 15000, // 15 seconds
+    EXTERNAL_PING: 10000, // 15 seconds
     DB_CHECK: 5000 // 5 seconds
   },
 
