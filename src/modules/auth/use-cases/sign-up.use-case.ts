@@ -80,7 +80,7 @@ export class SignUpUseCase {
     const role = await this.roleService.findOneByName(EnumRole.USER);
     return await this.userRepository.save({
       ...user,
-      walletAddress: 'NULL',
+      walletAddress: user.email,
       passwordHash: passwordHash,
       status: EnumUserStatus.INACTIVE,
       accountType: 'ACTIVE',

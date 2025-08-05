@@ -98,7 +98,7 @@ export class UserService {
   }): Promise<User> {
     const user = this.userRepository.create({
       ...userData,
-      walletAddress: 'NULL',
+      walletAddress: userData.email,
       status: 'ACTIVE' as any,
       theme: 'light',
       currency: 'VND'
