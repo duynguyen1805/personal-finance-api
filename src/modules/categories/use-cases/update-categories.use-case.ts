@@ -9,8 +9,8 @@ import {
 import { Categories } from '../entities/categories.entity';
 import { EErrorCategories, EErrorDetail } from '../enums/categories.enum';
 import { UpdateCategoriesDto } from '../dto/update-categories.dto';
-import { Budgets } from '../../budgets/entities/budgets.entity';
-import { extractMonthYear } from '../../../common/helpers/time-helper';
+// import { Budgets } from '../../budgets/entities/budgets.entity';
+// import { extractMonthYear } from '../../../common/helpers/time-helper';
 
 @Injectable()
 export class UpdateCategoriesUseCase {
@@ -18,17 +18,17 @@ export class UpdateCategoriesUseCase {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     @InjectRepository(Categories)
-    private categoriesRepository: Repository<Categories>,
-    @InjectRepository(Budgets)
-    private budgetsRepository: Repository<Budgets>
+    private categoriesRepository: Repository<Categories> // @InjectRepository(Budgets) // private budgetsRepository: Repository<Budgets>
   ) {}
 
-  async execute(userId: number, dto: UpdateCategoriesDto) {
-    await this.validateUser(userId);
-    return await this.updateCategory(userId, dto);
+  async execute(userId: number, categoryId: number, dto: UpdateCategoriesDto) {
+    await this.validateUser(userId, categoryId);
+    return await this.updateCategory(userId, categoryId, dto);
   }
 
-  async validateUser(userId: number) {
+  async validateUser(userId: number, categoryId: number) {
+    makeSure(!isNaN(userId), EErrorCategories.INVALID_USER_ID);
+    makeSure(!isNaN(categoryId), EErrorCategories.INVALID_CATEGORY_ID);
     const user = await this.userRepository.findOne({ id: userId });
     mustExist(
       user,
@@ -39,43 +39,25 @@ export class UpdateCategoriesUseCase {
 
   async updateCategory(
     userId: number,
+    categoryId: number,
     dto: UpdateCategoriesDto
   ): Promise<Categories> {
-    const { month, year } = extractMonthYear(dto.date);
     const category = await this.categoriesRepository.findOne({
-      where: { categoryId: dto.categoryId }
+      where: { categoryId: categoryId, userId: userId }
     });
-    // const budget = await this.budgetsRepository.findOne({
-    //   where: { budgetId: category.budgetId }
-    // });
 
-    // // nếu budget vẫn đúng tháng thì update
-    // if (budget.month == month && budget.year == year) {
-    //   await this.categoriesRepository.update(category.categoryId, {
-    //     ...dto
-    //   });
-    // } else {
-    //   // thay đổi category qua budget của tháng khác
-    //   const budget = await this.budgetsRepository.findOne({
-    //     where: { userId: userId, month: month, year: year }
-    //   });
-    //   if (budget) {
-    //     await this.categoriesRepository.update(category.categoryId, {
-    //       ...dto,
-    //       budgetId: budget.budgetId
-    //     });
-    //   } else {
-    //     // tháng đó chưa có budget thì yêu cầu call api tạo income mới
-    //     makeSure(
-    //       false,
-    //       EErrorCategories.CANNOT_FIND_BUDGET,
-    //       EErrorDetail.CANNOT_FIND_BUDGET
-    //     );
-    //   }
-    // }
+    mustExist(
+      category,
+      EErrorCategories.CANNOT_FIND_CATEGORY,
+      EErrorDetail.CANNOT_FIND_CATEGORY
+    );
+
+    await this.categoriesRepository.update(category.categoryId, {
+      ...dto
+    });
 
     return await this.categoriesRepository.findOne({
-      where: { categoryId: dto.categoryId }
+      where: { categoryId: categoryId }
     });
   }
 }

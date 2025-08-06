@@ -5,14 +5,6 @@ import { ECategoriesType } from '../enums/categories.enum';
 // export class UpdateUserDto extends PartialType(CreateUserDto) {}
 
 export class CreateCategoriesDto {
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // budgetId: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  date: Date;
-
   @ApiProperty()
   @IsNotEmpty()
   categoryName: string;
@@ -23,5 +15,9 @@ export class CreateCategoriesDto {
 
   @ApiProperty()
   @IsOptional()
-  allocatedAmount: number;
+  categoryIcon: string;
+
+  @ApiProperty()
+  @IsOptional()
+  categoryColor: string;
 }

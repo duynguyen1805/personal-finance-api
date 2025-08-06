@@ -40,10 +40,10 @@ export class CategoriesController {
     return await this.categoriesService.createCategories(user.id, dto);
   }
 
-  @Post('/update')
-  async update(@Body() dto: UpdateCategoriesDto) {
+  @Post('/update/:id')
+  async update(@Param('id') id: string, @Body() dto: UpdateCategoriesDto) {
     const user = this.request.user as User;
-    return await this.categoriesService.updateCategories(user.id, dto);
+    return await this.categoriesService.updateCategories(user.id, +id, dto);
   }
 
   @Get('/get-all')

@@ -20,8 +20,16 @@ export class CategoriesService {
     return await this.createCategoriesUseCase.execute(userId, input);
   }
 
-  async updateCategories(userId: number, input: UpdateCategoriesDto) {
-    return await this.updateCategoriesUseCase.execute(userId, input);
+  async updateCategories(
+    userId: number,
+    categoryId: number,
+    input: UpdateCategoriesDto
+  ) {
+    return await this.updateCategoriesUseCase.execute(
+      userId,
+      categoryId,
+      input
+    );
   }
 
   async getAllCategories(userId: number) {
